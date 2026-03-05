@@ -1,7 +1,8 @@
 ﻿import { PAGES } from '../constants/appConfig'
 
-export default function HomePage({ tr, onNavigate }) {
+export default function HomePage({ tr, onNavigate, locationState, onRequestLocation, uiLanguage }) {
   const openText = tr.pages.home === 'होम' ? 'खोलें' : 'Open'
+  const actionText = locationState.data ? tr.locationRefresh : tr.locationEnable
 
   return (
     <div>
@@ -9,6 +10,32 @@ export default function HomePage({ tr, onNavigate }) {
         <div className="card-content">
           <span className="card-title">{tr.homeTitle}</span>
           <p>{tr.homeSubtitle}</p>
+        </div>
+      </div>
+
+      <div className="card rustic-card top-gap">
+        <div className="card-content">
+          <span className="card-title">{tr.locationTitle}</span>
+          {locationState.status === 'requesting' && <p>{tr.locationPending}</p>}
+          {locationState.error && <p className="location-error">{tr.locationError}</p>}
+          {!locationState.data && locationState.status !== 'requesting' && !locationState.error && (
+            <p>{tr.locationUnknown}</p>
+          )}
+          {locationState.data && (
+            <p>
+              {tr.locationUsing} <strong>{locationState.data.displayName || locationState.data.district || locationState.data.state}</strong>
+            </p>
+          )}
+          <button className="btn waves-effect amber darken-3 top-gap" onClick={onRequestLocation}>
+            {actionText}
+          </button>
+          {locationState.data?.source === 'browser' && (
+            <p className="location-note">
+              {uiLanguage === 'hi'
+                ? 'अभी अनुमानित लोकेशन है। बैकएंड/Azure Maps जुड़ने पर पता और सटीक होगा।'
+                : 'This is an approximate location. Address will be precise after backend/Azure Maps integration.'}
+            </p>
+          )}
         </div>
       </div>
 

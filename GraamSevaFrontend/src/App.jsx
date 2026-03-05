@@ -3,6 +3,7 @@ import './App.css'
 import { PAGES, STORAGE_KEYS, UI_LANGUAGE_MAP } from './constants/appConfig'
 import { createAssistantReply } from './lib/assistant'
 import { TRANSLATIONS, getCards, getUiLanguage } from './lib/i18n'
+import { getLocationLabel, resolveCurrentLocation } from './lib/location'
 import AssistantBar from './components/AssistantBar'
 import OnboardingPage from './pages/OnboardingPage'
 import HomePage from './pages/HomePage'
@@ -33,10 +34,16 @@ function App() {
     serviceNeeded: '',
     notes: '',
   })
+  const [locationState, setLocationState] = useState({
+    status: 'idle',
+    data: null,
+    error: '',
+  })
 
   useEffect(() => {
     const storedProfile = localStorage.getItem(STORAGE_KEYS.profile)
     const storedHistory = localStorage.getItem(STORAGE_KEYS.history)
+    const storedLocation = localStorage.getItem(STORAGE_KEYS.location)
 
     if (storedProfile) {
       const parsed = JSON.parse(storedProfile)
@@ -47,15 +54,30 @@ function App() {
     if (storedHistory) {
       setHistory(JSON.parse(storedHistory))
     }
+
+    if (storedLocation) {
+      setLocationState({
+        status: 'ready',
+        data: JSON.parse(storedLocation),
+        error: '',
+      })
+    }
   }, [])
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.history, JSON.stringify(history))
   }, [history])
 
+  useEffect(() => {
+    if (locationState.data) {
+      localStorage.setItem(STORAGE_KEYS.location, JSON.stringify(locationState.data))
+    }
+  }, [locationState.data])
+
   const uiLanguage = getUiLanguage(profile.language, UI_LANGUAGE_MAP)
   const tr = TRANSLATIONS[uiLanguage]
-  const cards = getCards(uiLanguage)
+  const locationLabel = getLocationLabel(locationState.data)
+  const cards = getCards(uiLanguage, locationLabel)
 
   const greeting = useMemo(() => {
     if (!profile.name) return tr.greeting
@@ -75,6 +97,22 @@ function App() {
     setOnboardingStep('done')
   }
 
+  const requestLocation = async () => {
+    setLocationState((prev) => ({ ...prev, status: 'requesting', error: '' }))
+    try {
+      const resolved = await resolveCurrentLocation(profile.language || 'hi')
+      setLocationState({ status: 'ready', data: resolved, error: '' })
+    } catch {
+      setLocationState((prev) => ({ ...prev, status: 'error', error: 'LOCATION_FAILED' }))
+    }
+  }
+
+  useEffect(() => {
+    if (onboardingStep === 'done' && locationState.status === 'idle' && !locationState.data) {
+      requestLocation()
+    }
+  }, [onboardingStep, locationState.status, locationState.data])
+
   const runAssistant = (incomingQuery, source = 'text') => {
     if (!incomingQuery.trim()) return
 
@@ -88,6 +126,7 @@ function App() {
         lang: uiLanguage,
         pageLabels: tr.pages,
         cards,
+        location: locationState.data,
       })
 
       setAssistantState({
@@ -144,7 +183,7 @@ function App() {
     setApplicationForm((prev) => ({
       ...prev,
       fullName: prev.fullName || profile.name,
-      village: prev.village || (uiLanguage === 'hi' ? 'रामपुर' : 'Rampur'),
+      village: prev.village || (locationState.data?.village || locationState.data?.district || (uiLanguage === 'hi' ? 'रामपुर' : 'Rampur')),
       serviceNeeded:
         prev.serviceNeeded ||
         (memoryIntent === 'tractor'
@@ -190,7 +229,15 @@ function App() {
 
   const renderPage = () => {
     if (currentPage === 'home') {
-      return <HomePage tr={tr} onNavigate={setCurrentPage} />
+      return (
+        <HomePage
+          tr={tr}
+          onNavigate={setCurrentPage}
+          locationState={locationState}
+          onRequestLocation={requestLocation}
+          uiLanguage={uiLanguage}
+        />
+      )
     }
 
     if (currentPage === 'schemes') {

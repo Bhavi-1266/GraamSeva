@@ -1,4 +1,6 @@
-﻿const PAGE_KEYWORDS = {
+﻿import { getLocationLabel } from './location'
+
+const PAGE_KEYWORDS = {
   schemes: ['scheme', 'yojna', 'subsidy', 'tractor', 'योजना', 'सब्सिडी', 'ट्रैक्टर'],
   mandi: ['mandi', 'rate', 'price', 'gehu', 'wheat', 'grain', 'मंडी', 'भाव', 'गेहूं'],
   loan: ['loan', 'credit', 'kcc', 'finance', 'लोन', 'ऋण'],
@@ -21,9 +23,10 @@ function detectRedirect(query) {
   )
 }
 
-export function createAssistantReply({ query, page, memoryIntent, lang, pageLabels, cards }) {
+export function createAssistantReply({ query, page, memoryIntent, lang, pageLabels, cards, location }) {
   const lower = query.toLowerCase()
   const redirect = detectRedirect(query)
+  const locationLabel = getLocationLabel(location)
 
   const copy =
     lang === 'hi'
@@ -36,9 +39,13 @@ export function createAssistantReply({ query, page, memoryIntent, lang, pageLabe
           schemeTractorSug: ['अभी आवेदन करें', 'लोन पात्रता जांचें', 'नजदीकी सेवा केंद्र देखें'],
           schemeDefault: 'मैं सब्सिडी, फसल बीमा, पीएम-किसान और मनरेगा में मार्गदर्शन दे सकता हूँ।',
           schemeDefaultSug: ['पीएम-किसान जानकारी', 'फसल बीमा सहायता', 'आवेदन प्रक्रिया खोलें'],
-          mandiWheat: 'गेहूं के नजदीकी मंडी भाव नीचे उपलब्ध हैं।',
+          mandiWheat: locationLabel
+            ? `${locationLabel} के आसपास गेहूं के मंडी भाव नीचे उपलब्ध हैं।`
+            : 'गेहूं के नजदीकी मंडी भाव नीचे उपलब्ध हैं।',
           mandiWheatSug: ['धान का भाव दिखाएं', 'कल का रुझान देखें', 'नजदीकी मंडी खोलें'],
-          mandiDefault: 'फसल का नाम बताइए, मैं आपके आसपास के बाजार भाव दिखा दूंगा।',
+          mandiDefault: locationLabel
+            ? `फसल का नाम बताइए, मैं ${locationLabel} के आसपास के बाजार भाव दिखा दूंगा।`
+            : 'फसल का नाम बताइए, मैं आपके आसपास के बाजार भाव दिखा दूंगा।',
           mandiDefaultSug: ['गेहूं का भाव', 'धान का भाव', 'मक्का का भाव'],
           loanTractor: 'ट्रैक्टर लोन का अनुमान नीचे तैयार है।',
           loanTractorSug: ['केसीसी विकल्प लें', 'नाबार्ड लोन तुलना', 'आवेदन फॉर्म पर जाएं'],
@@ -46,7 +53,9 @@ export function createAssistantReply({ query, page, memoryIntent, lang, pageLabe
           loanDefaultSug: ['फसल लोन', 'ट्रैक्टर लोन', 'सिंचाई लोन'],
           applyText: 'आप टाइपिंग, वॉइस या कॉल मोड से आवेदन दे सकते हैं।',
           applySug: ['वॉइस से ऑटो-फिल', 'सपोर्ट एजेंट को कॉल', 'आवेदन जमा करें'],
-          general: 'मैं आपको योजनाएं, मंडी भाव, लोन अनुमान और आवेदन सहायता तक पहुंचा सकता हूँ।',
+          general: locationLabel
+            ? `मैं ${locationLabel} के अनुसार योजनाएं, मंडी भाव, लोन अनुमान और आवेदन सहायता दे सकता हूँ।`
+            : 'मैं आपको योजनाएं, मंडी भाव, लोन अनुमान और आवेदन सहायता तक पहुंचा सकता हूँ।',
           generalSug: ['योजनाएं खोलें', 'मंडी भाव देखें', 'आवेदन शुरू करें'],
         }
       : {
@@ -58,9 +67,13 @@ export function createAssistantReply({ query, page, memoryIntent, lang, pageLabe
           schemeTractorSug: ['Apply now', 'Check loan eligibility', 'Open nearby services'],
           schemeDefault: 'I can help with subsidy, crop insurance, PM-KISAN, and MGNREGA scheme guidance.',
           schemeDefaultSug: ['PM-KISAN details', 'Crop insurance help', 'Open application flow'],
-          mandiWheat: 'Latest nearby wheat rates are available below.',
+          mandiWheat: locationLabel
+            ? `Latest nearby wheat rates around ${locationLabel} are available below.`
+            : 'Latest nearby wheat rates are available below.',
           mandiWheatSug: ['Show rice price', 'Check tomorrow trend', 'Open nearest mandi'],
-          mandiDefault: 'Tell me your crop name and I will show market rates around your area.',
+          mandiDefault: locationLabel
+            ? `Tell me your crop name and I will show market rates around ${locationLabel}.`
+            : 'Tell me your crop name and I will show market rates around your area.',
           mandiDefaultSug: ['Wheat rate', 'Paddy rate', 'Maize rate'],
           loanTractor: 'Estimated tractor loan setup is prepared below.',
           loanTractorSug: ['Use KCC option', 'Compare NABARD loan', 'Move to apply form'],
@@ -68,7 +81,9 @@ export function createAssistantReply({ query, page, memoryIntent, lang, pageLabe
           loanDefaultSug: ['Crop loan', 'Tractor loan', 'Irrigation loan'],
           applyText: 'You can submit details by typing, voice, or call mode.',
           applySug: ['Auto-fill via voice', 'Call support agent', 'Submit application'],
-          general: 'I can route you to schemes, mandi rates, loan estimate, and application support.',
+          general: locationLabel
+            ? `I can provide schemes, mandi prices, loans, and applications using your ${locationLabel} location context.`
+            : 'I can route you to schemes, mandi rates, loan estimate, and application support.',
           generalSug: ['Open schemes', 'Open mandi', 'Start application'],
         }
 

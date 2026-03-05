@@ -18,6 +18,13 @@
     send: 'Send',
     homeTitle: 'Welcome',
     homeSubtitle: 'Choose a service below or ask the assistant at the top. Voice can redirect you anywhere.',
+    locationTitle: 'Current Location',
+    locationUsing: 'Using location:',
+    locationUnknown: 'Location not set yet.',
+    locationEnable: 'Enable Location',
+    locationRefresh: 'Refresh Location',
+    locationPending: 'Fetching current location...',
+    locationError: 'Location access failed. Please allow location permission.',
     noHistory: 'No conversation yet.',
     pages: {
       home: 'Home',
@@ -47,6 +54,13 @@
     send: 'भेजें',
     homeTitle: 'स्वागत है',
     homeSubtitle: 'नीचे सेवा चुनें या ऊपर सहायक से पूछें। वॉइस से सीधे संबंधित पेज पर जा सकते हैं।',
+    locationTitle: 'वर्तमान स्थान',
+    locationUsing: 'उपयोग हो रहा स्थान:',
+    locationUnknown: 'अभी लोकेशन सेट नहीं है।',
+    locationEnable: 'लोकेशन चालू करें',
+    locationRefresh: 'लोकेशन रीफ्रेश करें',
+    locationPending: 'वर्तमान लोकेशन ली जा रही है...',
+    locationError: 'लोकेशन एक्सेस नहीं मिला। कृपया अनुमति दें।',
     noHistory: 'अभी कोई बातचीत नहीं है।',
     pages: {
       home: 'होम',
@@ -63,7 +77,9 @@ export function getUiLanguage(languageCode, uiLanguageMap) {
   return uiLanguageMap[languageCode] || 'hi'
 }
 
-export function getCards(lang) {
+export function getCards(lang, locationLabel) {
+  const loc = locationLabel || (lang === 'hi' ? 'स्थानीय' : 'Local')
+
   if (lang === 'hi') {
     return {
       schemes: [
@@ -72,9 +88,9 @@ export function getCards(lang) {
         { title: 'किसान क्रेडिट कार्ड', detail: 'फसल व उपकरण लोन ₹3 लाख तक' },
       ],
       mandi: [
-        { title: 'सीतापुर मंडी', detail: 'गेहूं: ₹2,320 प्रति क्विंटल' },
-        { title: 'हरदोई मंडी', detail: 'गेहूं: ₹2,280 प्रति क्विंटल' },
-        { title: 'लखनऊ मंडी', detail: 'गेहूं: ₹2,400 प्रति क्विंटल' },
+        { title: `${loc} मंडी`, detail: 'गेहूं: ₹2,320 प्रति क्विंटल' },
+        { title: 'नजदीकी मंडी 2', detail: 'गेहूं: ₹2,280 प्रति क्विंटल' },
+        { title: 'नजदीकी मंडी 3', detail: 'गेहूं: ₹2,400 प्रति क्विंटल' },
       ],
     }
   }
@@ -86,9 +102,9 @@ export function getCards(lang) {
       { title: 'Kisan Credit Card', detail: 'Crop + equipment loan up to Rs 3 lakh' },
     ],
     mandi: [
-      { title: 'Sitapur Mandi', detail: 'Wheat: Rs 2,320 / quintal' },
-      { title: 'Hardoi Mandi', detail: 'Wheat: Rs 2,280 / quintal' },
-      { title: 'Lucknow Mandi', detail: 'Wheat: Rs 2,400 / quintal' },
+      { title: `${loc} Market`, detail: 'Wheat: Rs 2,320 / quintal' },
+      { title: 'Nearby Market 2', detail: 'Wheat: Rs 2,280 / quintal' },
+      { title: 'Nearby Market 3', detail: 'Wheat: Rs 2,400 / quintal' },
     ],
   }
 }

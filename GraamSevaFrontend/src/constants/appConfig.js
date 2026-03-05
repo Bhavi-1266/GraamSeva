@@ -1,6 +1,7 @@
-﻿export const STORAGE_KEYS = {
+export const STORAGE_KEYS = {
   profile: 'gs_profile',
   history: 'gs_conversations',
+  location: 'gs_location',
 }
 
 export const LANGUAGES = [

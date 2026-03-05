@@ -236,3 +236,5 @@ body {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+.location-error { color: #b71c1c; font-weight: 600; }
+.location-note { color: #6d4c41; font-size: 0.82rem; margin-top: 8px; }
