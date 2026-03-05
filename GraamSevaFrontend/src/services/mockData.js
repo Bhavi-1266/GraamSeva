@@ -105,10 +105,59 @@ export const MOCK_APPLICATION_RESPONSE = {
   ],
 }
 
+export const MOCK_LATEST_OFFERS = [
+  {
+    id: 101,
+    title: 'नई PM-KISAN वृद्धि',
+    desc: '₹ 2000 से बढ़कर ₹ 3000 प्रति माह',
+    icon: '📢',
+    badge: 'नया',
+    date: '2 दिन पहले',
+    type: 'update',
+  },
+  {
+    id: 102,
+    title: 'फसल बीमा को मिला विस्तार',
+    desc: '10 और राज्यों में उपलब्ध अब',
+    icon: '🛡️',
+    badge: 'अपडेट',
+    date: '5 दिन पहले',
+    type: 'expansion',
+  },
+  {
+    id: 103,
+    title: 'डिजिटल साक्षरता योजना',
+    desc: '₹ 500 की छात्रवृत्ति आवेदन के लिए खुली',
+    icon: '💻',
+    badge: 'नया',
+    date: 'आज',
+    type: 'new',
+  },
+  {
+    id: 104,
+    title: 'बेरोजगारी भत्ता बढ़ाया गया',
+    desc: '₹ 500 से ₹ 750 में संशोधन',
+    icon: '💰',
+    badge: 'अपडेट',
+    date: '1 दिन पहले',
+    type: 'update',
+  },
+  {
+    id: 105,
+    title: 'महिला उद्यम योजना',
+    desc: 'महिला किसानों के लिए विशेष ₹ 5 लाख तक ऋण',
+    icon: '👩‍🌾',
+    badge: 'नया',
+    date: '3 दिन पहले',
+    type: 'new',
+  },
+]
+
 export default {
   MOCK_SCHEMES,
   MOCK_ELIGIBILITY,
   MOCK_DASHBOARD_STATS,
   MOCK_TRANSCRIPTS,
   MOCK_APPLICATION_RESPONSE,
+  MOCK_LATEST_OFFERS,
 }

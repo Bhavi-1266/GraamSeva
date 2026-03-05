@@ -6,14 +6,14 @@ export default function HomePage({ tr, onNavigate, locationState, onRequestLocat
 
   return (
     <div>
-      <div className="card rustic-card">
+      {/* <div className="card rustic-card">
         <div className="card-content">
           <span className="card-title">{tr.homeTitle}</span>
           <p>{tr.homeSubtitle}</p>
         </div>
-      </div>
+      </div> */}
 
-      <div className="card rustic-card top-gap">
+      {/* <div className="card rustic-card top-gap">
         <div className="card-content">
           <span className="card-title">{tr.locationTitle}</span>
           {locationState.status === 'requesting' && <p>{tr.locationPending}</p>}
@@ -29,15 +29,9 @@ export default function HomePage({ tr, onNavigate, locationState, onRequestLocat
           <button className="btn waves-effect amber darken-3 top-gap" onClick={onRequestLocation}>
             {actionText}
           </button>
-          {locationState.data?.source === 'browser' && (
-            <p className="location-note">
-              {uiLanguage === 'hi'
-                ? 'अभी अनुमानित लोकेशन है। बैकएंड/Azure Maps जुड़ने पर पता और सटीक होगा।'
-                : 'This is an approximate location. Address will be precise after backend/Azure Maps integration.'}
-            </p>
-          )}
+          
         </div>
-      </div>
+      </div> */}
 
       <div className="service-grid">
         {PAGES.filter((p) => p.id !== 'history').map((page) => (
@@ -53,3 +47,4 @@ export default function HomePage({ tr, onNavigate, locationState, onRequestLocat
     </div>
   )
 }
+

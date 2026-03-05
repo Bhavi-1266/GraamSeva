@@ -159,6 +159,36 @@ class SchemeService {
       }
     }
   }
+
+  /**
+   * Get latest schemes and offers
+   * @param {String} language - Language code
+   * @param {Number} limit - Number of items to return
+   * @returns {Array} Latest schemes and offers
+   */
+  async getLatestSchemesAndOffers(language = 'hi', limit = 5) {
+    try {
+      console.log('Fetching latest schemes and offers...')
+      
+      const url = buildURL(API_ENDPOINTS.SCHEMES.LIST) // Reuse list endpoint with query params
+      const response = await apiClient.get(url, {
+        headers: { 'Accept-Language': language },
+      })
+
+      const items = response.schemes || response || []
+      return {
+        data: items.slice(0, limit),
+        source: 'api',
+      }
+    } catch (error) {
+      console.warn('Latest schemes API failed, using mock data:', error.message)
+      
+      return {
+        data: MOCK_LATEST_OFFERS,
+        source: 'mock',
+      }
+    }
+  }
 }
 
 export default new SchemeService()
