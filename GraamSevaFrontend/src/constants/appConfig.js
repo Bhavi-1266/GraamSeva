@@ -11,6 +11,7 @@ export const LANGUAGES = [
   { code: 'mr', label: 'Marathi (मराठी)' },
   { code: 'mai', label: 'Maithili (मैथिली)' },
   { code: 'or', label: 'Odia (ଓଡ଼ିଆ)' },
+  { code: 'en', label: 'English (अंग्रेज़ी)' },
 ]
 
 export const UI_LANGUAGE_MAP = {
@@ -20,6 +21,7 @@ export const UI_LANGUAGE_MAP = {
   mr: 'hi',
   mai: 'hi',
   or: 'hi',
+  en: 'en',
 }
 
 export const PAGES = [

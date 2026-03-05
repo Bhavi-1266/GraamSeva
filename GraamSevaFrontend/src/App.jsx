@@ -320,15 +320,17 @@ function App() {
 
       <nav className="bottom-nav">
         <div className="nav-wrapper brown darken-3">
-          <ul className="bottom-tabs">
+       <ul className="grid grid-cols-6 w-full  text-white">
             {PAGES.map((page) => (
               <li key={page.id}>
                 <button
-                  className={`tab-btn ${currentPage === page.id ? 'tab-active' : ''}`}
+                  className={`w-full border-none bg-transparent text-white/80 flex flex-col items-center justify-center 
+                  min-h-[58px] text-[0.72rem] cursor-pointer py-2 px-1 gap-1
+                  ${currentPage === page.id ? "text-yellow-100" : ""}`}
                   onClick={() => setCurrentPage(page.id)}
                 >
-                  <span className="material-icons">{page.icon}</span>
-                  <small>{tr.pages[page.id]}</small>
+                  <span className="material-icons text-[20px]">{page.icon}</span>
+                  <small className="leading-none">{tr.pages[page.id]}</small>
                 </button>
               </li>
             ))}

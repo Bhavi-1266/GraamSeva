@@ -1,3 +1,4 @@
+
 export default function AssistantBar({
   tr,
   voiceState,
@@ -8,6 +9,7 @@ export default function AssistantBar({
   onRunAssistant,
 }) {
   return (
+ 
     <section className="assistant-box card">
       <div className="card-content">
         <div className="assistant-head">

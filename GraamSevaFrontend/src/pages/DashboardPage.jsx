@@ -1,56 +1,66 @@
+import { useState, useEffect } from 'react'
+import { dashboardService } from '../services'
 import '../styles/DashboardPage.css'
 
-const DASHBOARD_STATS = {
-  todaysCalls: 247,
-  applicationsProcessed: 1340,
-  amountUnlocked: '₹68,50,000',
-  changePercent: '+12.5%',
-}
-
-const RECENT_ACTIVITIES = [
-  {
-    id: 1,
-    name: 'राम कुमार',
-    scheme: 'PM-KISAN',
-    status: 'Approved',
-    date: '2 घंटे पहले',
-    amount: '₹2,000',
-  },
-  {
-    id: 2,
-    name: 'रीता देवी',
-    scheme: 'Crop Insurance',
-    status: 'Processing',
-    date: '4 घंटे पहले',
-    amount: '₹15,000',
-  },
-  {
-    id: 3,
-    name: 'मोहन सिंह',
-    scheme: 'MGNREGA',
-    status: 'Pending',
-    date: '6 घंटे पहले',
-    amount: '₹309/day',
-  },
-  {
-    id: 4,
-    name: 'दुर्गा वर्मा',
-    scheme: 'Soil Health Card',
-    status: 'Rejected',
-    date: '8 घंटे पहले',
-    amount: '-',
-  },
-]
-
-const LANGUAGE_BREAKDOWN = [
-  { lang: 'हिन्दी', calls: 1200, color: '#FF6B6B' },
-  { lang: 'भोजपुरी', calls: 850, color: '#4ECDC4' },
-  { lang: 'अवधी', calls: 650, color: '#45B7D1' },
-  { lang: 'ओडिया', calls: 520, color: '#96CEB4' },
-  { lang: 'मराठी', calls: 420, color: '#FFEAA7' },
-]
-
 export default function DashboardPage({ onNavigate }) {
+  const [stats, setStats] = useState(null)
+  const [activities, setActivities] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [dataSource, setDataSource] = useState(null)
+
+  useEffect(() => {
+    loadDashboardData()
+  }, [])
+
+  const loadDashboardData = async () => {
+    setLoading(true)
+    try {
+      const [statsResult, activitiesResult] = await Promise.all([
+        dashboardService.getDashboardStats(),
+        dashboardService.getRecentActivities({ limit: 5 }),
+      ])
+
+      setStats(statsResult.data)
+      setActivities(activitiesResult.data)
+      setDataSource(statsResult.source)
+    } catch (err) {
+      console.error('Failed to load dashboard:', err)
+      setError('Unable to load dashboard data. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const LANGUAGE_BREAKDOWN = stats?.languageBreakdown || [
+    { lang: 'हिन्दी', calls: 1200, color: '#FF6B6B' },
+    { lang: 'भोजपुरी', calls: 850, color: '#4ECDC4' },
+    { lang: 'अवधी', calls: 650, color: '#45B7D1' },
+    { lang: 'ओडिया', calls: 520, color: '#96CEB4' },
+    { lang: 'मराठी', calls: 420, color: '#FFEAA7' },
+  ]
+
+  if (loading) {
+    return (
+      <div className="dashboard-page loading-state">
+        <div className="loading-spinner">⏳ डैशबोर्ड लोड किया जा रहा है...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="dashboard-page error-state">
+        <div className="error-message">
+          <p>❌ {error}</p>
+          <button className="retry-button" onClick={loadDashboardData}>
+            दोबारा कोशिश करें
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="dashboard-page">
       {/* Header */}
@@ -65,6 +75,11 @@ export default function DashboardPage({ onNavigate }) {
               day: 'numeric',
             })}
           </p>
+          {dataSource && (
+            <p className="data-source">
+              {dataSource === 'api' ? '✓ लाइव डेटा' : '📱 कैश डेटा'}
+            </p>
+          )}
         </div>
         <div className="header-action">
           <button className="operator-button">👤 CSC Operator</button>
@@ -78,7 +93,7 @@ export default function DashboardPage({ onNavigate }) {
             <span className="stat-icon">📞</span>
             <h3>आज की कालें</h3>
           </div>
-          <div className="stat-value">{DASHBOARD_STATS.todaysCalls}</div>
+          <div className="stat-value">{stats?.todaysCalls || 247}</div>
           <p className="stat-change">↑ 8% से कल</p>
         </div>
 
@@ -87,7 +102,7 @@ export default function DashboardPage({ onNavigate }) {
             <span className="stat-icon">📋</span>
             <h3>आवेदन संसाधित</h3>
           </div>
-          <div className="stat-value">{DASHBOARD_STATS.applicationsProcessed}</div>
+          <div className="stat-value">{stats?.applicationsProcessed || 1340}</div>
           <p className="stat-change">मासिक कुल</p>
         </div>
 
@@ -96,8 +111,8 @@ export default function DashboardPage({ onNavigate }) {
             <span className="stat-icon">💰</span>
             <h3>रुपये अनलॉक्ड</h3>
           </div>
-          <div className="stat-value">{DASHBOARD_STATS.amountUnlocked}</div>
-          <p className="stat-change">{DASHBOARD_STATS.changePercent} यह सप्ताह</p>
+          <div className="stat-value">{stats?.amountUnlocked || '₹68,50,000'}</div>
+          <p className="stat-change">+12.5% यह सप्ताह</p>
         </div>
 
         <div className="stat-card">
@@ -105,7 +120,7 @@ export default function DashboardPage({ onNavigate }) {
             <span className="stat-icon">✅</span>
             <h3>स्वीकृति दर</h3>
           </div>
-          <div className="stat-value">87%</div>
+          <div className="stat-value">{stats?.approvalRate || '87%'}</div>
           <p className="stat-change">उद्योग औसत से ऊपर</p>
         </div>
       </div>
@@ -121,7 +136,7 @@ export default function DashboardPage({ onNavigate }) {
               <button className="view-all-button">सभी देखें →</button>
             </div>
             <div className="activities-list">
-              {RECENT_ACTIVITIES.map((activity) => (
+              {(activities || []).map((activity) => (
                 <div key={activity.id} className={`activity-item ${activity.status.toLowerCase()}`}>
                   <div className="activity-info">
                     <div className="activity-name">{activity.name}</div>
@@ -182,21 +197,21 @@ export default function DashboardPage({ onNavigate }) {
               <h2>⚡ त्वरित कार्य</h2>
             </div>
             <div className="quick-actions">
-              <button className="action-button">
-                <span className="action-icon">➕</span>
-                <span>नया आवेदन</span>
+              <button className="action-button" onClick={() => onNavigate('voice')}>
+                <span className="action-icon">🎤</span>
+                <span>नई कॉल</span>
               </button>
               <button className="action-button">
                 <span className="action-icon">🔍</span>
                 <span>स्थिति जांचें</span>
               </button>
-              <button className="action-button">
+              <button className="action-button" onClick={() => onNavigate('dashboard')}>
                 <span className="action-icon">📊</span>
                 <span>रिपोर्ट</span>
               </button>
-              <button className="action-button">
-                <span className="action-icon">🎤</span>
-                <span>IVR टेस्ट</span>
+              <button className="action-button" onClick={loadDashboardData}>
+                <span className="action-icon">🔄</span>
+                <span>ताज़ा करें</span>
               </button>
             </div>
           </div>

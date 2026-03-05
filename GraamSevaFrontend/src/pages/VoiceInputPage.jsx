@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { voiceService } from '../services'
 import '../styles/VoiceInputPage.css'
 
 const LANGUAGE_NAMES = {
@@ -8,6 +9,7 @@ const LANGUAGE_NAMES = {
   odi: 'ଓଡିଆ',
   mar: 'मराठी',
   mai: 'मैथिली',
+    en: 'English',
 }
 
 export default function VoiceInputPage({ language, onComplete, onBack }) {
@@ -18,6 +20,9 @@ export default function VoiceInputPage({ language, onComplete, onBack }) {
   const [mobileNumber, setMobileNumber] = useState('')
   const [step, setStep] = useState('info') // 'info' or 'recording'
   const [isProcessing, setIsProcessing] = useState(false)
+  const [transcriptionSource, setTranscriptionSource] = useState(null)
+  let mediaRecorder = null
+  let recordingTimeout = null
 
   const handleStartRecording = () => {
     setIsRecording(true)
@@ -27,6 +32,7 @@ export default function VoiceInputPage({ language, onComplete, onBack }) {
         if (t >= 60) {
           setIsRecording(false)
           clearInterval(interval)
+          handleStopRecording()
           return t
         }
         return t + 1
@@ -34,18 +40,40 @@ export default function VoiceInputPage({ language, onComplete, onBack }) {
     }, 1000)
   }
 
-  const handleStopRecording = () => {
+  const handleStopRecording = async () => {
     setIsRecording(false)
-    // Simulate transcript from voice
-    const mockTranscripts = {
-      hi: 'मुझे PM-KISAN योजना के बारे में जानकारी चाहिए',
-      bhoj: 'हम फसल बीमा के लिए आवेदन करना चाहते हैं',
-      awa: 'मिट्टी स्वास्थ्य कार्ड योजना की जानकारी दीजिए',
-      odi: 'ମୁଁ MGNREGA ରେଜିଷ୍ଟ୍ରେସନ ସମ୍ପର୍କରେ ଜାଣିବାକୁ ଚାହୁଁ',
-      mar: 'मला सरकारी योजनांचा माहिती हवा',
-      mai: 'हम PMAW योजनाकेँ बारेमे जानकारी चाहै छी',
+    setIsProcessing(true)
+    
+    try {
+      // Try to get audio from microphone, or use mock data
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const chunks = []
+      mediaRecorder = new MediaRecorder(stream)
+      
+      mediaRecorder.ondataavailable = (e) => chunks.push(e.data)
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(chunks, { type: 'audio/wav' })
+        stream.getTracks().forEach((track) => track.stop())
+        
+        // Call transcription API service
+        const result = await voiceService.transcribeAudio(audioBlob, language)
+        setTranscript(result.text)
+        setTranscriptionSource(result.source)
+        setIsProcessing(false)
+      }
+      
+      mediaRecorder.start()
+      recordingTimeout = setTimeout(() => {
+        mediaRecorder.stop()
+      }, 3000)
+    } catch (error) {
+      console.warn('Microphone access denied, using mock data:', error)
+      // Fallback: Use mock data
+      const result = await voiceService.transcribeAudio(null, language)
+      setTranscript(result.text)
+      setTranscriptionSource(result.source)
+      setIsProcessing(false)
     }
-    setTranscript(mockTranscripts[language] || 'Query recorded')
   }
 
   const handleContinue = () => {

@@ -1,55 +1,6 @@
+import { useState, useEffect } from 'react'
+import { schemeService } from '../services'
 import '../styles/ServicesPage.css'
-
-const SERVICES = [
-  {
-    id: 1,
-    name: 'PM-KISAN',
-    icon: '🌾',
-    desc: 'किसान सम्मान निधि योजना',
-    details: '₹6,000 वार्षिक सहायता',
-    eligible: true,
-  },
-  {
-    id: 2,
-    name: 'Crop Insurance',
-    icon: '🛡️',
-    desc: 'प्रधानमंत्री फसल बीमा योजना',
-    details: 'फसल नुकसान की सुरक्षा',
-    eligible: true,
-  },
-  {
-    id: 3,
-    name: 'MGNREGA',
-    icon: '💼',
-    desc: 'महात्मा गांधी रोजगार गारंटी',
-    details: '100 दिन की गारंटीशुदा कार्य',
-    eligible: true,
-  },
-  {
-    id: 4,
-    name: 'Soil Health Card',
-    icon: '🌱',
-    desc: 'मिट्टी स्वास्थ्य कार्ड योजना',
-    details: 'मिट्टी परीक्षण और सहायता',
-    eligible: false,
-  },
-  {
-    id: 5,
-    name: 'Dairy Subsidy',
-    icon: '🐄',
-    desc: 'पशुपालन और डेयरी सहयोग',
-    details: '₹10,000 तक की सहायता',
-    eligible: true,
-  },
-  {
-    id: 6,
-    name: 'Farmer Credit',
-    icon: '🏦',
-    desc: 'किसान क्रेडिट कार्ड योजना',
-    details: 'आसान ब्याज दरों पर ऋण',
-    eligible: true,
-  },
-]
 
 export default function ServicesPage({
   userProfile,
@@ -57,6 +8,53 @@ export default function ServicesPage({
   onServiceSelect,
   onBack,
 }) {
+  const [schemes, setSchemes] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [dataSource, setDataSource] = useState(null)
+
+  useEffect(() => {
+    loadSchemes()
+  }, [language])
+
+  const loadSchemes = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      console.log('Loading schemes...')
+      const result = await schemeService.getAllSchemes(language)
+      setSchemes(result.data)
+      setDataSource(result.source)
+      console.log(`Schemes loaded from ${result.source}`)
+    } catch (err) {
+      console.error('Failed to load schemes:', err)
+      setError('Unable to load schemes. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="services-page loading-state">
+        <div className="loading-spinner">⏳ योजनाएं लोड की जा रही हैं...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="services-page error-state">
+        <div className="error-message">
+          <p>❌ {error}</p>
+          <button className="retry-button" onClick={loadSchemes}>
+            दोबारा कोशिश करें
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="services-page">
       <div className="services-header">
@@ -66,12 +64,17 @@ export default function ServicesPage({
         <div className="user-greeting">
           <h2>नमस्ते, {userProfile.name}! 👋</h2>
           <p className="subtitle">उपलब्ध सरकारी योजनाएं:</p>
+          {dataSource && (
+            <p className="data-source-hint">
+              {dataSource === 'api' ? '✓ लाइव डेटा' : '📱 ऑफलाइन डेटा'}
+            </p>
+          )}
         </div>
       </div>
 
       <div className="services-content">
         <div className="services-list">
-          {SERVICES.map((service) => (
+          {schemes.map((service) => (
             <div
               key={service.id}
               className={`service-card ${

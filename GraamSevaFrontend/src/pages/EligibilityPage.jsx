@@ -1,62 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { eligibilityService } from '../services'
 import '../styles/EligibilityPage.css'
-
-const ELIGIBILITY_CRITERIA = {
-  1: {
-    // PM-KISAN
-    title: 'PM-KISAN - किसान सम्मान निधि योजना',
-    description:
-      'खेती में लगे सभी भारतीय किसानों के लिए आर्थिक सहायता योजना',
-    benefits: ['₹2,000 हर चार महीने में', '₹6,000 प्रति वर्ष', 'सीधे बैंक में'],
-    requirements: [
-      { item: 'भारतीय नागरिक होना चाहिए', status: 'verified' },
-      { item: 'खेती योग्य जमीन होनी चाहिए', status: 'verified' },
-      { item: '2 हेक्टेयर तक की जमीन', status: 'verified' },
-      { item: 'आधार निर्भर बैंक खाता', status: 'pending' },
-    ],
-    documents: [
-      'आधार कार्ड',
-      'जमीन के कागजात',
-      'बैंक खाते की जानकारी',
-      'मोबाइल नंबर',
-    ],
-    nextSteps: 'फॉर्म भरने के बाद 30 दिन में ₹2,000 खाते में आएंगे',
-  },
-  2: {
-    // Crop Insurance
-    title: 'PMFBY - प्रधानमंत्री फसल बीमा योजना',
-    description: 'फसल नुकसान की स्थिति में आर्थिक सुरक्षा',
-    benefits: [
-      'फसल नुकसान की भरपाई',
-      'न्यूनतम प्रीमियम',
-      'दस्तावेज़ मुक्त क्लेम',
-    ],
-    requirements: [
-      { item: 'खेती योग्य जमीन का मालिक', status: 'verified' },
-      { item: 'बीजाई का समय निर्धारित सीमा में', status: 'pending' },
-      { item: 'जिले में पंजीकृत फसल', status: 'verified' },
-    ],
-    documents: ['दुर्घटना का प्रमाण', 'फसल का विवरण', 'बैंक विवरण'],
-    nextSteps: 'नुकसान रिपोर्ट के 72 घंटों में पंचायत को सूचित करें',
-  },
-  3: {
-    // MGNREGA
-    title: 'MGNREGA - महात्मा गांधी रोजगार गारंटी योजना',
-    description: 'ग्रामीण क्षेत्रों में 100 दिन का गारंटीशुदा कार्य',
-    benefits: [
-      'न्यूनतम ₹309 दैनिक मजदूरी',
-      '100 दिन का काम गारंटीशुदा',
-      'बीमा कवर शामिल',
-    ],
-    requirements: [
-      { item: '18 वर्ष या अधिक उम्र', status: 'verified' },
-      { item: 'ग्रामीण निवासी', status: 'verified' },
-      { item: 'आधार से जुड़ा बैंक खाता', status: 'pending' },
-    ],
-    documents: ['आधार कार्ड', 'बैंक खाता', 'ग्राम पंचायत से पत्र'],
-    nextSteps: 'पंचायत को आवेदन दीजिए, 15 दिन में काम शुरू होगा',
-  },
-}
 
 export default function EligibilityPage({
   service,
@@ -67,19 +11,52 @@ export default function EligibilityPage({
 }) {
   const [isEligible, setIsEligible] = useState(null)
   const [expandedSection, setExpandedSection] = useState(null)
+  const [info, setInfo] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [checking, setChecking] = useState(false)
+  const [dataSource, setDataSource] = useState(null)
 
-  if (!service) return null
+  useEffect(() => {
+    if (service) {
+      loadEligibilityCriteria()
+    }
+  }, [service, language])
 
-  const info = ELIGIBILITY_CRITERIA[service.id]
-  if (!info) return null
-
-  const calculateEligibility = () => {
-    const verifiedCount = info.requirements.filter(
-      (r) => r.status === 'verified'
-    ).length
-    const isElig = verifiedCount >= 2
-    setIsEligible(isElig)
+  const loadEligibilityCriteria = async () => {
+    setLoading(true)
+    try {
+      const result = await eligibilityService.getEligibilityCriteria(
+        service.id,
+        language
+      )
+      setInfo(result.data)
+      setDataSource(result.source)
+    } catch (err) {
+      console.error('Failed to load criteria:', err)
+    } finally {
+      setLoading(false)
+    }
   }
+
+  const calculateEligibility = async () => {
+    setChecking(true)
+    try {
+      const result = await eligibilityService.checkEligibility(
+        service.id,
+        userProfile,
+        language
+      )
+      setIsEligible(result.eligible)
+      setDataSource(result.source)
+    } catch (err) {
+      console.error('Failed to check eligibility:', err)
+      setIsEligible(false)
+    } finally {
+      setChecking(false)
+    }
+  }
+
+  if (!service || loading) return null
 
   return (
     <div className="eligibility-page">

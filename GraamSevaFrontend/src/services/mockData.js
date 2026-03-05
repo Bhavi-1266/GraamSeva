@@ -1,0 +1,114 @@
+/**
+ * Mock Data - Fallback when APIs are unavailable
+ * All data structures match API response format
+ */
+
+export const MOCK_SCHEMES = [
+  {
+    id: 1,
+    name: 'PM-KISAN',
+    icon: '🌾',
+    desc: 'किसान सम्मान निधि योजना',
+    details: '₹6,000 वार्षिक सहायता',
+    benefits: ['₹2,000 हर चार महीने में', '₹6,000 प्रति वर्ष', 'सीधे बैंक में'],
+    eligible: true,
+  },
+  {
+    id: 2,
+    name: 'Crop Insurance',
+    icon: '🛡️',
+    desc: 'प्रधानमंत्री फसल बीमा योजना',
+    details: 'फसल नुकसान की सुरक्षा',
+    benefits: ['फसल नुकसान की भरपाई', 'न्यूनतम प्रीमियम', 'दस्तावेज़ मुक्त क्लेम'],
+    eligible: true,
+  },
+  {
+    id: 3,
+    name: 'MGNREGA',
+    icon: '💼',
+    desc: 'महात्मा गांधी रोजगार गारंटी',
+    details: '100 दिन की गारंटीशुदा कार्य',
+    benefits: ['न्यूनतम ₹309 दैनिक मजदूरी', '100 दिन का काम गारंटीशुदा', 'बीमा कवर शामिल'],
+    eligible: true,
+  },
+]
+
+export const MOCK_ELIGIBILITY = {
+  1: {
+    schemeId: 1,
+    title: 'PM-KISAN - किसान सम्मान निधि योजना',
+    description: 'खेती में लगे सभी भारतीय किसानों के लिए आर्थिक सहायता योजना',
+    requirements: [
+      { item: 'भारतीय नागरिक होना चाहिए', status: 'verified' },
+      { item: 'खेती योग्य जमीन होनी चाहिए', status: 'verified' },
+      { item: '2 हेक्टेयर तक की जमीन', status: 'verified' },
+      { item: 'आधार निर्भर बैंक खाता', status: 'pending' },
+    ],
+    documents: ['आधार कार्ड', 'जमीन के कागजात', 'बैंक खाते की जानकारी', 'मोबाइल नंबर'],
+    nextSteps: 'फॉर्म भरने के बाद 30 दिन में ₹2,000 खाते में आएंगे',
+  },
+}
+
+export const MOCK_DASHBOARD_STATS = {
+  todaysCalls: 247,
+  applicationsProcessed: 1340,
+  amountUnlocked: '₹68,50,000',
+  approvalRate: '87%',
+  recentActivities: [
+    {
+      id: 1,
+      name: 'राम कुमार',
+      scheme: 'PM-KISAN',
+      status: 'Approved',
+      date: '2 घंटे पहले',
+      amount: '₹2,000',
+    },
+    {
+      id: 2,
+      name: 'रीता देवी',
+      scheme: 'Crop Insurance',
+      status: 'Processing',
+      date: '4 घंटे पहले',
+      amount: '₹15,000',
+    },
+  ],
+  languageBreakdown: [
+    { lang: 'हिन्दी', calls: 1200 },
+    { lang: 'भोजपुरी', calls: 850 },
+    { lang: 'अवधी', calls: 650 },
+    { lang: 'ओडिया', calls: 520 },
+    { lang: 'मराठी', calls: 420 },
+  ],
+}
+
+export const MOCK_TRANSCRIPTS = {
+  hi: 'मुझे PM-KISAN योजना के बारे में जानकारी चाहिए',
+  bhoj: 'हम फसल बीमा के लिए आवेदन करना चाहते हैं',
+  awa: 'मिट्टी स्वास्थ्य कार्ड योजना की जानकारी दीजिए',
+  odi: 'ମୁଁ MGNREGA ରେଜିଷ୍ଟ୍ରେସନ ସମ୍ପର୍କରେ ଜାଣିବାକୁ ଚାହୁଁ',
+  mar: 'मला सरकारी योजनांचा माहिती हवा',
+  mai: 'हम PMAW योजनाकेँ बारेमे जानकारी चाहै छी',
+  en: 'I need information about government schemes',
+}
+
+export const MOCK_APPLICATION_RESPONSE = {
+  success: true,
+  referenceId: 'GS-2024-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+  status: 'submitted',
+  timestamp: new Date().toISOString(),
+  expectedApprovalTime: '7-15 days',
+  nextSteps: [
+    'आपका आवेदन क्षेत्रीय कार्यालय को भेजा जाएगा',
+    'अधिकारी आपसे 3-5 दिनों में संपर्क करेंगे',
+    'मूल दस्तावेज़ ले जाकर ब्लॉक ऑफिस जाएँ',
+    'मंजूरी के बाद 7 दिन में पैसे खाते में आएंगे',
+  ],
+}
+
+export default {
+  MOCK_SCHEMES,
+  MOCK_ELIGIBILITY,
+  MOCK_DASHBOARD_STATS,
+  MOCK_TRANSCRIPTS,
+  MOCK_APPLICATION_RESPONSE,
+}
