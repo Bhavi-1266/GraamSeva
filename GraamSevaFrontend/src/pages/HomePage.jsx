@@ -1,6 +1,8 @@
-import { PAGES } from '../constants/appConfig'
+﻿import { PAGES } from '../constants/appConfig'
 
 export default function HomePage({ tr, onNavigate }) {
+  const openText = tr.pages.home === 'होम' ? 'खोलें' : 'Open'
+
   return (
     <div>
       <div className="card rustic-card">
@@ -16,7 +18,7 @@ export default function HomePage({ tr, onNavigate }) {
             <div className="card-content">
               <span className="material-icons">{page.icon}</span>
               <h6>{tr.pages[page.id]}</h6>
-              <p>{tr.pages[page.id]} {tr.pages.home === '???' ? '?????' : 'Open'}</p>
+              <p>{tr.pages[page.id]} {openText}</p>
             </div>
           </button>
         ))}

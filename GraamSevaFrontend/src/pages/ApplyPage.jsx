@@ -1,4 +1,4 @@
-export default function ApplyPage({
+﻿export default function ApplyPage({
   uiLanguage,
   applicationMode,
   setApplicationMode,
@@ -8,17 +8,17 @@ export default function ApplyPage({
   submitApplication,
 }) {
   const copy = {
-    title: uiLanguage === 'hi' ? '???? ?? ??? ?????' : 'Apply for Service',
-    typing: uiLanguage === 'hi' ? '???????' : 'Typing',
-    voice: uiLanguage === 'hi' ? '????' : 'Voice',
-    call: uiLanguage === 'hi' ? '???' : 'Call',
-    callText: uiLanguage === 'hi' ? '?????? ?????? ?? ??? ????:' : 'Call assisted center:',
-    callSub: uiLanguage === 'hi' ? '?????? ??? ?? ??? ????? ???? ??? ??? ??????' : 'An operator can complete the same form over phone.',
-    fullName: uiLanguage === 'hi' ? '???? ???' : 'Full Name',
-    village: uiLanguage === 'hi' ? '????' : 'Village',
-    service: uiLanguage === 'hi' ? '?????? ????' : 'Service Needed',
-    notes: uiLanguage === 'hi' ? '???????' : 'Notes',
-    submit: uiLanguage === 'hi' ? '????? ??? ????' : 'Submit Application',
+    title: uiLanguage === 'hi' ? 'सेवा के लिए आवेदन' : 'Apply for Service',
+    typing: uiLanguage === 'hi' ? 'टाइपिंग' : 'Typing',
+    voice: uiLanguage === 'hi' ? 'वॉइस' : 'Voice',
+    call: uiLanguage === 'hi' ? 'कॉल' : 'Call',
+    callText: uiLanguage === 'hi' ? 'सहायता केंद्र पर कॉल करें:' : 'Call assisted center:',
+    callSub: uiLanguage === 'hi' ? 'ऑपरेटर फोन पर यही फॉर्म भरने में मदद करेगा।' : 'An operator can complete the same form over phone.',
+    fullName: uiLanguage === 'hi' ? 'पूरा नाम' : 'Full Name',
+    village: uiLanguage === 'hi' ? 'गांव' : 'Village',
+    service: uiLanguage === 'hi' ? 'आवश्यक सेवा' : 'Service Needed',
+    notes: uiLanguage === 'hi' ? 'टिप्पणी' : 'Notes',
+    submit: uiLanguage === 'hi' ? 'आवेदन जमा करें' : 'Submit Application',
   }
 
   return (

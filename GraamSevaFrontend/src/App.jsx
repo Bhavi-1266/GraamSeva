@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 import { PAGES, STORAGE_KEYS, UI_LANGUAGE_MAP } from './constants/appConfig'
 import { createAssistantReply } from './lib/assistant'
@@ -20,9 +20,9 @@ function App() {
   const [query, setQuery] = useState('')
   const [memoryIntent, setMemoryIntent] = useState('general')
   const [assistantState, setAssistantState] = useState({
-    query: '????? ???? ?????? ??????',
-    response: '??? ???? ??? ?? ??? ????? ????',
-    suggestions: ['??????? ?????', '???? ??? ?????', '????? ???? ????'],
+    query: 'बोलकर अपनी समस्या बताइए।',
+    response: 'मैं आपकी मदद के लिए तैयार हूँ।',
+    suggestions: ['योजनाएं खोलें', 'मंडी भाव देखें', 'आवेदन शुरू करें'],
     cards: [],
   })
   const [history, setHistory] = useState([])
@@ -126,8 +126,8 @@ function App() {
 
     setTimeout(() => {
       const spoken = window.prompt(
-        uiLanguage === 'hi' ? '???? ????? ????? (??? ???? ???? ???):' : 'Speak command (type here for now):',
-        uiLanguage === 'hi' ? '???? ???????? ???? ??' : 'Mujhe tractor lena hai',
+        uiLanguage === 'hi' ? 'अपना कमांड बोलें (अभी टाइप करके दें):' : 'Speak command (type here for now):',
+        uiLanguage === 'hi' ? 'मुझे ट्रैक्टर लेना है' : 'Mujhe tractor lena hai',
       )
 
       if (!spoken) {
@@ -144,20 +144,20 @@ function App() {
     setApplicationForm((prev) => ({
       ...prev,
       fullName: prev.fullName || profile.name,
-      village: prev.village || (uiLanguage === 'hi' ? '??????' : 'Rampur'),
+      village: prev.village || (uiLanguage === 'hi' ? 'रामपुर' : 'Rampur'),
       serviceNeeded:
         prev.serviceNeeded ||
         (memoryIntent === 'tractor'
           ? uiLanguage === 'hi'
-            ? '???????? ??????? + ???'
+            ? 'ट्रैक्टर सब्सिडी + लोन'
             : 'Tractor Subsidy + Loan'
           : uiLanguage === 'hi'
-            ? '????-????? ??????????'
+            ? 'पीएम-किसान मार्गदर्शन'
             : 'PM-KISAN Guidance'),
       notes:
         prev.notes ||
         (uiLanguage === 'hi'
-          ? '????? ?????? ?? ???-?????? ???? ????'
+          ? 'सहायक संदर्भ से ऑटो-कैप्चर किया गया।'
           : 'Auto-captured from assistant context.'),
     }))
   }
@@ -168,7 +168,7 @@ function App() {
     if (!applicationForm.fullName || !applicationForm.village || !applicationForm.serviceNeeded) {
       window.alert(
         uiLanguage === 'hi'
-          ? '????? ??? ???? ?? ???? ????? ??????? ?????'
+          ? 'कृपया जमा करने से पहले जरूरी जानकारी भरें।'
           : 'Please fill required fields before submit.',
       )
       return
@@ -176,7 +176,7 @@ function App() {
 
     window.alert(
       uiLanguage === 'hi'
-        ? '????? ???????? ?????????? ??? ??? ?? ???? ?????? ?????????? ???? ??? ???'
+        ? 'आवेदन फ्रंटएंड प्रोटोटाइप में सेव हो गया। बैकएंड इंटीग्रेशन अगला कदम है।'
         : 'Application saved in frontend prototype. Backend integration can be added next.',
     )
 
@@ -195,21 +195,21 @@ function App() {
 
     if (currentPage === 'schemes') {
       const sectionCards = assistantState.cards.length ? assistantState.cards : cards.schemes
-      return <SchemesPage title={uiLanguage === 'hi' ? '????? ?? ???????' : 'Recommended Schemes'} cards={sectionCards} />
+      return <SchemesPage title={uiLanguage === 'hi' ? 'सुझाई गई योजनाएं' : 'Recommended Schemes'} cards={sectionCards} />
     }
 
     if (currentPage === 'mandi') {
       const sectionCards = assistantState.cards.length ? assistantState.cards : cards.mandi
-      return <MandiPage title={uiLanguage === 'hi' ? '?????? ???? ???' : 'Nearby Market Prices'} cards={sectionCards} />
+      return <MandiPage title={uiLanguage === 'hi' ? 'नजदीकी मंडी भाव' : 'Nearby Market Prices'} cards={sectionCards} />
     }
 
     if (currentPage === 'loan') {
       return (
         <LoanPage
-          title={uiLanguage === 'hi' ? '??? ????' : 'Loan Estimator'}
+          title={uiLanguage === 'hi' ? 'लोन आकलन' : 'Loan Estimator'}
           subtitle={
             uiLanguage === 'hi'
-              ? '"???? ???????? ??? ?????" ????? ?????? ????? ??????'
+              ? '"मुझे ट्रैक्टर लोन चाहिए" बोलकर अनुमान तुरंत देखें।'
               : 'Ask: "Mujhe tractor loan chahiye" to auto-generate a suggested loan setup.'
           }
           cards={assistantState.cards}

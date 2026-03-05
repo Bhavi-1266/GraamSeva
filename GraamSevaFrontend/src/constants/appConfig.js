@@ -1,15 +1,15 @@
-export const STORAGE_KEYS = {
+﻿export const STORAGE_KEYS = {
   profile: 'gs_profile',
   history: 'gs_conversations',
 }
 
 export const LANGUAGES = [
-  { code: 'hi', label: 'Hindi (?????)' },
-  { code: 'bho', label: 'Bhojpuri (???????)' },
-  { code: 'awa', label: 'Awadhi (????)' },
-  { code: 'mr', label: 'Marathi (?????)' },
-  { code: 'mai', label: 'Maithili (??????)' },
-  { code: 'or', label: 'Odia (?????)' },
+  { code: 'hi', label: 'Hindi (हिंदी)' },
+  { code: 'bho', label: 'Bhojpuri (भोजपुरी)' },
+  { code: 'awa', label: 'Awadhi (अवधी)' },
+  { code: 'mr', label: 'Marathi (मराठी)' },
+  { code: 'mai', label: 'Maithili (मैथिली)' },
+  { code: 'or', label: 'Odia (ଓଡ଼ିଆ)' },
 ]
 
 export const UI_LANGUAGE_MAP = {
