@@ -6,22 +6,18 @@
 
 // ============================================
 // API BASE URLS
-// ============================================
 export const API_CONFIG = {
-  // Main API Base URL
-  BASE_URL: process.env.VITE_API_BASE_URL || 'https://api.graamseva.in',
-  
-  // Timeout for API calls (ms)
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || "https://api.graamseva.in",
+
   TIMEOUT: 10000,
-  
-  // Azure Services
+
   AZURE: {
-    SPEECH_KEY: process.env.VITE_AZURE_SPEECH_KEY || 'your_key_here',
-    SPEECH_REGION: process.env.VITE_AZURE_SPEECH_REGION || 'centralindia',
-    OPENAI_KEY: process.env.VITE_AZURE_OPENAI_KEY || 'your_key_here',
-    OPENAI_RESOURCE: process.env.VITE_AZURE_OPENAI_RESOURCE || 'your_resource',
-    OPENAI_DEPLOYMENT: process.env.VITE_AZURE_OPENAI_DEPLOYMENT || 'gpt-4o',
-  },
+    SPEECH_KEY: import.meta.env.VITE_AZURE_SPEECH_KEY || "your_key_here",
+    SPEECH_REGION: import.meta.env.VITE_AZURE_SPEECH_REGION || "centralindia",
+    OPENAI_KEY: import.meta.env.VITE_AZURE_OPENAI_KEY || "your_key_here",
+    OPENAI_RESOURCE: import.meta.env.VITE_AZURE_OPENAI_RESOURCE || "your_resource",
+    OPENAI_DEPLOYMENT: import.meta.env.VITE_AZURE_OPENAI_DEPLOYMENT || "gpt-4o",
+  }
 }
 
 // ============================================
@@ -92,6 +88,10 @@ export const API_ENDPOINTS = {
     MANDI_PRICES: '/api/mandi/prices',
     WEATHER: '/api/weather/village/:villageCode',
     COLD_STORAGE: '/api/cold-storage/nearby',
+  },
+  NewSchemes: {
+    LIST: '/api/new-schemes',
+    GET_BY_ID: '/api/new-schemes/:id',
   },
 }
 

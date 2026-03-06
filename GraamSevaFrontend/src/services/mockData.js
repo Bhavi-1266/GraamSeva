@@ -153,6 +153,8 @@ export const MOCK_LATEST_OFFERS = [
   },
 ]
 
+
+
 export default {
   MOCK_SCHEMES,
   MOCK_ELIGIBILITY,
