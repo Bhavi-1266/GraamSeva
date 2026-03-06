@@ -4,33 +4,92 @@
  */
 
 export const MOCK_SCHEMES = [
-  {
-    id: 1,
-    name: 'PM-KISAN',
-    icon: '🌾',
-    desc: 'किसान सम्मान निधि योजना',
-    details: '₹6,000 वार्षिक सहायता',
-    benefits: ['₹2,000 हर चार महीने में', '₹6,000 प्रति वर्ष', 'सीधे बैंक में'],
-    eligible: true,
+{
+  id: 1,
+  name: "PM-KISAN",
+  icon: "🌾",
+  desc: "किसान सम्मान निधि योजना",
+  details: "₹6000 annual income support",
+
+  governmentLevel: "Central Government",
+
+  eligibility: {
+    gender: "All",
+    maritalStatus: "All",
+    incomeLimit: "₹10 lakh/year",
+    landRequired: "≤ 2 hectares",
   },
-  {
-    id: 2,
-    name: 'Crop Insurance',
-    icon: '🛡️',
-    desc: 'प्रधानमंत्री फसल बीमा योजना',
-    details: 'फसल नुकसान की सुरक्षा',
-    benefits: ['फसल नुकसान की भरपाई', 'न्यूनतम प्रीमियम', 'दस्तावेज़ मुक्त क्लेम'],
-    eligible: true,
+
+  benefits: [
+    "₹2000 every 4 months",
+    "Direct DBT transfer",
+    "No middlemen"
+  ],
+
+  howToApply: [
+    "Visit CSC center",
+    "Submit Aadhaar + land records",
+    "Verification by district office",
+    "Money credited to bank"
+  ],
+
+  documents: [
+    "Aadhaar card",
+    "Land ownership papers",
+    "Bank account",
+    "Mobile number"
+  ],
+
+  authority: {
+    ministry: "Ministry of Agriculture",
+    stateBody: "State Agriculture Department",
+    localBody: "Gram Panchayat"
+  }
+},
+{
+  id: 2,
+  name: "PM Fasal Bima Yojana",
+  icon: "🛡️",
+  desc: "प्रधानमंत्री फसल बीमा योजना",
+  details: "Crop insurance protection for farmers against natural disasters",
+
+  governmentLevel: "Central + State Government",
+
+  eligibility: {
+    gender: "All",
+    maritalStatus: "All",
+    incomeLimit: "No income limit",
+    landRequired: "Must own or cultivate farmland",
   },
-  {
-    id: 3,
-    name: 'MGNREGA',
-    icon: '💼',
-    desc: 'महात्मा गांधी रोजगार गारंटी',
-    details: '100 दिन की गारंटीशुदा कार्य',
-    benefits: ['न्यूनतम ₹309 दैनिक मजदूरी', '100 दिन का काम गारंटीशुदा', 'बीमा कवर शामिल'],
-    eligible: true,
-  },
+
+  benefits: [
+    "Insurance coverage against crop failure",
+    "Low premium (1.5%–2% of crop value)",
+    "Protection from floods, drought, pests",
+    "Direct claim settlement to bank account"
+  ],
+
+  howToApply: [
+    "Visit nearest bank or CSC center",
+    "Register your crop details",
+    "Pay small insurance premium",
+    "Submit land and Aadhaar documents",
+    "Receive insurance coverage confirmation"
+  ],
+
+  documents: [
+    "Aadhaar card",
+    "Land ownership / lease documents",
+    "Bank account details",
+    "Crop sowing declaration"
+  ],
+
+  authority: {
+    ministry: "Ministry of Agriculture & Farmers Welfare",
+    stateBody: "State Agriculture Insurance Office",
+    localBody: "District Agriculture Officer"
+  }
+},
 ]
 
 export const MOCK_ELIGIBILITY = {

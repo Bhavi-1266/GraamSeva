@@ -4,7 +4,7 @@
  */
 
 import { API_ENDPOINTS, buildURL } from './apiConfig'
-import { MOCK_SCHEMES } from './mockData'
+import { MOCK_SCHEMES, MOCK_LATEST_OFFERS } from './mockData'
 import apiClient from './apiClient'
 
 class SchemeService {
@@ -44,29 +44,33 @@ class SchemeService {
    * @returns {Object} Scheme details
    */
   async getSchemeById(schemeId, language = 'hi') {
-    try {
-      console.log(`Fetching scheme ${schemeId} from API...`)
-      
-      const url = buildURL(API_ENDPOINTS.SCHEMES.GET_BY_ID.replace(':id', schemeId))
-      const response = await apiClient.get(url, {
-        headers: { 'Accept-Language': language },
-      })
+  try {
+    console.log(`Fetching scheme ${schemeId} from API...`)
 
-      return {
-        data: response,
-        source: 'api',
-      }
-    } catch (error) {
-      console.warn(`Scheme ${schemeId} API failed, using mock data:`, error.message)
-      
-      const scheme = MOCK_SCHEMES.find((s) => s.id === schemeId)
-      return {
-        data: scheme || MOCK_SCHEMES[0],
-        source: 'mock',
-      }
+    const url = buildURL(API_ENDPOINTS.SCHEMES.GET_BY_ID, { id: schemeId })
+
+    const response = await apiClient.get(url, {
+      headers: { 'Accept-Language': language },
+    })
+
+    return {
+      data: response,
+      source: 'api',
+    }
+
+  } catch (error) {
+    console.warn(`Scheme ${schemeId} API failed, using mock data:`, error.message)
+
+    const id = Number(schemeId)
+
+    const scheme = MOCK_SCHEMES.find((s) => s.id === id)
+
+    return {
+      data: scheme ?? MOCK_SCHEMES[0],
+      source: 'mock',
     }
   }
-
+}
   /**
    * Search schemes
    * @param {String} query - Search query
