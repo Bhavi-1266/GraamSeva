@@ -269,26 +269,24 @@ function App() {
 
       <nav className="bottom-nav">
 
-        <div className="nav-wrapper brown darken-3">
+        <div className="nav-wrapper bottom-nav-surface">
 
-          <ul className="grid grid-cols-6 w-full text-white">
+          <ul className="bottom-tabs">
 
             {PAGES.map((page) => (
 
               <li key={page.id}>
 
                 <button
-                  className={`w-full border-none bg-transparent text-white/80 flex flex-col items-center justify-center 
-                  min-h-[58px] text-[0.72rem] cursor-pointer py-2 px-1 gap-1
-                  ${currentPage === page.id ? "text-yellow-100" : ""}`}
+                  className={`tab-btn ${currentPage === page.id ? "tab-active" : ""}`}
                   onClick={() => setCurrentPage(page.id)}
                 >
 
-                  <span className="material-icons text-[20px]">
+                  <span className="material-icons">
                     {page.icon}
                   </span>
 
-                  <small className="leading-none">
+                  <small>
                     {tr.pages[page.id]}
                   </small>
 
@@ -608,3 +606,5 @@ const MOCK_RESPONSES = {
     }
   }
 }
+
+
