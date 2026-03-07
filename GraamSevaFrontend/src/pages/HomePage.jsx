@@ -2,9 +2,27 @@ import { useState } from 'react'
 import { PAGES } from '../constants/appConfig'
 import voiceService from '../services/voiceService'
 
-export default function HomePage({ tr, onNavigate, locationState, onRequestLocation, uiLanguage }) {
-  const openText = tr.pages.home === 'होम' ? 'खोलें' : 'Open'
-  const actionText = locationState.data ? tr.locationRefresh : tr.locationEnable
+export default function HomePage({ tr, onNavigate, uiLanguage, profile }) {
+  const openText = tr.pages.home === "होम" ? "खोलें" : "Open"
+  const [newOffers, setNewOffers] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadNewOffers()
+  }, [uiLanguage])
+
+  const loadNewOffers = async () => {
+    try {
+      setLoading(true)
+      const result = await newSchemesOffersService.getNewSchemes(uiLanguage)
+      setNewOffers(result.data)
+      console.log(`New offers loaded from ${result.source}:`, result.data)
+    } catch (err) {
+      console.error("Failed to load new offers:", err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const [isListening, setIsListening] = useState(false)
   const [voiceResult, setVoiceResult] = useState(null)
@@ -26,40 +44,41 @@ export default function HomePage({ tr, onNavigate, locationState, onRequestLocat
 
   return (
     <div>
-      {/* <div className="card rustic-card">
-        <div className="card-content">
-          <span className="card-title">{tr.homeTitle}</span>
-          <p>{tr.homeSubtitle}</p>
-        </div>
-      </div> */}
-
-      {/* <div className="card rustic-card top-gap">
-        <div className="card-content">
-          <span className="card-title">{tr.locationTitle}</span>
-          {locationState.status === 'requesting' && <p>{tr.locationPending}</p>}
-          {locationState.error && <p className="location-error">{tr.locationError}</p>}
-          {!locationState.data && locationState.status !== 'requesting' && !locationState.error && (
-            <p>{tr.locationUnknown}</p>
-          )}
-          {locationState.data && (
-            <p>
-              {tr.locationUsing} <strong>{locationState.data.displayName || locationState.data.district || locationState.data.state}</strong>
-            </p>
-          )}
-          <button className="btn waves-effect amber darken-3 top-gap" onClick={onRequestLocation}>
-            {actionText}
-          </button>
-          
-        </div>
-      </div> */}
+      {/* New Schemes & Offers Section */}
+      <div className="bg-white p-4 rounded-lg mb-6 overflow-x-auto">
+        {loading ? (
+          <p className="text-center text-gray-500">
+            {uiLanguage === 'hi' ? 'नई योजनाएं लोड हो रही हैं...' : 'Loading new schemes...'}
+          </p>
+        ) : (
+          <div className="flex gap-4 min-w-max">
+            {newOffers.map((offer) => (
+              <div
+                key={offer.id}
+                className="min-w-[220px] bg-gray-100 p-4 rounded-lg shadow-sm flex flex-col gap-1"
+              >
+                <h4 className="font-semibold text-sm">
+                  {offer.title}
+                </h4>
+                <p className="text-xs text-gray-600">
+                  {offer.desc}
+                </p>
+                <span className="text-[10px] bg-green-200 w-fit px-2 py-1 rounded">
+                  {offer.badge}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       <div className="card rustic-card top-gap voice-assistant-card" style={{ textAlign: 'center', marginBottom: '20px' }}>
         <div className="card-content">
           <span className="card-title" style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>
-             {tr.voiceAssistant || 'Voice AI Assistant'}
+            {tr.voiceAssistant || 'Voice AI Assistant'}
           </span>
-          
-          <button 
+
+          <button
             className={`btn-floating btn-large waves-effect waves-light ${isListening ? 'red pulse' : 'green'}`}
             onClick={handleVoiceAssistant}
             disabled={isListening}
@@ -67,7 +86,7 @@ export default function HomePage({ tr, onNavigate, locationState, onRequestLocat
           >
             <span className="material-icons" style={{ color: 'white', fontSize: '32px' }}>mic</span>
           </button>
-          
+
           <p style={{ marginTop: '10px', color: isListening ? '#f44336' : 'inherit', fontWeight: '500' }}>
             {isListening ? (tr.listening || 'Listening... Speak now') : (tr.tapToSpeak || 'Tap to speak in your language')}
           </p>
@@ -90,12 +109,18 @@ export default function HomePage({ tr, onNavigate, locationState, onRequestLocat
       </div>
 
       <div className="service-grid">
-        {PAGES.filter((p) => p.id !== 'history').map((page) => (
-          <button key={page.id} className="card service-card" onClick={() => onNavigate(page.id)}>
+        {PAGES.filter((p) => p.id !== "history").map((page) => (
+          <button
+            key={page.id}
+            className="card service-card"
+            onClick={() => onNavigate(page.id)}
+          >
             <div className="card-content">
               <span className="material-icons">{page.icon}</span>
               <h6>{tr.pages[page.id]}</h6>
-              <p>{tr.pages[page.id]} {openText}</p>
+              <p>
+                {tr.pages[page.id]} {openText}
+              </p>
             </div>
           </button>
         ))}

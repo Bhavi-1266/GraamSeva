@@ -8,6 +8,8 @@ export { default as schemeService } from './schemeService'
 export { default as eligibilityService } from './eligibilityService'
 export { default as applicationService } from './applicationService'
 export { default as dashboardService } from './dashboardService'
+export { default as mandiService } from './mandiService'
+export { default as loanService } from './loanService'
 export { default as apiClient } from './apiClient'
 
 export {
@@ -27,4 +29,6 @@ export {
   MOCK_TRANSCRIPTS,
   MOCK_APPLICATION_RESPONSE,
   MOCK_LATEST_OFFERS,
+  MOCK_MANDI_PRICES,
+  MOCK_LOAN_OPTIONS,
 } from './mockData'

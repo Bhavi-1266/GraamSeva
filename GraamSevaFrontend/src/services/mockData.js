@@ -4,33 +4,92 @@
  */
 
 export const MOCK_SCHEMES = [
-  {
-    id: 1,
-    name: 'PM-KISAN',
-    icon: '🌾',
-    desc: 'किसान सम्मान निधि योजना',
-    details: '₹6,000 वार्षिक सहायता',
-    benefits: ['₹2,000 हर चार महीने में', '₹6,000 प्रति वर्ष', 'सीधे बैंक में'],
-    eligible: true,
+{
+  id: 1,
+  name: "PM-KISAN",
+  icon: "🌾",
+  desc: "किसान सम्मान निधि योजना",
+  details: "₹6000 annual income support",
+
+  governmentLevel: "Central Government",
+
+  eligibility: {
+    gender: "All",
+    maritalStatus: "All",
+    incomeLimit: "₹10 lakh/year",
+    landRequired: "≤ 2 hectares",
   },
-  {
-    id: 2,
-    name: 'Crop Insurance',
-    icon: '🛡️',
-    desc: 'प्रधानमंत्री फसल बीमा योजना',
-    details: 'फसल नुकसान की सुरक्षा',
-    benefits: ['फसल नुकसान की भरपाई', 'न्यूनतम प्रीमियम', 'दस्तावेज़ मुक्त क्लेम'],
-    eligible: true,
+
+  benefits: [
+    "₹2000 every 4 months",
+    "Direct DBT transfer",
+    "No middlemen"
+  ],
+
+  howToApply: [
+    "Visit CSC center",
+    "Submit Aadhaar + land records",
+    "Verification by district office",
+    "Money credited to bank"
+  ],
+
+  documents: [
+    "Aadhaar card",
+    "Land ownership papers",
+    "Bank account",
+    "Mobile number"
+  ],
+
+  authority: {
+    ministry: "Ministry of Agriculture",
+    stateBody: "State Agriculture Department",
+    localBody: "Gram Panchayat"
+  }
+},
+{
+  id: 2,
+  name: "PM Fasal Bima Yojana",
+  icon: "🛡️",
+  desc: "प्रधानमंत्री फसल बीमा योजना",
+  details: "Crop insurance protection for farmers against natural disasters",
+
+  governmentLevel: "Central + State Government",
+
+  eligibility: {
+    gender: "All",
+    maritalStatus: "All",
+    incomeLimit: "No income limit",
+    landRequired: "Must own or cultivate farmland",
   },
-  {
-    id: 3,
-    name: 'MGNREGA',
-    icon: '💼',
-    desc: 'महात्मा गांधी रोजगार गारंटी',
-    details: '100 दिन की गारंटीशुदा कार्य',
-    benefits: ['न्यूनतम ₹309 दैनिक मजदूरी', '100 दिन का काम गारंटीशुदा', 'बीमा कवर शामिल'],
-    eligible: true,
-  },
+
+  benefits: [
+    "Insurance coverage against crop failure",
+    "Low premium (1.5%–2% of crop value)",
+    "Protection from floods, drought, pests",
+    "Direct claim settlement to bank account"
+  ],
+
+  howToApply: [
+    "Visit nearest bank or CSC center",
+    "Register your crop details",
+    "Pay small insurance premium",
+    "Submit land and Aadhaar documents",
+    "Receive insurance coverage confirmation"
+  ],
+
+  documents: [
+    "Aadhaar card",
+    "Land ownership / lease documents",
+    "Bank account details",
+    "Crop sowing declaration"
+  ],
+
+  authority: {
+    ministry: "Ministry of Agriculture & Farmers Welfare",
+    stateBody: "State Agriculture Insurance Office",
+    localBody: "District Agriculture Officer"
+  }
+},
 ]
 
 export const MOCK_ELIGIBILITY = {
@@ -153,6 +212,188 @@ export const MOCK_LATEST_OFFERS = [
   },
 ]
 
+export const MOCK_MANDI_PRICES = [
+  {
+    id: 1,
+    mandi: 'रामपुर मंडी',
+    state: 'उत्तर प्रदेश',
+    crops: [
+      {
+        crop: 'गेहूं (Wheat)',
+        price: '₹2,150/क्विंटल',
+        change: '+50',
+        trend: 'up',
+      },
+      {
+        crop: 'धान (Paddy)',
+        price: '₹1,930/क्विंटल',
+        change: '-10',
+        trend: 'down',
+      },
+      {
+        crop: 'मक्का (Maize)',
+        price: '₹1,700/क्विंटल',
+        change: '+20',
+        trend: 'up',
+      },
+    ],
+  },
+
+  {
+    id: 2,
+    mandi: 'लखनऊ मंडी',
+    state: 'उत्तर प्रदेश',
+    crops: [
+      {
+        crop: 'गेहूं (Wheat)',
+        price: '₹2,180/क्विंटल',
+        change: '+30',
+        trend: 'up',
+      },
+      {
+        crop: 'दलहन (Pulses)',
+        price: '₹5,820/क्विंटल',
+        change: '+110',
+        trend: 'up',
+      },
+      {
+        crop: 'चना (Gram)',
+        price: '₹5,100/क्विंटल',
+        change: '-40',
+        trend: 'down',
+      },
+    ],
+  },
+
+  {
+    id: 3,
+    mandi: 'सुल्तानपुर मंडी',
+    state: 'उत्तर प्रदेश',
+    crops: [
+      {
+        crop: 'धान (Paddy)',
+        price: '₹1,950/क्विंटल',
+        change: '+15',
+        trend: 'up',
+      },
+      {
+        crop: 'सरसों (Mustard)',
+        price: '₹5,400/क्विंटल',
+        change: '+70',
+        trend: 'up',
+      },
+      {
+        crop: 'मक्का (Maize)',
+        price: '₹1,690/क्विंटल',
+        change: '0',
+        trend: 'stable',
+      },
+    ],
+  },
+
+  {
+    id: 4,
+    mandi: 'फैजाबाद मंडी',
+    state: 'उत्तर प्रदेश',
+    crops: [
+      {
+        crop: 'गेहूं (Wheat)',
+        price: '₹2,120/क्विंटल',
+        change: '-20',
+        trend: 'down',
+      },
+      {
+        crop: 'गन्ना (Sugarcane)',
+        price: '₹355/क्विंटल',
+        change: '+10',
+        trend: 'up',
+      },
+      {
+        crop: 'दलहन (Pulses)',
+        price: '₹5,760/क्विंटल',
+        change: '+60',
+        trend: 'up',
+      },
+    ],
+  },
+
+  {
+    id: 5,
+    mandi: 'बस्ती मंडी',
+    state: 'उत्तर प्रदेश',
+    crops: [
+      {
+        crop: 'गन्ना (Sugarcane)',
+        price: '₹350/क्विंटल',
+        change: '+15',
+        trend: 'up',
+      },
+      {
+        crop: 'धान (Paddy)',
+        price: '₹1,920/क्विंटल',
+        change: '-30',
+        trend: 'down',
+      },
+      {
+        crop: 'चना (Gram)',
+        price: '₹5,050/क्विंटल',
+        change: '+25',
+        trend: 'up',
+      },
+    ],
+  },
+]
+
+export const MOCK_LOAN_OPTIONS = [
+  {
+    id: 1,
+    title: 'कृषि उपकरण लोन (Equipment Loan)',
+    detail: 'ट्रैक्टर, थ्रेशर और अन्य उपकरण के लिए | 3-7 साल के लिए | 7-9% वार्षिक ब्याज',
+    amount: '₹3-10 लाख',
+    interest: '7-9%',
+    tenure: '3-7 years',
+    eligibility: 'खेती योग्य जमीन आवश्यक',
+  },
+  {
+    id: 2,
+    title: 'फसल लोन (Crop Loan)',
+    detail: 'बीज, खाद, कीटनाशक के लिए अल्पकालिक ऋण | 6-12 महीने | 4-7% ब्याज',
+    amount: '₹50,000-5 लाख',
+    interest: '4-7%',
+    tenure: '6-12 months',
+    eligibility: 'खेती का प्रमाण पत्र चाहिए',
+  },
+  {
+    id: 3,
+    title: 'पशुपालन लोन (Dairy/Livestock Loan)',
+    detail: 'गाय, भैंस, मुर्गी पालन के लिए | 3-5 साल | 8-10% ब्याज',
+    amount: '₹1-5 लाख',
+    interest: '8-10%',
+    tenure: '3-5 years',
+    eligibility: 'पशुपालन प्रशिक्षण या अनुभव',
+  },
+  {
+    id: 4,
+    title: 'भूमि विकास लोन (Land Development)',
+    detail: 'सिंचाई, बोरवेल, तालाब खुदाई के लिए | 5-10 साल | 9-11% ब्याज',
+    amount: '₹2-8 लाख',
+    interest: '9-11%',
+    tenure: '5-10 years',
+    eligibility: 'ज़मीन का स्वामित्व आवश्यक',
+  },
+  {
+    id: 5,
+    title: 'मुद्रा लोन (MUDRA Loan)',
+    detail: 'छोटे व्यवसाय शुरू करने के लिए | 3-5 साल | 8-12% ब्याज',
+    amount: '₹50,000-10 लाख',
+    interest: '8-12%',
+    tenure: '3-5 years',
+    eligibility: 'व्यवसाय योजना आवश्यक',
+  },
+]
+
+
+
 export default {
   MOCK_SCHEMES,
   MOCK_ELIGIBILITY,
@@ -160,4 +401,6 @@ export default {
   MOCK_TRANSCRIPTS,
   MOCK_APPLICATION_RESPONSE,
   MOCK_LATEST_OFFERS,
+  MOCK_MANDI_PRICES,
+  MOCK_LOAN_OPTIONS,
 }
