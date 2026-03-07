@@ -27,7 +27,7 @@ class VoiceService {
    * Live microphone → text via Web Speech API
    * Used by HomePage (recognizeAndTranslate) and VoiceInputPage (transcribeAudio)
    */
-  async recognizeAndTranslate(language) {
+  async recognizeAndTranslate(language, onInterimResult) {
     const SpeechRecognition = getSpeechRecognition()
 
     if (!SpeechRecognition) {
@@ -39,20 +39,54 @@ class VoiceService {
     return new Promise((resolve, reject) => {
       const recognition = new SpeechRecognition()
       recognition.lang = LOCALE_MAP[language] || 'hi-IN'
-      recognition.interimResults = false
+      recognition.interimResults = true // Enable live preview
       recognition.maxAlternatives = 1
       recognition.continuous = false
 
-      recognition.onresult = (event) => {
-        const result = event.results[0][0]
-        resolve({
-          text: result.transcript,
-          translatedText: null,
-          confidence: result.confidence || 0.9,
-          language,
-          timestamp: new Date().toISOString(),
-          source: 'web-speech-api',
-        })
+      let finalTranscript = ''
+
+      recognition.onresult = async (event) => {
+        let interimTranscript = ''
+        
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript
+          } else {
+            interimTranscript += event.results[i][0].transcript
+          }
+        }
+
+        // Send live preview characters back to the UI
+        if (onInterimResult && interimTranscript) {
+          onInterimResult(interimTranscript)
+        }
+
+        // If it's the final result, translate it
+        if (event.results[event.results.length - 1].isFinal) {
+          let translatedText = finalTranscript
+
+          // Use free Google Translate API if not English
+          if (language !== 'en' && finalTranscript.trim()) {
+            try {
+              const res = await fetch(
+                `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${language}&tl=en&dt=t&q=${encodeURIComponent(finalTranscript)}`
+              )
+              const data = await res.json()
+              translatedText = data[0].map((item) => item[0]).join('')
+            } catch (err) {
+              console.warn('Free Translation API failed:', err)
+            }
+          }
+
+          resolve({
+            text: finalTranscript,
+            translatedText: translatedText,
+            confidence: event.results[event.results.length - 1][0].confidence || 0.9,
+            language,
+            timestamp: new Date().toISOString(),
+            source: 'web-speech-api',
+          })
+        }
       }
 
       recognition.onerror = (event) => {
