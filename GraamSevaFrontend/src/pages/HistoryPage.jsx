@@ -1,33 +1,25 @@
-import { useState, useEffect } from 'react'
-import { formatTime } from '../lib/assistant'
+import { useMemo } from 'react'
 import { STORAGE_KEYS } from '../constants/appConfig'
+import { formatTime } from '../lib/assistant'
 
-export default function HistoryPage({ tr, uiLanguage }) {
-  const [history, setHistory] = useState([])
-
-  useEffect(() => {
-    loadHistory()
-  }, [])
-
-  const loadHistory = () => {
-    try {
-      const storedHistory = localStorage.getItem(STORAGE_KEYS.history)
-      if (storedHistory) {
-        setHistory(JSON.parse(storedHistory))
-      }
-    } catch (err) {
-      console.error("Failed to load history:", err)
-    }
-  }
+export default function HistoryPage({ tr, uiLanguage, chatThreads = [], onOpenChat, onClearHistory }) {
+  const sortedThreads = useMemo(() => {
+    return [...chatThreads].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+  }, [chatThreads])
 
   const clearHistory = () => {
-    const confirmMsg = uiLanguage === 'hi' 
-      ? 'क्या आप सभी इतिहास हटाना चाहते हैं?' 
-      : 'Are you sure you want to clear all history?'
-    
+    const confirmMsg =
+      uiLanguage === 'hi'
+        ? 'Kya aap sabhi chat history hatana chahte hain?'
+        : 'Are you sure you want to clear all chat history?'
+
     if (window.confirm(confirmMsg)) {
-      localStorage.removeItem(STORAGE_KEYS.history)
-      setHistory([])
+      if (onClearHistory) {
+        onClearHistory()
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.chatThreads)
+        localStorage.removeItem(STORAGE_KEYS.history)
+      }
     }
   }
 
@@ -36,30 +28,37 @@ export default function HistoryPage({ tr, uiLanguage }) {
       <div className="card-content">
         <div className="flex justify-between items-center mb-3">
           <span className="card-title">{tr.pages.history}</span>
-          {history.length > 0 && (
-            <button 
-              className="btn-small waves-effect red lighten-1"
-              onClick={clearHistory}
-            >
-              {uiLanguage === 'hi' ? 'साफ करें' : 'Clear'}
+          {sortedThreads.length > 0 && (
+            <button className="btn-small waves-effect red lighten-1" onClick={clearHistory}>
+              Clear
             </button>
           )}
         </div>
-        
-        {history.length === 0 ? (
-          <p>{tr.noHistory || (uiLanguage === 'hi' ? 'कोई इतिहास नहीं है।' : 'No history available.')}</p>
+
+        {sortedThreads.length === 0 ? (
+          <p>No chat history available.</p>
         ) : (
           <ul className="collection">
-            {history.map((item) => (
-              <li className="collection-item" key={item.id}>
-                <strong>{tr.you || (uiLanguage === 'hi' ? 'आप' : 'You')}:</strong> {item.query}
-                <br />
-                <strong>{tr.ai || (uiLanguage === 'hi' ? 'AI' : 'AI')}:</strong> {item.response}
-                <div className="history-meta">
-                  {item.page} | {formatTime(item.timestamp)}
-                </div>
-              </li>
-            ))}
+            {sortedThreads.map((thread) => {
+              const lastMessage = thread.messages?.[thread.messages.length - 1]
+              const preview = lastMessage?.text || ''
+              return (
+                <li className="collection-item" key={thread.id}>
+                  <div className="flex justify-between items-start gap-2">
+                    <div>
+                      <strong>{thread.title || 'Chat'}</strong>
+                      <p style={{ margin: '4px 0', color: '#6d4c41' }}>{preview.slice(0, 100)}</p>
+                      <div className="history-meta">
+                        {thread.messages?.length || 0} messages | {formatTime(thread.updatedAt || thread.createdAt)}
+                      </div>
+                    </div>
+                    <button className="btn-small amber darken-2" onClick={() => onOpenChat && onOpenChat(thread.id)}>
+                      Continue
+                    </button>
+                  </div>
+                </li>
+              )
+            })}
           </ul>
         )}
       </div>

@@ -12,26 +12,158 @@ import HistoryPage from "./pages/HistoryPage"
 import voiceService from "./services/voiceService"
 
 function App() {
-
   const [onboardingStep, setOnboardingStep] = useState("language")
   const [profile, setProfile] = useState({ name: "", mobile: "", language: "" })
   const [currentPage, setCurrentPage] = useState("home")
-
-  const [assistantOpen, setAssistantOpen] = useState(false)
-  const [assistantPopup, setAssistantPopup] = useState(null)
+  const [assistantThreads, setAssistantThreads] = useState([])
+  const [activeChatId, setActiveChatId] = useState(null)
 
   const uiLanguage = getUiLanguage(profile.language, UI_LANGUAGE_MAP)
   const tr = TRANSLATIONS[uiLanguage]
 
-  /*
-  -----------------------------
-  ASSISTANT REQUEST
-  -----------------------------
-  */
+  useEffect(() => {
+    const storedProfile = localStorage.getItem(STORAGE_KEYS.profile)
+    if (storedProfile) {
+      const parsed = JSON.parse(storedProfile)
+      setProfile(parsed)
+      setOnboardingStep("done")
+    }
+  }, [])
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.chatThreads)
+      if (!raw) return
+      const parsed = JSON.parse(raw)
+      if (!Array.isArray(parsed)) return
+      setAssistantThreads(parsed)
+      if (parsed.length > 0) setActiveChatId(parsed[0].id)
+    } catch (err) {
+      console.error("Failed to load chat threads:", err)
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.chatThreads, JSON.stringify(assistantThreads))
+  }, [assistantThreads])
+
+  const activeThread = useMemo(() => {
+    return assistantThreads.find((thread) => thread.id === activeChatId) || null
+  }, [assistantThreads, activeChatId])
+
+  const greeting = useMemo(() => {
+    if (!profile.name) return tr.greeting
+    return `${tr.greeting}, ${profile.name}`
+  }, [profile.name, tr.greeting])
+
+  const upsertThreadMessage = (threadId, message, seedQuery) => {
+    setAssistantThreads((prev) => {
+      const now = new Date().toISOString()
+      const index = prev.findIndex((thread) => thread.id === threadId)
+
+      if (index === -1) {
+        const titleSource = (seedQuery || message.text || "New Chat").trim()
+        const thread = {
+          id: threadId,
+          title: titleSource.length > 40 ? `${titleSource.slice(0, 40)}...` : titleSource,
+          createdAt: now,
+          updatedAt: now,
+          messages: [{ ...message, timestamp: now }],
+        }
+        return [thread, ...prev]
+      }
+
+      const current = prev[index]
+      const updated = {
+        ...current,
+        updatedAt: now,
+        messages: [...(current.messages || []), { ...message, timestamp: now }],
+      }
+
+      const next = [...prev]
+      next[index] = updated
+      return next
+    })
+  }
+
+  const serializeAssistantResult = (data) => {
+    if (data?.message) return data.message
+    if (data?.speak) return data.speak
+
+    const items = data?.result?.items || []
+    if (!items.length) return "No details found."
+
+    return items
+      .map((item) =>
+        Object.entries(item)
+          .map(([k, v]) => `${k}: ${v}`)
+          .join(" | "),
+      )
+      .join("\n")
+  }
+
+  const persistLegacyHistory = (query, responseText, pageId) => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.history)
+      const existing = raw ? JSON.parse(raw) : []
+      const next = [
+        {
+          id: `h_${Date.now()}`,
+          query,
+          response: responseText,
+          page: pageId,
+          timestamp: new Date().toISOString(),
+        },
+        ...existing,
+      ].slice(0, 200)
+      localStorage.setItem(STORAGE_KEYS.history, JSON.stringify(next))
+    } catch (err) {
+      console.error("Failed to persist history:", err)
+    }
+  }
+
+  const handleAssistantResponse = (data, sourceQuery, threadId) => {
+    const responseText = serializeAssistantResult(data)
+
+    upsertThreadMessage(
+      threadId,
+      {
+        id: `m_${Date.now()}_a`,
+        role: "assistant",
+        text: responseText,
+      },
+      sourceQuery,
+    )
+
+    persistLegacyHistory(sourceQuery, responseText, data.redirect || currentPage)
+
+    if (data.redirect) {
+      setCurrentPage(data.redirect)
+    }
+
+    if (data.speak) {
+      const speech = new SpeechSynthesisUtterance(data.speak)
+      speech.lang = uiLanguage === "hi" ? "hi-IN" : "en-US"
+      window.speechSynthesis.speak(speech)
+    }
+  }
 
   const runAssistant = async (incomingQuery) => {
+    const query = incomingQuery?.trim()
+    if (!query) return
 
-    if (!incomingQuery?.trim()) return
+    const threadId = activeChatId || `chat_${Date.now()}`
+    setActiveChatId(threadId)
+
+    upsertThreadMessage(
+      threadId,
+      {
+        id: `m_${Date.now()}_u`,
+        role: "user",
+        text: query,
+      },
+      query,
+    )
 
     try {
       const controller = new AbortController()
@@ -41,174 +173,95 @@ function App() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         signal: controller.signal,
-        body: JSON.stringify({
-          query: incomingQuery,
-          language: uiLanguage
-        })
+        body: JSON.stringify({ query, language: uiLanguage }),
       })
 
       clearTimeout(timeout)
       if (!res.ok) throw new Error("API error")
-      
-      let data = await res.json()
-      if (!data || !data.result) {
-        throw new Error("Invalid API response")
-      }
-      handleAssistantResponse(data)
 
+      const data = await res.json()
+      if (!data || !data.result) throw new Error("Invalid API response")
+
+      handleAssistantResponse(data, query, threadId)
     } catch (err) {
       console.warn("Assistant failed, using local intent router:", err)
-      
-      // Simple local intent router since backend is not connected
-      const queryLower = incomingQuery.toLowerCase()
+
+      const queryLower = query.toLowerCase()
       let mockData = MOCK_RESPONSES.default
 
-      if (queryLower.includes('mandi') || queryLower.includes('market') || queryLower.includes('price')) {
+      if (queryLower.includes("mandi") || queryLower.includes("market") || queryLower.includes("price")) {
         mockData = MOCK_RESPONSES.mandi
-      } else if (queryLower.includes('loan') || queryLower.includes('finance') || queryLower.includes('tractor')) {
+      } else if (queryLower.includes("loan") || queryLower.includes("finance") || queryLower.includes("tractor")) {
         mockData = MOCK_RESPONSES.loan
-      } else if (queryLower.includes('scheme') || queryLower.includes('yojana') || queryLower.includes('subsidy')) {
+      } else if (queryLower.includes("scheme") || queryLower.includes("yojana") || queryLower.includes("subsidy")) {
         mockData = MOCK_RESPONSES.schemes
-      } else if (queryLower.includes('apply') || queryLower.includes('form')) {
+      } else if (queryLower.includes("apply") || queryLower.includes("form")) {
         mockData = MOCK_RESPONSES.apply
-      } else if (queryLower.includes('history') || queryLower.includes('status')) {
+      } else if (queryLower.includes("history") || queryLower.includes("status")) {
         mockData = MOCK_RESPONSES.history
       }
 
-      handleAssistantResponse(mockData)
+      handleAssistantResponse(mockData, query, threadId)
     }
   }
 
-  /*
-  -----------------------------
-  ASSISTANT RESPONSE
-  -----------------------------
-  */
-
-  const handleAssistantResponse = (data) => {
-
-    setAssistantPopup(data.result)
-
-    if (data.redirect) {
-      setCurrentPage(data.redirect)
-    }
-
-    if (data.speak) {
-
-      const speech = new SpeechSynthesisUtterance(data.speak)
-
-      speech.lang = uiLanguage === "hi" ? "hi-IN" : "en-US"
-
-      window.speechSynthesis.speak(speech)
-    }
-
+  const startNewChat = () => {
+    setActiveChatId(null)
   }
 
-  /*
-  -----------------------------
-  LOAD PROFILE
-  -----------------------------
-  */
+  const openChatFromHistory = (threadId) => {
+    setActiveChatId(threadId)
+    setCurrentPage("home")
+  }
 
-  useEffect(() => {
-
-    const storedProfile = localStorage.getItem(STORAGE_KEYS.profile)
-
-    if (storedProfile) {
-
-      const parsed = JSON.parse(storedProfile)
-
-      setProfile(parsed)
-
-      setOnboardingStep("done")
-
-    }
-
-  }, [])
-
-  /*
-  -----------------------------
-  GREETING
-  -----------------------------
-  */
-
-  const greeting = useMemo(() => {
-
-    if (!profile.name) return tr.greeting
-
-    return `${tr.greeting}, ${profile.name}`
-
-  }, [profile.name, tr.greeting])
-
-  /*
-  -----------------------------
-  PROFILE SUBMIT
-  -----------------------------
-  */
+  const clearAllChats = () => {
+    localStorage.removeItem(STORAGE_KEYS.chatThreads)
+    localStorage.removeItem(STORAGE_KEYS.history)
+    setAssistantThreads([])
+    setActiveChatId(null)
+  }
 
   const submitProfile = (event) => {
-
     event.preventDefault()
-
     const isMobileValid = /^\d{10}$/.test(profile.mobile)
 
     if (!profile.language || !profile.name.trim() || !isMobileValid) {
-
       window.alert(tr.invalidProfile)
-
       return
-
     }
 
     localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(profile))
-
     setOnboardingStep("done")
-
   }
-
-  /*
-  -----------------------------
-  PAGE RENDERER
-  -----------------------------
-  */
 
   const renderPage = () => {
-
     switch (currentPage) {
-
       case "home":
         return <HomePage tr={tr} onNavigate={setCurrentPage} uiLanguage={uiLanguage} profile={profile} />
-
       case "schemes":
         return <SchemesPage tr={tr} uiLanguage={uiLanguage} />
-
       case "mandi":
         return <MandiPage tr={tr} uiLanguage={uiLanguage} />
-
       case "loan":
         return <LoanPage tr={tr} uiLanguage={uiLanguage} />
-
       case "apply":
         return <ApplyPage tr={tr} uiLanguage={uiLanguage} profile={profile} />
-
       case "history":
-        return <HistoryPage tr={tr} uiLanguage={uiLanguage} />
-
+        return (
+          <HistoryPage
+            tr={tr}
+            uiLanguage={uiLanguage}
+            chatThreads={assistantThreads}
+            onOpenChat={openChatFromHistory}
+            onClearHistory={clearAllChats}
+          />
+        )
       default:
         return <HomePage tr={tr} onNavigate={setCurrentPage} uiLanguage={uiLanguage} profile={profile} />
-
     }
-
   }
 
-  /*
-  -----------------------------
-  ONBOARDING
-  -----------------------------
-  */
-
   if (onboardingStep !== "done") {
-
     return (
       <OnboardingPage
         tr={tr}
@@ -219,21 +272,11 @@ function App() {
         onSubmit={submitProfile}
       />
     )
-
   }
 
-  /*
-  -----------------------------
-  MAIN UI
-  -----------------------------
-  */
-
   return (
-
     <div className="app-shell">
-
       <header className="top-header">
-
         <div>
           <h5>{tr.appName}</h5>
           <p>{greeting}</p>
@@ -242,369 +285,213 @@ function App() {
         <button className="btn-flat" onClick={() => setOnboardingStep("language")}>
           {tr.reset}
         </button>
-
       </header>
 
-      
-
-      <AssistantPopup
-        open={assistantOpen}
-        onClose={() => setAssistantOpen(false)}
-        onRunAssistant={runAssistant}
-      />
-
-      <AssistantResultPopup
-        data={assistantPopup}
-        onClose={() => setAssistantPopup(null)}
-      />
-
       <main className="content-area">
-        <AssistantIsland
+        <AssistantChatPanel
           onRunAssistant={runAssistant}
-          onOpen={() => setAssistantOpen(true)}
           uiLanguage={uiLanguage}
+          activeThread={activeThread}
+          onNewChat={startNewChat}
         />
         {renderPage()}
       </main>
 
       <nav className="bottom-nav">
-
         <div className="nav-wrapper bottom-nav-surface">
-
           <ul className="bottom-tabs">
-
             {PAGES.map((page) => (
-
               <li key={page.id}>
-
                 <button
                   className={`tab-btn ${currentPage === page.id ? "tab-active" : ""}`}
                   onClick={() => setCurrentPage(page.id)}
                 >
-
-                  <span className="material-icons">
-                    {page.icon}
-                  </span>
-
-                  <small>
-                    {tr.pages[page.id]}
-                  </small>
-
+                  <span className="material-icons">{page.icon}</span>
+                  <small>{tr.pages[page.id]}</small>
                 </button>
-
               </li>
-
             ))}
-
           </ul>
-
         </div>
-
       </nav>
-
     </div>
-
   )
 }
 
 export default App
 
-
-/*
----------------------------------------
-ASSISTANT ISLAND
----------------------------------------
-*/
-
-function AssistantIsland({ onOpen, onRunAssistant, uiLanguage }) {
-
+function AssistantChatPanel({ onRunAssistant, uiLanguage, activeThread, onNewChat }) {
   const [query, setQuery] = useState("")
   const [isListening, setIsListening] = useState(false)
 
   const submit = () => {
-
     if (!query.trim()) return
-
     onRunAssistant(query)
-
     setQuery("")
-
   }
 
   const handleMic = async () => {
     try {
       setIsListening(true)
-      setQuery('') // Clear previous query before listening
+      setQuery("")
 
-      const result = await voiceService.recognizeAndTranslate(
-        uiLanguage || 'hi',
-        (interimText) => {
-          // Live preview: show what is being spoken in the input box
-          setQuery(interimText)
-        }
-      )
+      const result = await voiceService.recognizeAndTranslate(uiLanguage || "hi", (interimText) => {
+        setQuery(interimText)
+      })
 
       if (result.text) {
-        // Final preview: show the final transcribed text
         setQuery(result.text)
-        
-        // Pass the TRANSLATED text to the AI (or original if en/failed)
         const finalPrompt = result.translatedText || result.text
-        onRunAssistant(finalPrompt, 'voice')
-        
-        // Clear box after a short delay so they see what they said
-        setTimeout(() => setQuery(''), 1500)
+        onRunAssistant(finalPrompt)
+        setTimeout(() => setQuery(""), 800)
       }
     } catch (error) {
-      console.error('Mic error:', error)
+      console.error("Mic error:", error)
       window.alert(
-        uiLanguage === 'hi'
-          ? 'माइक्रोफ़ोन से आवाज़ नहीं मिली। कृपया Chrome/Edge में दोबारा कोशिश करें।'
-          : 'Could not capture audio. Please try again in Chrome/Edge.'
+        uiLanguage === "hi"
+          ? "Could not capture audio. Please try again in Chrome/Edge."
+          : "Could not capture audio. Please try again in Chrome/Edge.",
       )
-      setQuery('')
+      setQuery("")
     } finally {
       setIsListening(false)
     }
   }
 
   return (
+    <div className="rustic-card" style={{ padding: "10px", marginBottom: "10px" }}>
+      <div className="flex items-center justify-between mb-2">
+        <strong>Assistant Chat</strong>
+        <button className="btn-flat" onClick={onNewChat}>New Chat</button>
+      </div>
 
-    <div >
+      <div
+        style={{
+          background: "rgba(255,255,255,0.85)",
+          border: "1px solid rgba(109, 76, 65, 0.18)",
+          borderRadius: "10px",
+          maxHeight: "240px",
+          overflowY: "auto",
+          padding: "8px",
+          marginBottom: "8px",
+        }}
+      >
+        {(activeThread?.messages || []).length === 0 ? (
+          <p style={{ margin: 0, color: "#7b6b5f", fontSize: "0.85rem" }}>Start a chat. It will be saved automatically.</p>
+        ) : (
+          (activeThread.messages || []).map((message) => (
+            <div
+              key={message.id + message.timestamp}
+              style={{
+                marginBottom: "6px",
+                display: "flex",
+                justifyContent: message.role === "user" ? "flex-end" : "flex-start",
+              }}
+            >
+              <div
+                style={{
+                  maxWidth: "84%",
+                  background: message.role === "user" ? "#efe2c8" : "#f7f3ea",
+                  border: "1px solid rgba(109, 76, 65, 0.18)",
+                  borderRadius: "8px",
+                  padding: "6px 8px",
+                  whiteSpace: "pre-wrap",
+                  fontSize: "0.84rem",
+                }}
+              >
+                {message.text}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
 
-      <div className="flex items-center gap-2 bg-white shadow-lg px-4 py-2 mb-3 rounded-full">
-
-        <button onClick={onOpen}>
-          <span className="material-icons">smart_toy</span>
-        </button>
-
+      <div className="flex items-center gap-2 bg-white shadow-lg px-3 py-2 rounded-full">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && submit()}
           placeholder="Ask GraamSeva..."
-          className="outline-none text-sm w-[150px]"
+          className="outline-none text-sm w-full"
         />
 
         <button onClick={submit}>
           <span className="material-icons text-amber-600">send</span>
         </button>
 
-        <button 
-          onClick={handleMic} 
+        <button
+          onClick={handleMic}
           disabled={isListening}
-          className={`relative flex items-center justify-center w-8 h-8 rounded-full transition-all ${isListening ? 'bg-red-500 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+          className={`relative flex items-center justify-center w-8 h-8 rounded-full transition-all ${
+            isListening ? "bg-red-500 text-white" : "text-gray-600 hover:bg-gray-100"
+          }`}
         >
-          {isListening && (
-            <>
-              <span className="absolute inset-0 rounded-full border-2 border-red-400 animate-[ping_1.5s_cubic-bezier(0,0,0.2,1)_infinite]" />
-              <span className="absolute inset-0 rounded-full border-2 border-red-300 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]" />
-            </>
-          )}
-          <span className="material-icons !text-[20px] z-10">{isListening ? 'hearing' : 'mic'}</span>
+          <span className="material-icons !text-[20px] z-10">{isListening ? "hearing" : "mic"}</span>
         </button>
-
       </div>
-
     </div>
-
   )
 }
-
-
-/*
----------------------------------------
-ASSISTANT POPUP CHAT
----------------------------------------
-*/
-
-function AssistantPopup({ open, onClose, onRunAssistant }) {
-
-  const [query, setQuery] = useState("")
-
-  if (!open) return null
-
-  return (
-
-    <div className="fixed inset-0 bg-black/40 z-50 flex justify-center items-end">
-
-      <div className="bg-white w-full max-w-lg rounded-t-xl p-4">
-
-        <div className="flex justify-between mb-3">
-          <h4>GraamSeva Assistant</h4>
-          <button onClick={onClose}>✕</button>
-        </div>
-
-        <div className="flex flex-wrap gap-2 mb-4">
-
-          {["loan chahiye", "barish kab aayegi", "tractor subsidy", "mandi bhav"].map((p) => (
-
-            <button
-              key={p}
-              onClick={() => onRunAssistant(p)}
-              className="chip"
-            >
-              {p}
-            </button>
-
-          ))}
-
-        </div>
-
-        <div className="flex gap-2">
-
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && onRunAssistant(query)}
-            className="border rounded px-3 py-2 flex-1"
-            placeholder="Ask anything..."
-          />
-
-          <button
-            className="btn amber"
-            onClick={() => onRunAssistant(query)}
-          >
-            Send
-          </button>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  )
-}
-
-
-/*
----------------------------------------
-RESULT POPUP
----------------------------------------
-*/
-
-function AssistantResultPopup({ data, onClose }) {
-
-  if (!data) return null
-
-  return (
-
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-
-      <div className="bg-white p-6 rounded-xl w-[90%] max-w-md">
-
-        <h5 className="text-lg font-semibold mb-3">
-          Results
-        </h5>
-
-        {data.items?.map((item, i) => (
-
-          <div key={i} className="bg-gray-50 p-3 rounded mb-2">
-
-            {Object.entries(item).map(([k, v]) => (
-
-              <p key={k} className="text-sm">
-                <strong>{k}:</strong> {v}
-              </p>
-
-            ))}
-
-          </div>
-
-        ))}
-
-        <button className="btn amber mt-4" onClick={onClose}>
-          Close
-        </button>
-
-      </div>
-
-    </div>
-
-  )
-}
-
-
-/*
----------------------------------------
-MOCK RESPONSES
----------------------------------------
-*/
 
 const MOCK_RESPONSES = {
   mandi: {
-    message: "Here are the latest local Mandi prices.",
-    speak: "Here are the latest Mandi prices near you.",
+    message: "Here are the latest local mandi prices.",
+    speak: "Here are the latest mandi prices near you.",
     redirect: "mandi",
     result: {
       items: [
-        { Crop: "Wheat / Gehu", Market: "Nagpur Mandi", Price: "₹2,200 / Quinta" },
-        { Crop: "Soybean", Market: "Pune Mandi", Price: "₹4,100 / Quintal" },
-        { Crop: "Cotton / Kapas", Market: "Amravati Mandi", Price: "₹7,200 / Quintal" }
-      ]
-    }
+        { Crop: "Wheat", Market: "Nagpur Mandi", Price: "Rs 2200 / Quintal" },
+        { Crop: "Soybean", Market: "Pune Mandi", Price: "Rs 4100 / Quintal" },
+      ],
+    },
   },
-  
   schemes: {
-    message: "Based on your profile, here are Govt schemes you can apply for.",
+    message: "Based on your profile, here are government schemes you can apply for.",
     speak: "Here are some top government schemes you might be eligible for.",
     redirect: "schemes",
     result: {
       items: [
-        { Scheme: "PM-KISAN SAMMAN NIDHI", Benefit: "₹6,000 / year", Status: "Open" },
-        { Scheme: "Kisan Credit Card", Benefit: "Low interest loans up to ₹3 Lakh", Status: "Open" }
-      ]
-    }
+        { Scheme: "PM-KISAN", Benefit: "Rs 6000 / year", Status: "Open" },
+        { Scheme: "Kisan Credit Card", Benefit: "Low interest loans up to Rs 3 Lakh", Status: "Open" },
+      ],
+    },
   },
-  
   apply: {
     message: "You can apply for your desired scheme here.",
     speak: "Opening the application form.",
     redirect: "apply",
     result: {
-      items: [
-        { Action: "Start New Application", Requirements: "Aadhar Card, PAN, Land Records" }
-      ]
-    }
+      items: [{ Action: "Start New Application", Requirements: "Aadhaar, PAN, Land Records" }],
+    },
   },
-  
   history: {
     message: "Here is your application history.",
     speak: "Opening your past applications.",
     redirect: "history",
     result: {
-      items: [
-        { Application: "Tractor Subsidy", Date: "12-Oct-2025", Status: "Approved" },
-        { Application: "PM-Kisan", Date: "01-Jan-2026", Status: "Pending" }
-      ]
-    }
+      items: [{ Application: "Tractor Subsidy", Date: "12-Oct-2025", Status: "Approved" }],
+    },
   },
-
   loan: {
-    message: "These are some tractor loan options you may consider.",
+    message: "These are some tractor loan options.",
     speak: "Here are some tractor loan options.",
     redirect: "loan",
     result: {
       items: [
-        { Bank: "SBI Tractor Loan", Amount: "₹5,00,000", Interest: "7%" },
-        { Bank: "HDFC Tractor Finance", Amount: "₹4,50,000", Interest: "7.5%" }
-      ]
-    }
+        { Bank: "SBI Tractor Loan", Amount: "Rs 5,00,000", Interest: "7%" },
+        { Bank: "HDFC Tractor Finance", Amount: "Rs 4,50,000", Interest: "7.5%" },
+      ],
+    },
   },
-  
   default: {
-    message: "I can help you with Mandi prices, Loans, and Govt Schemes.",
-    speak: "I can help you check Mandi prices, find Government schemes, or apply for loans. What do you need?",
+    message: "I can help with mandi prices, loans, and government schemes.",
+    speak: "I can help you check mandi prices, find schemes, or apply for loans. What do you need?",
     redirect: "home",
     result: {
       items: [
-        { Suggestion: "Try saying 'What are Mandi prices today?'" },
-        { Suggestion: "Try saying 'I need a tractor loan.'" },
-        { Suggestion: "Try saying 'Show me govt schemes.'" }
-      ]
-    }
-  }
+        { Suggestion: "Try saying What are mandi prices today?" },
+        { Suggestion: "Try saying I need a tractor loan." },
+      ],
+    },
+  },
 }
-
-

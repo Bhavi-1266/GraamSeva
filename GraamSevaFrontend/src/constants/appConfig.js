@@ -1,6 +1,7 @@
 export const STORAGE_KEYS = {
   profile: 'gs_profile',
   history: 'gs_conversations',
+  chatThreads: 'gs_chat_threads',
   location: 'gs_location',
 }
 
