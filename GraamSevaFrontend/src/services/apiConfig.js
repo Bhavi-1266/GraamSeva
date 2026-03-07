@@ -9,19 +9,11 @@
 // ============================================
 export const API_CONFIG = {
   // Main API Base URL
-  BASE_URL: process.env.VITE_API_BASE_URL || 'https://api.graamseva.in',
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://api.graamseva.in',
   
   // Timeout for API calls (ms)
   TIMEOUT: 10000,
-  
-  // Azure Services
-  AZURE: {
-    SPEECH_KEY: process.env.VITE_AZURE_SPEECH_KEY || 'your_key_here',
-    SPEECH_REGION: process.env.VITE_AZURE_SPEECH_REGION || 'centralindia',
-    OPENAI_KEY: process.env.VITE_AZURE_OPENAI_KEY || 'your_key_here',
-    OPENAI_RESOURCE: process.env.VITE_AZURE_OPENAI_RESOURCE || 'your_resource',
-    OPENAI_DEPLOYMENT: process.env.VITE_AZURE_OPENAI_DEPLOYMENT || 'gpt-4o',
-  },
+
 }
 
 // ============================================
@@ -137,5 +129,5 @@ export const buildHeaders = (token = null) => {
 /**
  * Environment check
  */
-export const isDevelopment = () => process.env.NODE_ENV === 'development'
-export const isProduction = () => process.env.NODE_ENV === 'production'
+export const isDevelopment = () => import.meta.env.MODE === 'development'
+export const isProduction = () => import.meta.env.MODE === 'production'
