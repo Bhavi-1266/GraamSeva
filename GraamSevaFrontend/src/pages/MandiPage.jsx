@@ -24,43 +24,49 @@ export default function MandiPage({ tr, uiLanguage }) {
 
   const title = uiLanguage === 'hi' ? 'आज की मंडी भाव' : 'Today\'s Market Prices'
 
-  return (
-    <div className="card rustic-card">
-      <div className="card-content">
-        <span className="card-title">{title}</span>
-        
-        {loading ? (
-          <div className="center-align py-4">
-            <p>{uiLanguage === 'hi' ? 'मंडी भाव लोड हो रहे हैं...' : 'Loading market prices...'}</p>
+   return  <ul className="collection rounded-lg shadow-md p-4 bg-white">
+    {mandiPrices.map((mandi) => (
+      <li key={mandi.id} className="collection-item">
+
+        {/* Mandi Name */}
+        <div className="mb-2">
+          <strong className="text-lg">{mandi.mandi}</strong>
+          <p className="text-sm text-gray-500">{mandi.state}</p>
+        </div>
+
+        {/* Crop Prices */}
+        {mandi.crops.map((crop, index) => (
+          <div
+            key={index}
+            className="flex justify-between items-center border-t pt-2 mt-2"
+          >
+            <div>
+              <p className="font-medium">{crop.crop}</p>
+            </div>
+
+            <div className="text-right">
+              <p className="font-bold text-green-700">{crop.price}</p>
+
+              <p
+                className={`text-xs ${
+                  crop.trend === "up"
+                    ? "text-green-600"
+                    : crop.trend === "down"
+                    ? "text-red-600"
+                    : "text-gray-600"
+                }`}
+              >
+                {crop.trend === "up"
+                  ? "↑"
+                  : crop.trend === "down"
+                  ? "↓"
+                  : "→"}{" "}
+                {crop.change}
+              </p>
+            </div>
           </div>
-        ) : (
-          <ul className="collection">
-            {mandiPrices.map((item) => (
-              <li key={item.id || item.title} className="collection-item">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <strong>{item.title}</strong>
-                    <p className="text-sm text-gray-600">{item.location}</p>
-                    <p className="text-xs text-gray-500">{item.detail}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-green-700">{item.price}</p>
-                    {item.change && (
-                      <p className={`text-xs ${
-                        item.trend === 'up' ? 'text-green-600' : 
-                        item.trend === 'down' ? 'text-red-600' : 
-                        'text-gray-600'
-                      }`}>
-                        {item.trend === 'up' ? '↑' : item.trend === 'down' ? '↓' : '→'} {item.change}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
-  )
+        ))}
+      </li>
+    ))}
+  </ul>
 }

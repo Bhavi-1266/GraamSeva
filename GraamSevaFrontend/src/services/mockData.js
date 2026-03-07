@@ -215,48 +215,132 @@ export const MOCK_LATEST_OFFERS = [
 export const MOCK_MANDI_PRICES = [
   {
     id: 1,
-    title: 'गेहूं (Wheat)',
-    location: 'रामपुर मंडी',
-    price: '₹2,150/क्विंटल',
-    change: '+50',
-    trend: 'up',
-    detail: 'आज की दर: ₹2,150 प्रति क्विंटल | कल से ₹50 ऊपर',
+    mandi: 'रामपुर मंडी',
+    state: 'उत्तर प्रदेश',
+    crops: [
+      {
+        crop: 'गेहूं (Wheat)',
+        price: '₹2,150/क्विंटल',
+        change: '+50',
+        trend: 'up',
+      },
+      {
+        crop: 'धान (Paddy)',
+        price: '₹1,930/क्विंटल',
+        change: '-10',
+        trend: 'down',
+      },
+      {
+        crop: 'मक्का (Maize)',
+        price: '₹1,700/क्विंटल',
+        change: '+20',
+        trend: 'up',
+      },
+    ],
   },
+
   {
     id: 2,
-    title: 'धान (Paddy)',
-    location: 'लखनऊ मंडी',
-    price: '₹1,940/क्विंटल',
-    change: '-20',
-    trend: 'down',
-    detail: 'आज की दर: ₹1,940 प्रति क्विंटल | कल से ₹20 नीचे',
+    mandi: 'लखनऊ मंडी',
+    state: 'उत्तर प्रदेश',
+    crops: [
+      {
+        crop: 'गेहूं (Wheat)',
+        price: '₹2,180/क्विंटल',
+        change: '+30',
+        trend: 'up',
+      },
+      {
+        crop: 'दलहन (Pulses)',
+        price: '₹5,820/क्विंटल',
+        change: '+110',
+        trend: 'up',
+      },
+      {
+        crop: 'चना (Gram)',
+        price: '₹5,100/क्विंटल',
+        change: '-40',
+        trend: 'down',
+      },
+    ],
   },
+
   {
     id: 3,
-    title: 'दलहन (Pulses)',
-    location: 'सुल्तानपुर मंडी',
-    price: '₹5,800/क्विंटल',
-    change: '+120',
-    trend: 'up',
-    detail: 'आज की दर: ₹5,800 प्रति क्विंटल | कल से ₹120 ऊपर',
+    mandi: 'सुल्तानपुर मंडी',
+    state: 'उत्तर प्रदेश',
+    crops: [
+      {
+        crop: 'धान (Paddy)',
+        price: '₹1,950/क्विंटल',
+        change: '+15',
+        trend: 'up',
+      },
+      {
+        crop: 'सरसों (Mustard)',
+        price: '₹5,400/क्विंटल',
+        change: '+70',
+        trend: 'up',
+      },
+      {
+        crop: 'मक्का (Maize)',
+        price: '₹1,690/क्विंटल',
+        change: '0',
+        trend: 'stable',
+      },
+    ],
   },
+
   {
     id: 4,
-    title: 'मक्का (Maize)',
-    location: 'फैजाबाद मंडी',
-    price: '₹1,680/क्विंटल',
-    change: '0',
-    trend: 'stable',
-    detail: 'आज की दर: ₹1,680 प्रति क्विंटल | स्थिर',
+    mandi: 'फैजाबाद मंडी',
+    state: 'उत्तर प्रदेश',
+    crops: [
+      {
+        crop: 'गेहूं (Wheat)',
+        price: '₹2,120/क्विंटल',
+        change: '-20',
+        trend: 'down',
+      },
+      {
+        crop: 'गन्ना (Sugarcane)',
+        price: '₹355/क्विंटल',
+        change: '+10',
+        trend: 'up',
+      },
+      {
+        crop: 'दलहन (Pulses)',
+        price: '₹5,760/क्विंटल',
+        change: '+60',
+        trend: 'up',
+      },
+    ],
   },
+
   {
     id: 5,
-    title: 'गन्ना (Sugarcane)',
-    location: 'बस्ती मंडी',
-    price: '₹350/क्विंटल',
-    change: '+15',
-    trend: 'up',
-    detail: 'आज की दर: ₹350 प्रति क्विंटल | कल से ₹15 ऊपर',
+    mandi: 'बस्ती मंडी',
+    state: 'उत्तर प्रदेश',
+    crops: [
+      {
+        crop: 'गन्ना (Sugarcane)',
+        price: '₹350/क्विंटल',
+        change: '+15',
+        trend: 'up',
+      },
+      {
+        crop: 'धान (Paddy)',
+        price: '₹1,920/क्विंटल',
+        change: '-30',
+        trend: 'down',
+      },
+      {
+        crop: 'चना (Gram)',
+        price: '₹5,050/क्विंटल',
+        change: '+25',
+        trend: 'up',
+      },
+    ],
   },
 ]
 
