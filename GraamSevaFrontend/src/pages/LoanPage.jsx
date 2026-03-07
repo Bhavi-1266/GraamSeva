@@ -81,11 +81,13 @@ function calculateLoanBreakdown(principal, annualRate, months, processingFeePerc
 
 const formatCurrency = (value) => `Rs ${Number(value || 0).toLocaleString("en-IN")}`
 
-export default function LoanPage({ tr, uiLanguage }) {
+export default function LoanPage({ uiLanguage }) {
   const [loanOptions, setLoanOptions] = useState([])
   const [loading, setLoading] = useState(true)
   const [loanAmount, setLoanAmount] = useState(DEFAULT_LOAN_AMOUNT)
   const [selectedNearbyOffer, setSelectedNearbyOffer] = useState(null)
+  const [selectedGlobalOption, setSelectedGlobalOption] = useState(null)
+  const [globalLoanAmount, setGlobalLoanAmount] = useState(DEFAULT_LOAN_AMOUNT)
   const [locationLabel, setLocationLabel] = useState(null)
 
   useEffect(() => {
@@ -129,13 +131,41 @@ export default function LoanPage({ tr, uiLanguage }) {
     }))
   }, [loanAmount])
 
-  const title = uiLanguage === "hi" ? "Loan Options" : "Loan Options"
-  const subtitle =
-    uiLanguage === "hi"
-      ? "Available loan schemes for farmers and rural areas"
-      : "Available loan schemes for farmers and rural areas"
+  const parseAnnualRate = (option) => {
+    const source = `${option?.interest || ""} ${option?.detail || ""}`
+    const match = source.match(/(\d+(\.\d+)?)\s*%/)
+    return match ? Number(match[1]) : 8.5
+  }
 
-  const nearbyTitle = uiLanguage === "hi" ? "Nearby Bank Loan Comparison" : "Nearby Bank Loan Comparison"
+  const parseTenureMonths = (option) => {
+    const source = `${option?.tenure || ""} ${option?.detail || ""}`.toLowerCase()
+    const yearMatch = source.match(/(\d+)\s*-\s*(\d+)\s*year|(\d+)\s*year/)
+    if (yearMatch) {
+      const years = Number(yearMatch[2] || yearMatch[3] || yearMatch[1] || 3)
+      return years * 12
+    }
+    const monthMatch = source.match(/(\d+)\s*-\s*(\d+)\s*month|(\d+)\s*month/)
+    if (monthMatch) {
+      return Number(monthMatch[2] || monthMatch[3] || monthMatch[1] || 36)
+    }
+    return 36
+  }
+
+  const getGlobalDocuments = (option) => {
+    const title = (option?.title || "").toLowerCase()
+    if (title.includes("crop")) {
+      return ["Aadhaar Card", "Land/Crop Proof", "Bank Passbook", "Recent Photograph"]
+    }
+    if (title.includes("equipment") || title.includes("tractor")) {
+      return ["Aadhaar + PAN", "Land Ownership/Lease Proof", "Income Certificate", "Quotation of Equipment"]
+    }
+    return ["Aadhaar Card", "Address Proof", "Income Proof", "Bank Statement (6 months)", "Photograph"]
+  }
+
+  const title = "Loan Options"
+  const subtitle = "Available loan schemes for farmers and rural areas"
+
+  const nearbyTitle = "Nearby Bank Loan Comparison"
   const nearbySubtitle = locationLabel
     ? `Estimated offers near ${locationLabel}.`
     : "Estimated offers from nearby branches (location integration pending backend)."
@@ -146,6 +176,15 @@ export default function LoanPage({ tr, uiLanguage }) {
         selectedNearbyOffer.annualInterestRate,
         selectedNearbyOffer.tenureMonths,
         selectedNearbyOffer.processingFeePercent,
+      )
+    : null
+
+  const selectedGlobalBreakdown = selectedGlobalOption
+    ? calculateLoanBreakdown(
+        Number(globalLoanAmount),
+        parseAnnualRate(selectedGlobalOption),
+        parseTenureMonths(selectedGlobalOption),
+        0.5,
       )
     : null
 
@@ -177,6 +216,17 @@ export default function LoanPage({ tr, uiLanguage }) {
                     <strong>Eligibility:</strong> {item.eligibility}
                   </p>
                 )}
+                <div className="global-option-actions">
+                  <button
+                    className="nearby-details-btn"
+                    onClick={() => {
+                      setSelectedGlobalOption(item)
+                      setGlobalLoanAmount(DEFAULT_LOAN_AMOUNT)
+                    }}
+                  >
+                    View Complete Details
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
@@ -258,6 +308,54 @@ export default function LoanPage({ tr, uiLanguage }) {
             <p className="nearby-loan-modal-section">Documents Required</p>
             <ul className="nearby-loan-list">
               {selectedNearbyOffer.documents.map((doc) => (
+                <li key={doc}>{doc}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
+      {selectedGlobalOption && selectedGlobalBreakdown && (
+        <div className="nearby-loan-modal-overlay" onClick={() => setSelectedGlobalOption(null)}>
+          <div className="nearby-loan-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="nearby-loan-close" onClick={() => setSelectedGlobalOption(null)}>
+              Close
+            </button>
+
+            <h3>{selectedGlobalOption.title}</h3>
+            <p className="nearby-loan-modal-sub">{selectedGlobalOption.detail}</p>
+
+            <div className="nearby-loan-input-row">
+              <label htmlFor="global-loan-amount">Loan Amount</label>
+              <input
+                id="global-loan-amount"
+                type="number"
+                min="10000"
+                step="1000"
+                value={globalLoanAmount}
+                onChange={(e) => setGlobalLoanAmount(Math.max(0, Number(e.target.value || 0)))}
+              />
+            </div>
+
+            <div className="nearby-loan-summary-grid">
+              <p>Requested Amount: <strong>{formatCurrency(globalLoanAmount)}</strong></p>
+              <p>Estimated Interest Rate: <strong>{parseAnnualRate(selectedGlobalOption)}% p.a.</strong></p>
+              <p>Estimated Tenure: <strong>{parseTenureMonths(selectedGlobalOption)} months</strong></p>
+              <p>Installments (Stages): <strong>{selectedGlobalBreakdown.installmentCount}</strong></p>
+              <p>Monthly EMI: <strong>{formatCurrency(selectedGlobalBreakdown.emi)}</strong></p>
+              <p>Total Interest: <strong>{formatCurrency(selectedGlobalBreakdown.totalInterest)}</strong></p>
+              <p>Processing Fee: <strong>{formatCurrency(selectedGlobalBreakdown.processingFee)}</strong></p>
+              <p>Final Amount to Pay: <strong>{formatCurrency(selectedGlobalBreakdown.totalPayable)}</strong></p>
+            </div>
+
+            <p className="nearby-loan-modal-section">Eligibility</p>
+            <ul className="nearby-loan-list">
+              <li>{selectedGlobalOption.eligibility || "Eligibility details to be validated by bank branch."}</li>
+            </ul>
+
+            <p className="nearby-loan-modal-section">Documents Required</p>
+            <ul className="nearby-loan-list">
+              {getGlobalDocuments(selectedGlobalOption).map((doc) => (
                 <li key={doc}>{doc}</li>
               ))}
             </ul>

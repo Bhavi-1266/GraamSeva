@@ -179,3 +179,8 @@
     grid-template-columns: 1fr;
   }
 }
+
+.global-option-actions {
+  margin-top: 8px;
+}
+
