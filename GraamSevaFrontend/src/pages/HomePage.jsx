@@ -18,16 +18,29 @@ export default function HomePage({ tr, onNavigate, uiLanguage, profile }) {
       setNewOffers(result.data)
       console.log(`New offers loaded from ${result.source}:`, result.data)
     } catch (err) {
-      console.error("Failed to load new offers:", err)
+      console.error('Failed to load new offers:', err)
     } finally {
       setLoading(false)
     }
   }
 
+  const updatesTitle = 'Recent Updates'
+  const regularTitle = 'Regular Updates'
+  const optionsTitle = 'Home Options'
+  const optionsHint = 'Open tabs and services'
+
+  const latestUpdates = newOffers.filter((offer) => offer.type === 'new' || offer.type === 'update')
+  const regularUpdates = newOffers.filter((offer) => offer.type !== 'new' && offer.type !== 'update')
+  const homeOptions = PAGES.filter((page) => page.id !== 'home')
+
   return (
-    <div>
-      {/* New Schemes & Offers Section */}
-      <div className="bg-white p-4 rounded-lg mb-6 overflow-x-auto">
+    <div className="home-layout">
+      <section className="home-updates-panel rustic-card">
+        <div className="home-panel-head">
+          <h3>{updatesTitle}</h3>
+          <span>{newOffers.length}</span>
+        </div>
+
         {loading ? (
           <p className="text-center text-gray-500">
             {t(uiLanguage, 'homeLoading')}
@@ -45,10 +58,10 @@ export default function HomePage({ tr, onNavigate, uiLanguage, profile }) {
                   {offer.badge}
                 </span>
               </div>
-            ))}
+            </div>
           </div>
         )}
-      </div>
+      </section>
 
       <div className="service-grid">
         {PAGES.filter((p) => p.id !== "history").map((page) => (

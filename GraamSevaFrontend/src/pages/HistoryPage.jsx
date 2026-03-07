@@ -1,25 +1,11 @@
-import { useState, useEffect } from 'react'
-import { formatTime } from '../lib/assistant'
+import { useMemo } from 'react'
 import { STORAGE_KEYS } from '../constants/appConfig'
 import { t } from '../lib/i18n'
 
-export default function HistoryPage({ tr, uiLanguage }) {
-  const [history, setHistory] = useState([])
-
-  useEffect(() => {
-    loadHistory()
-  }, [])
-
-  const loadHistory = () => {
-    try {
-      const storedHistory = localStorage.getItem(STORAGE_KEYS.history)
-      if (storedHistory) {
-        setHistory(JSON.parse(storedHistory))
-      }
-    } catch (err) {
-      console.error("Failed to load history:", err)
-    }
-  }
+export default function HistoryPage({ tr, uiLanguage, chatThreads = [], onOpenChat, onClearHistory }) {
+  const sortedThreads = useMemo(() => {
+    return [...chatThreads].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+  }, [chatThreads])
 
   const clearHistory = () => {
     if (window.confirm(t(uiLanguage, 'historyConfirm'))) {

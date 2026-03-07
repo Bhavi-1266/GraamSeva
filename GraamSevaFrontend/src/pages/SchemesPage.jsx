@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import schemeService from "../services/schemeService"
 import { t } from "../lib/i18n"
 
-export default function SchemesPage({ tr, uiLanguage }) {
+export default function SchemesPage({ uiLanguage }) {
   const [schemes, setSchemes] = useState([])
   const [selectedScheme, setSelectedScheme] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -71,9 +71,10 @@ export default function SchemesPage({ tr, uiLanguage }) {
           >
             <button
               onClick={closeModal}
-              className="absolute top-3 right-3 text-gray-600 hover:text-black"
+              className="scheme-modal-close"
+              aria-label="Close scheme details"
             >
-              ✕
+              X
             </button>
 
             <h3 className="text-xl font-bold mb-2">{selectedScheme.name}</h3>
