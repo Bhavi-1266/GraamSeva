@@ -1,6 +1,7 @@
-﻿import { PAGES } from "../constants/appConfig"
-import { useState, useEffect } from "react"
-import newSchemesOffersService from "../services/newSchemesOffers"
+import { useState, useEffect } from 'react'
+import { PAGES } from '../constants/appConfig'
+import voiceService from '../services/voiceService'
+import newSchemesOffersService from '../services/newSchemesOffers'
 
 export default function HomePage({ tr, onNavigate, uiLanguage, profile }) {
   const openText = tr.pages.home === "होम" ? "खोलें" : "Open"
@@ -54,7 +55,6 @@ export default function HomePage({ tr, onNavigate, uiLanguage, profile }) {
         )}
       </div>
 
-      {/* Service Grid */}
       <div className="service-grid">
         {PAGES.filter((p) => p.id !== "history").map((page) => (
           <button
