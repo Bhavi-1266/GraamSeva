@@ -17,6 +17,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState("home")
   const [assistantThreads, setAssistantThreads] = useState([])
   const [activeChatId, setActiveChatId] = useState(null)
+  const [threadsHydrated, setThreadsHydrated] = useState(false)
 
   const uiLanguage = getUiLanguage(profile.language, UI_LANGUAGE_MAP)
   const tr = TRANSLATIONS[uiLanguage]
@@ -40,12 +41,15 @@ function App() {
       if (parsed.length > 0) setActiveChatId(parsed[0].id)
     } catch (err) {
       console.error("Failed to load chat threads:", err)
+    } finally {
+      setThreadsHydrated(true)
     }
   }, [])
 
   useEffect(() => {
+    if (!threadsHydrated) return
     localStorage.setItem(STORAGE_KEYS.chatThreads, JSON.stringify(assistantThreads))
-  }, [assistantThreads])
+  }, [assistantThreads, threadsHydrated])
 
   const activeThread = useMemo(() => {
     return assistantThreads.find((thread) => thread.id === activeChatId) || null
@@ -495,3 +499,7 @@ const MOCK_RESPONSES = {
     },
   },
 }
+
+
+
+
