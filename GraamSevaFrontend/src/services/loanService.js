@@ -4,7 +4,7 @@
  */
 
 import { API_ENDPOINTS, buildURL } from './apiConfig'
-import { MOCK_LOAN_OPTIONS } from './mockData'
+import { getMockLoanOptions } from './mockData'
 import apiClient from './apiClient'
 
 class LoanService {
@@ -17,7 +17,7 @@ class LoanService {
   async getLoanOptions(language = 'hi', loanType = null) {
     try {
       console.log('Fetching loan options from API...')
-      
+
       const url = buildURL(API_ENDPOINTS.LOANS?.LIST || '/api/loans')
       const response = await apiClient.get(url, {
         headers: { 'Accept-Language': language },
@@ -31,9 +31,9 @@ class LoanService {
       }
     } catch (error) {
       console.warn('Loan API failed, using mock data:', error.message)
-      
+
       return {
-        data: MOCK_LOAN_OPTIONS,
+        data: getMockLoanOptions(language),
         source: 'mock',
       }
     }
@@ -41,21 +41,18 @@ class LoanService {
 
   /**
    * Calculate loan EMI
+   * Pure math — no strings, so no language handling needed here.
    * @param {Number} amount - Loan amount
-   * @param {Number} interest - Annual interest rate
+   * @param {Number} interest - Annual interest rate (%)
    * @param {Number} tenure - Tenure in months
-   * @returns {Object} { data: Object, source: 'api'|'mock' }
+   * @returns {Object} { data: Object, source: 'api'|'calculated' }
    */
   async calculateEMI(amount, interest, tenure) {
     try {
       console.log('Calculating EMI from API...')
-      
+
       const url = buildURL(API_ENDPOINTS.LOANS?.CALCULATE || '/api/loans/calculate')
-      const response = await apiClient.post(url, {
-        amount,
-        interest,
-        tenure,
-      })
+      const response = await apiClient.post(url, { amount, interest, tenure })
 
       console.log('EMI calculated successfully:', response)
       return {
@@ -64,14 +61,15 @@ class LoanService {
       }
     } catch (error) {
       console.warn('EMI calculation API failed, using local calculation:', error.message)
-      
-      // Local EMI calculation formula: P × r × (1 + r)^n / ((1 + r)^n - 1)
-      const monthlyRate = (interest / 100) / 12
-      const emi = amount * monthlyRate * Math.pow(1 + monthlyRate, tenure) / 
-                  (Math.pow(1 + monthlyRate, tenure) - 1)
+
+      // P × r × (1 + r)^n / ((1 + r)^n - 1)
+      const monthlyRate = interest / 100 / 12
+      const emi =
+        (amount * monthlyRate * Math.pow(1 + monthlyRate, tenure)) /
+        (Math.pow(1 + monthlyRate, tenure) - 1)
       const totalAmount = emi * tenure
       const totalInterest = totalAmount - amount
-      
+
       return {
         data: {
           emi: Math.round(emi),
@@ -81,7 +79,7 @@ class LoanService {
           tenure,
           interest,
         },
-        source: 'mock',
+        source: 'calculated',
       }
     }
   }

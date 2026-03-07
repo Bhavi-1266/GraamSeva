@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import loanService from "../services/loanService"
+import { t } from "../lib/i18n"
 
 export default function LoanPage({ tr, uiLanguage }) {
   const [loanOptions, setLoanOptions] = useState([])
@@ -22,20 +23,15 @@ export default function LoanPage({ tr, uiLanguage }) {
     }
   }
 
-  const title = uiLanguage === 'hi' ? 'लोन विकल्प' : 'Loan Options'
-  const subtitle = uiLanguage === 'hi' 
-    ? 'किसानों और ग्रामीण क्षेत्रों के लिए उपलब्ध लोन योजनाएं'
-    : 'Available loan schemes for farmers and rural areas'
-
   return (
     <div className="card rustic-card">
       <div className="card-content">
-        <span className="card-title">{title}</span>
-        <p className="mb-4 text-gray-600">{subtitle}</p>
-        
+        <span className="card-title">{t(uiLanguage, 'loanTitle')}</span>
+        <p className="mb-4 text-gray-600">{t(uiLanguage, 'loanSubtitle')}</p>
+
         {loading ? (
           <div className="center-align py-4">
-            <p>{uiLanguage === 'hi' ? 'लोन विकल्प लोड हो रहे हैं...' : 'Loading loan options...'}</p>
+            <p>{t(uiLanguage, 'loanLoading')}</p>
           </div>
         ) : (
           <ul className="collection top-gap">
@@ -52,7 +48,7 @@ export default function LoanPage({ tr, uiLanguage }) {
                 <p className="text-sm text-gray-700">{item.detail}</p>
                 {item.eligibility && (
                   <p className="text-xs text-gray-500 mt-1">
-                    <strong>{uiLanguage === 'hi' ? 'पात्रता:' : 'Eligibility:'}</strong> {item.eligibility}
+                    <strong>{t(uiLanguage, 'loanEligibility')}</strong> {item.eligibility}
                   </p>
                 )}
               </li>

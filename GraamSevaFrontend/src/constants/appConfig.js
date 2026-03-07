@@ -14,13 +14,14 @@ export const LANGUAGES = [
   { code: 'en', label: 'English (अंग्रेज़ी)' },
 ]
 
+// Each language now maps to itself — no collapsing to Hindi
 export const UI_LANGUAGE_MAP = {
   hi: 'hi',
-  bho: 'hi',
-  awa: 'hi',
-  mr: 'hi',
-  mai: 'hi',
-  or: 'hi',
+  bho: 'bho',
+  awa: 'awa',
+  mr: 'mr',
+  mai: 'mai',
+  or: 'or',
   en: 'en',
 }
 

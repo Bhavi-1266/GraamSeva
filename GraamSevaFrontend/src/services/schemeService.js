@@ -4,19 +4,19 @@
  */
 
 import { API_ENDPOINTS, buildURL } from './apiConfig'
-import { MOCK_SCHEMES, MOCK_LATEST_OFFERS } from './mockData'
+import { getMockSchemes, getMockSchemeById, getMockLatestOffers } from './mockData'
 import apiClient from './apiClient'
 
 class SchemeService {
   /**
    * Get all schemes
    * @param {String} language - Language code for localization
-   * @returns {Array} List of schemes
+   * @returns {Object} { data: Array, source: 'api'|'mock' }
    */
   async getAllSchemes(language = 'hi') {
     try {
       console.log('Fetching schemes from API...')
-      
+
       const url = buildURL(API_ENDPOINTS.SCHEMES.LIST)
       const response = await apiClient.get(url, {
         headers: { 'Accept-Language': language },
@@ -29,9 +29,9 @@ class SchemeService {
       }
     } catch (error) {
       console.warn('Schemes API failed, using mock data:', error.message)
-      
+
       return {
-        data: MOCK_SCHEMES,
+        data: getMockSchemes(language),
         source: 'mock',
       }
     }
@@ -41,51 +41,43 @@ class SchemeService {
    * Get scheme by ID
    * @param {Number} schemeId - Scheme ID
    * @param {String} language - Language code
-   * @returns {Object} Scheme details
+   * @returns {Object} { data: Object, source: 'api'|'mock' }
    */
   async getSchemeById(schemeId, language = 'hi') {
-  try {
-    console.log(`Fetching scheme ${schemeId} from API...`)
+    try {
+      console.log(`Fetching scheme ${schemeId} from API...`)
 
-    const url = buildURL(API_ENDPOINTS.SCHEMES.GET_BY_ID, { id: schemeId })
+      const url = buildURL(API_ENDPOINTS.SCHEMES.GET_BY_ID, { id: schemeId })
+      const response = await apiClient.get(url, {
+        headers: { 'Accept-Language': language },
+      })
 
-    const response = await apiClient.get(url, {
-      headers: { 'Accept-Language': language },
-    })
+      return {
+        data: response,
+        source: 'api',
+      }
+    } catch (error) {
+      console.warn(`Scheme ${schemeId} API failed, using mock data:`, error.message)
 
-    return {
-      data: response,
-      source: 'api',
-    }
-
-  } catch (error) {
-    console.warn(`Scheme ${schemeId} API failed, using mock data:`, error.message)
-
-    const id = Number(schemeId)
-
-    const scheme = MOCK_SCHEMES.find((s) => s.id === id)
-
-    return {
-      data: scheme ?? MOCK_SCHEMES[0],
-      source: 'mock',
+      return {
+        data: getMockSchemeById(schemeId, language),
+        source: 'mock',
+      }
     }
   }
-}
+
   /**
    * Search schemes
    * @param {String} query - Search query
    * @param {String} language - Language code
-   * @returns {Array} Search results
+   * @returns {Object} { data: Array, source: 'api'|'mock' }
    */
   async searchSchemes(query, language = 'hi') {
     try {
       console.log('Searching schemes API...')
-      
+
       const url = buildURL(API_ENDPOINTS.SCHEMES.SEARCH)
-      const response = await apiClient.post(url, {
-        query,
-        language,
-      })
+      const response = await apiClient.post(url, { query, language })
 
       return {
         data: response.results || response,
@@ -93,11 +85,12 @@ class SchemeService {
       }
     } catch (error) {
       console.warn('Search API failed, filtering mock data:', error.message)
-      
-      const results = MOCK_SCHEMES.filter(
-        (scheme) =>
-          scheme.name.toLowerCase().includes(query.toLowerCase()) ||
-          scheme.desc.toLowerCase().includes(query.toLowerCase())
+
+      const schemes = getMockSchemes(language)
+      const results = schemes.filter(
+        (s) =>
+          s.name.toLowerCase().includes(query.toLowerCase()) ||
+          s.desc.toLowerCase().includes(query.toLowerCase())
       )
 
       return {
@@ -111,12 +104,12 @@ class SchemeService {
    * Get schemes by state
    * @param {String} state - State code
    * @param {String} language - Language code
-   * @returns {Array} Schemes for the state
+   * @returns {Object} { data: Array, source: 'api'|'mock' }
    */
   async getSchemesByState(state, language = 'hi') {
     try {
       console.log(`Fetching schemes for state: ${state}`)
-      
+
       const url = buildURL(API_ENDPOINTS.SCHEMES.BY_STATE.replace(':state', state))
       const response = await apiClient.get(url, {
         headers: { 'Accept-Language': language },
@@ -128,9 +121,9 @@ class SchemeService {
       }
     } catch (error) {
       console.warn(`State schemes API failed for ${state}, using mock data:`, error.message)
-      
+
       return {
-        data: MOCK_SCHEMES,
+        data: getMockSchemes(language),
         source: 'mock',
       }
     }
@@ -139,12 +132,12 @@ class SchemeService {
   /**
    * Get popular schemes
    * @param {String} language - Language code
-   * @returns {Array} Popular schemes
+   * @returns {Object} { data: Array, source: 'api'|'mock' }
    */
   async getPopularSchemes(language = 'hi') {
     try {
       console.log('Fetching popular schemes...')
-      
+
       const url = buildURL(API_ENDPOINTS.SCHEMES.POPULAR)
       const response = await apiClient.get(url, {
         headers: { 'Accept-Language': language },
@@ -156,9 +149,9 @@ class SchemeService {
       }
     } catch (error) {
       console.warn('Popular schemes API failed, using mock data:', error.message)
-      
+
       return {
-        data: MOCK_SCHEMES.slice(0, 3),
+        data: getMockSchemes(language).slice(0, 3),
         source: 'mock',
       }
     }
@@ -168,13 +161,13 @@ class SchemeService {
    * Get latest schemes and offers
    * @param {String} language - Language code
    * @param {Number} limit - Number of items to return
-   * @returns {Array} Latest schemes and offers
+   * @returns {Object} { data: Array, source: 'api'|'mock' }
    */
   async getLatestSchemesAndOffers(language = 'hi', limit = 5) {
     try {
       console.log('Fetching latest schemes and offers...')
-      
-      const url = buildURL(API_ENDPOINTS.SCHEMES.LIST) // Reuse list endpoint with query params
+
+      const url = buildURL(API_ENDPOINTS.SCHEMES.LIST)
       const response = await apiClient.get(url, {
         headers: { 'Accept-Language': language },
       })
@@ -186,9 +179,9 @@ class SchemeService {
       }
     } catch (error) {
       console.warn('Latest schemes API failed, using mock data:', error.message)
-      
+
       return {
-        data: MOCK_LATEST_OFFERS,
+        data: getMockLatestOffers(language),
         source: 'mock',
       }
     }

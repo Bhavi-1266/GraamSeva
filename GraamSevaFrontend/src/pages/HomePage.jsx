@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
 import { PAGES } from '../constants/appConfig'
-import voiceService from '../services/voiceService'
 import newSchemesOffersService from '../services/newSchemesOffers'
+import { t } from '../lib/i18n'
 
 export default function HomePage({ tr, onNavigate, uiLanguage, profile }) {
-  const openText = tr.pages.home === "होम" ? "खोलें" : "Open"
   const [newOffers, setNewOffers] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -31,7 +30,7 @@ export default function HomePage({ tr, onNavigate, uiLanguage, profile }) {
       <div className="bg-white p-4 rounded-lg mb-6 overflow-x-auto">
         {loading ? (
           <p className="text-center text-gray-500">
-            {uiLanguage === 'hi' ? 'नई योजनाएं लोड हो रही हैं...' : 'Loading new schemes...'}
+            {t(uiLanguage, 'homeLoading')}
           </p>
         ) : (
           <div className="flex gap-4 min-w-max">
@@ -40,12 +39,8 @@ export default function HomePage({ tr, onNavigate, uiLanguage, profile }) {
                 key={offer.id}
                 className="min-w-[220px] bg-gray-100 p-4 rounded-lg shadow-sm flex flex-col gap-1"
               >
-                <h4 className="font-semibold text-sm">
-                  {offer.title}
-                </h4>
-                <p className="text-xs text-gray-600">
-                  {offer.desc}
-                </p>
+                <h4 className="font-semibold text-sm">{offer.title}</h4>
+                <p className="text-xs text-gray-600">{offer.desc}</p>
                 <span className="text-[10px] bg-green-200 w-fit px-2 py-1 rounded">
                   {offer.badge}
                 </span>
@@ -64,9 +59,9 @@ export default function HomePage({ tr, onNavigate, uiLanguage, profile }) {
           >
             <div className="card-content">
               <span className="material-icons">{page.icon}</span>
-              <h6>{tr.pages[page.id]}</h6>
+              <h6>{t(uiLanguage, `pages.${page.id}`)}</h6>
               <p>
-                {tr.pages[page.id]} {openText}
+                {t(uiLanguage, `pages.${page.id}`)} {t(uiLanguage, 'homeOpen')}
               </p>
             </div>
           </button>
