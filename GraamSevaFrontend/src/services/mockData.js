@@ -212,6 +212,102 @@ export const MOCK_LATEST_OFFERS = [
   },
 ]
 
+export const MOCK_MANDI_PRICES = [
+  {
+    id: 1,
+    title: 'गेहूं (Wheat)',
+    location: 'रामपुर मंडी',
+    price: '₹2,150/क्विंटल',
+    change: '+50',
+    trend: 'up',
+    detail: 'आज की दर: ₹2,150 प्रति क्विंटल | कल से ₹50 ऊपर',
+  },
+  {
+    id: 2,
+    title: 'धान (Paddy)',
+    location: 'लखनऊ मंडी',
+    price: '₹1,940/क्विंटल',
+    change: '-20',
+    trend: 'down',
+    detail: 'आज की दर: ₹1,940 प्रति क्विंटल | कल से ₹20 नीचे',
+  },
+  {
+    id: 3,
+    title: 'दलहन (Pulses)',
+    location: 'सुल्तानपुर मंडी',
+    price: '₹5,800/क्विंटल',
+    change: '+120',
+    trend: 'up',
+    detail: 'आज की दर: ₹5,800 प्रति क्विंटल | कल से ₹120 ऊपर',
+  },
+  {
+    id: 4,
+    title: 'मक्का (Maize)',
+    location: 'फैजाबाद मंडी',
+    price: '₹1,680/क्विंटल',
+    change: '0',
+    trend: 'stable',
+    detail: 'आज की दर: ₹1,680 प्रति क्विंटल | स्थिर',
+  },
+  {
+    id: 5,
+    title: 'गन्ना (Sugarcane)',
+    location: 'बस्ती मंडी',
+    price: '₹350/क्विंटल',
+    change: '+15',
+    trend: 'up',
+    detail: 'आज की दर: ₹350 प्रति क्विंटल | कल से ₹15 ऊपर',
+  },
+]
+
+export const MOCK_LOAN_OPTIONS = [
+  {
+    id: 1,
+    title: 'कृषि उपकरण लोन (Equipment Loan)',
+    detail: 'ट्रैक्टर, थ्रेशर और अन्य उपकरण के लिए | 3-7 साल के लिए | 7-9% वार्षिक ब्याज',
+    amount: '₹3-10 लाख',
+    interest: '7-9%',
+    tenure: '3-7 years',
+    eligibility: 'खेती योग्य जमीन आवश्यक',
+  },
+  {
+    id: 2,
+    title: 'फसल लोन (Crop Loan)',
+    detail: 'बीज, खाद, कीटनाशक के लिए अल्पकालिक ऋण | 6-12 महीने | 4-7% ब्याज',
+    amount: '₹50,000-5 लाख',
+    interest: '4-7%',
+    tenure: '6-12 months',
+    eligibility: 'खेती का प्रमाण पत्र चाहिए',
+  },
+  {
+    id: 3,
+    title: 'पशुपालन लोन (Dairy/Livestock Loan)',
+    detail: 'गाय, भैंस, मुर्गी पालन के लिए | 3-5 साल | 8-10% ब्याज',
+    amount: '₹1-5 लाख',
+    interest: '8-10%',
+    tenure: '3-5 years',
+    eligibility: 'पशुपालन प्रशिक्षण या अनुभव',
+  },
+  {
+    id: 4,
+    title: 'भूमि विकास लोन (Land Development)',
+    detail: 'सिंचाई, बोरवेल, तालाब खुदाई के लिए | 5-10 साल | 9-11% ब्याज',
+    amount: '₹2-8 लाख',
+    interest: '9-11%',
+    tenure: '5-10 years',
+    eligibility: 'ज़मीन का स्वामित्व आवश्यक',
+  },
+  {
+    id: 5,
+    title: 'मुद्रा लोन (MUDRA Loan)',
+    detail: 'छोटे व्यवसाय शुरू करने के लिए | 3-5 साल | 8-12% ब्याज',
+    amount: '₹50,000-10 लाख',
+    interest: '8-12%',
+    tenure: '3-5 years',
+    eligibility: 'व्यवसाय योजना आवश्यक',
+  },
+]
+
 
 
 export default {
@@ -221,4 +317,6 @@ export default {
   MOCK_TRANSCRIPTS,
   MOCK_APPLICATION_RESPONSE,
   MOCK_LATEST_OFFERS,
+  MOCK_MANDI_PRICES,
+  MOCK_LOAN_OPTIONS,
 }

@@ -1,12 +1,31 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import schemeService from "../services/schemeService"
 
-export default function SchemesPage({ title, cards }) {
+export default function SchemesPage({ tr, uiLanguage }) {
+  const [schemes, setSchemes] = useState([])
   const [selectedScheme, setSelectedScheme] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadSchemes()
+  }, [uiLanguage])
+
+  const loadSchemes = async () => {
+    try {
+      setLoading(true)
+      const result = await schemeService.getAllSchemes(uiLanguage)
+      setSchemes(result.data)
+      console.log(`Schemes loaded from ${result.source}:`, result.data)
+    } catch (err) {
+      console.error("Failed to load schemes:", err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleClick = async (item) => {
     try {
-      const result = await schemeService.getSchemeById(item.id)
+      const result = await schemeService.getSchemeById(item.id, uiLanguage)
       setSelectedScheme(result.data)
     } catch (err) {
       console.error("Failed to load scheme details", err)
@@ -15,24 +34,32 @@ export default function SchemesPage({ title, cards }) {
 
   const closeModal = () => setSelectedScheme(null)
 
+  const title = uiLanguage === 'hi' ? 'सरकारी योजनाएं' : 'Government Schemes'
+
   return (
     <div className="card rustic-card">
       <div className="card-content">
         <span className="card-title">{title}</span>
 
-        {/* Scheme List */}
-        <ul className="collection">
-          {cards.map((item) => (
-            <li
-              key={item.id}
-              className="collection-item cursor-pointer hover:bg-gray-100"
-              onClick={() => handleClick(item)}
-            >
-              <strong>{item.name || item.title}</strong>
-              <p>{item.desc || item.detail}</p>
-            </li>
-          ))}
-        </ul>
+        {loading ? (
+          <div className="center-align py-4">
+            <p>{uiLanguage === 'hi' ? 'योजनाएं लोड हो रही हैं...' : 'Loading schemes...'}</p>
+          </div>
+        ) : (
+          /* Scheme List */
+          <ul className="collection">
+            {schemes.map((item) => (
+              <li
+                key={item.id}
+                className="collection-item cursor-pointer hover:bg-gray-100"
+                onClick={() => handleClick(item)}
+              >
+                <strong>{item.name || item.title}</strong>
+                <p>{item.desc || item.detail}</p>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* Modal Popup */}
