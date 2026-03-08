@@ -10,6 +10,7 @@ import LoanPage from "./pages/LoanPage"
 import ApplyPage from "./pages/ApplyPage"
 import HistoryPage from "./pages/HistoryPage"
 import voiceService from "./services/voiceService"
+import { generateChatResponse } from "./services/llmService"
 
 function App() {
   const [onboardingStep, setOnboardingStep] = useState("language")
@@ -18,6 +19,7 @@ function App() {
   const [assistantThreads, setAssistantThreads] = useState([])
   const [activeChatId, setActiveChatId] = useState(null)
   const [threadsHydrated, setThreadsHydrated] = useState(false)
+  const [userLocation, setUserLocation] = useState({ lat: null, lng: null })
 
   const uiLanguage = getUiLanguage(profile.language, UI_LANGUAGE_MAP)
   const tr = TRANSLATIONS[uiLanguage]
@@ -50,6 +52,22 @@ function App() {
     if (!threadsHydrated) return
     localStorage.setItem(STORAGE_KEYS.chatThreads, JSON.stringify(assistantThreads))
   }, [assistantThreads, threadsHydrated])
+
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          })
+        },
+        (error) => {
+          console.warn("Geolocation access denied or failed:", error.message)
+        }
+      )
+    }
+  }, [])
 
   const activeThread = useMemo(() => {
     return assistantThreads.find((thread) => thread.id === activeChatId) || null
@@ -170,42 +188,20 @@ function App() {
     )
 
     try {
-      const controller = new AbortController()
-      const timeout = setTimeout(() => controller.abort(), 5000)
-
-      const res = await fetch("/api/assistant", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        signal: controller.signal,
-        body: JSON.stringify({ query, language: uiLanguage }),
+      const data = await generateChatResponse(query, uiLanguage, {
+        profile,
+        location: userLocation,
       })
-
-      clearTimeout(timeout)
-      if (!res.ok) throw new Error("API error")
-
-      const data = await res.json()
-      if (!data || !data.result) throw new Error("Invalid API response")
-
       handleAssistantResponse(data, query, threadId)
     } catch (err) {
-      console.warn("Assistant failed, using local intent router:", err)
-
-      const queryLower = query.toLowerCase()
-      let mockData = MOCK_RESPONSES.default
-
-      if (queryLower.includes("mandi") || queryLower.includes("market") || queryLower.includes("price")) {
-        mockData = MOCK_RESPONSES.mandi
-      } else if (queryLower.includes("loan") || queryLower.includes("finance") || queryLower.includes("tractor")) {
-        mockData = MOCK_RESPONSES.loan
-      } else if (queryLower.includes("scheme") || queryLower.includes("yojana") || queryLower.includes("subsidy")) {
-        mockData = MOCK_RESPONSES.schemes
-      } else if (queryLower.includes("apply") || queryLower.includes("form")) {
-        mockData = MOCK_RESPONSES.apply
-      } else if (queryLower.includes("history") || queryLower.includes("status")) {
-        mockData = MOCK_RESPONSES.history
+      console.warn("Assistant failed, using fallback:", err)
+      const fallbackData = {
+        message: "I am having trouble processing your request right now. Please try again later.",
+        speak: "I am having trouble right now. Please try later.",
+        redirect: "home",
+        result: { items: [] }
       }
-
-      handleAssistantResponse(mockData, query, threadId)
+      handleAssistantResponse(fallbackData, query, threadId)
     }
   }
 
@@ -436,70 +432,4 @@ function AssistantChatPanel({ onRunAssistant, uiLanguage, activeThread, onNewCha
     </div>
   )
 }
-
-const MOCK_RESPONSES = {
-  mandi: {
-    message: "Here are the latest local mandi prices.",
-    speak: "Here are the latest mandi prices near you.",
-    redirect: "mandi",
-    result: {
-      items: [
-        { Crop: "Wheat", Market: "Nagpur Mandi", Price: "Rs 2200 / Quintal" },
-        { Crop: "Soybean", Market: "Pune Mandi", Price: "Rs 4100 / Quintal" },
-      ],
-    },
-  },
-  schemes: {
-    message: "Based on your profile, here are government schemes you can apply for.",
-    speak: "Here are some top government schemes you might be eligible for.",
-    redirect: "schemes",
-    result: {
-      items: [
-        { Scheme: "PM-KISAN", Benefit: "Rs 6000 / year", Status: "Open" },
-        { Scheme: "Kisan Credit Card", Benefit: "Low interest loans up to Rs 3 Lakh", Status: "Open" },
-      ],
-    },
-  },
-  apply: {
-    message: "You can apply for your desired scheme here.",
-    speak: "Opening the application form.",
-    redirect: "apply",
-    result: {
-      items: [{ Action: "Start New Application", Requirements: "Aadhaar, PAN, Land Records" }],
-    },
-  },
-  history: {
-    message: "Here is your application history.",
-    speak: "Opening your past applications.",
-    redirect: "history",
-    result: {
-      items: [{ Application: "Tractor Subsidy", Date: "12-Oct-2025", Status: "Approved" }],
-    },
-  },
-  loan: {
-    message: "These are some tractor loan options.",
-    speak: "Here are some tractor loan options.",
-    redirect: "loan",
-    result: {
-      items: [
-        { Bank: "SBI Tractor Loan", Amount: "Rs 5,00,000", Interest: "7%" },
-        { Bank: "HDFC Tractor Finance", Amount: "Rs 4,50,000", Interest: "7.5%" },
-      ],
-    },
-  },
-  default: {
-    message: "I can help with mandi prices, loans, and government schemes.",
-    speak: "I can help you check mandi prices, find schemes, or apply for loans. What do you need?",
-    redirect: "home",
-    result: {
-      items: [
-        { Suggestion: "Try saying What are mandi prices today?" },
-        { Suggestion: "Try saying I need a tractor loan." },
-      ],
-    },
-  },
-}
-
-
-
 
