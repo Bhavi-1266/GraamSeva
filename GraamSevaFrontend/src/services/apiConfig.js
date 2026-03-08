@@ -88,6 +88,9 @@ export const API_ENDPOINTS = {
     LIST: '/api/new-schemes',
     GET_BY_ID: '/api/new-schemes/:id',
   },
+  AI: {
+    HOME_UPDATES: '/api/ai/home-updates',
+  },
 }
 
 // ============================================
@@ -134,3 +137,4 @@ export const buildHeaders = (token = null) => {
  */
 export const isDevelopment = () => import.meta.env.MODE === 'development'
 export const isProduction = () => import.meta.env.MODE === 'production'
+
