@@ -57,7 +57,7 @@ export default function HomePage({ tr, onNavigate, uiLanguage, profile }) {
                   <article key={offer.id} className="update-item">
                     <div className="update-item-head">
                       <strong>{offer.title}</strong>
-                      <span>{offer.badge}</span>
+                      <span className='self-center'>{offer.badge}</span>
                     </div>
                     <p>{offer.desc}</p>
                     {offer.date && <small>{offer.date}</small>}
@@ -77,9 +77,9 @@ export default function HomePage({ tr, onNavigate, uiLanguage, profile }) {
               <div className="updates-list">
                 {regularUpdates.map((offer) => (
                   <article key={offer.id} className="update-item regular">
-                    <div className="update-item-head">
+                    <div className="update-item-head  ">
                       <strong>{offer.title}</strong>
-                      <span>{offer.badge}</span>
+                      <span >{offer.badge}</span>
                     </div>
                     <p>{offer.desc}</p>
                     {offer.date && <small>{offer.date}</small>}

@@ -399,6 +399,7 @@ function AssistantChatPanel({ onRunAssistant, uiLanguage, activeThread, onNewCha
           overflowY: "auto",
           padding: "8px",
           marginBottom: "8px",
+          marginTop: "5px",
         }}
       >
         {(activeThread?.messages || []).length === 0 ? (
@@ -409,9 +410,11 @@ function AssistantChatPanel({ onRunAssistant, uiLanguage, activeThread, onNewCha
               key={message.id + message.timestamp}
               style={{
                 marginBottom: "6px",
+                marginTop: "5px",
                 display: "flex",
                 justifyContent: message.role === "user" ? "flex-end" : "flex-start",
               }}
+
             >
               <div
                 style={{
@@ -422,7 +425,9 @@ function AssistantChatPanel({ onRunAssistant, uiLanguage, activeThread, onNewCha
                   padding: "6px 8px",
                   whiteSpace: "pre-wrap",
                   fontSize: "0.84rem",
+                  marginTop: "5px",
                 }}
+                
               >
                 {message.text}
               </div>
@@ -431,7 +436,7 @@ function AssistantChatPanel({ onRunAssistant, uiLanguage, activeThread, onNewCha
         )}
       </div>
 
-      <div className="flex items-center gap-2 bg-white shadow-lg px-3 py-2 rounded-full">
+      <div className="flex items-center gap-2 bg-white shadow-lg px-3 py-2 rounded-md">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -440,14 +445,14 @@ function AssistantChatPanel({ onRunAssistant, uiLanguage, activeThread, onNewCha
           className="outline-none text-sm w-full"
         />
 
-        <button onClick={submit}>
-          <span className="material-icons text-amber-600">send</span>
+        <button onClick={submit} className="rounded-md">
+          <span className="material-icons text-amber-600  align-middle" >send</span>
         </button>
 
         <button
           onClick={handleMic}
           disabled={isListening}
-          className={`relative flex items-center justify-center w-8 h-8 rounded-full transition-all ${
+          className={`relative flex items-center justify-center w-8 h-8 rounded-md transition-all ${
             isListening ? "bg-red-500 text-white" : "text-gray-600 hover:bg-gray-100"
           }`}
         >
