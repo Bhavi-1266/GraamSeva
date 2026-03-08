@@ -21,7 +21,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:5174` in your browser. The app will auto-reload when you make changes.
+Open `http://localhost:5173` in your browser. The app will auto-reload when you make changes.
 
 ### Step 3: Explore the App
 
