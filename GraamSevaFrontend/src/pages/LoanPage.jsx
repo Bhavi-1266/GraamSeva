@@ -5,48 +5,6 @@ import "../styles/LoanComparison.css"
 
 const DEFAULT_LOAN_AMOUNT = 200000
 
-const NEARBY_BANK_OFFERS = [
-  {
-    id: "sbi-rural",
-    bankName: "State Bank of India",
-    branch: "Rural Branch",
-    distanceKm: 2.1,
-    annualInterestRate: 7.2,
-    tenureMonths: 48,
-    processingFeePercent: 1.0,
-    minAmount: 50000,
-    maxAmount: 1200000,
-    prepayment: "Allowed after 12 months",
-    documents: ["Aadhaar Card", "PAN Card", "Land/Income Proof", "Bank Statement (6 months)", "Passport Size Photo"],
-  },
-  {
-    id: "pnb-kisan",
-    bankName: "Punjab National Bank",
-    branch: "Kisan Seva Branch",
-    distanceKm: 3.4,
-    annualInterestRate: 7.8,
-    tenureMonths: 60,
-    processingFeePercent: 0.8,
-    minAmount: 75000,
-    maxAmount: 1500000,
-    prepayment: "Allowed with nominal fee",
-    documents: ["Aadhaar Card", "Address Proof", "Income Certificate", "Land Records", "2 Guarantor References"],
-  },
-  {
-    id: "bob-agri",
-    bankName: "Bank of Baroda",
-    branch: "Agri Credit Desk",
-    distanceKm: 4.2,
-    annualInterestRate: 8.1,
-    tenureMonths: 36,
-    processingFeePercent: 0.75,
-    minAmount: 100000,
-    maxAmount: 1000000,
-    prepayment: "No penalty after 24 EMIs",
-    documents: ["Aadhaar + PAN", "Farmer ID/KCC Details", "Last 1 year passbook", "Crop/Business Plan", "Photograph"],
-  },
-]
-
 function calculateLoanBreakdown(principal, annualRate, months, processingFeePercent) {
   const monthlyRate = annualRate / 100 / 12
 
@@ -57,12 +15,11 @@ function calculateLoanBreakdown(principal, annualRate, months, processingFeePerc
   const emi =
     monthlyRate === 0
       ? principal / months
-      : (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) /
-        (Math.pow(1 + monthlyRate, months) - 1)
+      : (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1)
 
   const totalEmiPayable = emi * months
-  const processingFee   = principal * (processingFeePercent / 100)
-  const totalPayable    = totalEmiPayable + processingFee
+  const processingFee = principal * (processingFeePercent / 100)
+  const totalPayable = totalEmiPayable + processingFee
 
   return {
     emi: Math.round(emi),
@@ -74,70 +31,138 @@ function calculateLoanBreakdown(principal, annualRate, months, processingFeePerc
 }
 
 const formatCurrency = (value) => `Rs ${Number(value || 0).toLocaleString("en-IN")}`
+const callFn = (fn, ...args) => (typeof fn === "function" ? fn(...args) : fn)
 
-// tr.loanNearbySubtitle and tr.loanEstRate / tr.loanEstTenure may be functions — call safely
-const callFn = (fn, ...args) => (typeof fn === 'function' ? fn(...args) : fn)
-
-export default function LoanPage({ tr, uiLanguage }) {
-  const [loanOptions, setLoanOptions]           = useState([])
-  const [loading, setLoading]                   = useState(true)
-  const [loanAmount, setLoanAmount]             = useState(DEFAULT_LOAN_AMOUNT)
-  const [selectedNearbyOffer, setSelectedNearbyOffer]   = useState(null)
+export default function LoanPage({ tr, uiLanguage, userLocation, profile }) {
+  const [loanOptions, setLoanOptions] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [nearbyLoading, setNearbyLoading] = useState(true)
+  const [nearbySource, setNearbySource] = useState(null)
+  const [loanAmount, setLoanAmount] = useState(DEFAULT_LOAN_AMOUNT)
+  const [nearbyOffers, setNearbyOffers] = useState([])
+  const [selectedNearbyOffer, setSelectedNearbyOffer] = useState(null)
   const [selectedGlobalOption, setSelectedGlobalOption] = useState(null)
   const [globalLoanAmount, setGlobalLoanAmount] = useState(DEFAULT_LOAN_AMOUNT)
-  const [locationLabel, setLocationLabel]       = useState(null)
+  const [locationLabel, setLocationLabel] = useState(null)
+  const [locationData, setLocationData] = useState(null)
+  const [profileData, setProfileData] = useState(null)
 
-  useEffect(() => { loadLoanOptions() }, [uiLanguage])
+  useEffect(() => {
+    loadLoanOptions()
+  }, [uiLanguage])
 
   useEffect(() => {
     try {
       const rawLocation = localStorage.getItem(STORAGE_KEYS.location)
-      if (!rawLocation) return
-      const parsed = JSON.parse(rawLocation)
-      setLocationLabel(parsed?.village || parsed?.district || parsed?.state || parsed?.displayName || null)
-    } catch { setLocationLabel(null) }
-  }, [])
+      if (rawLocation) {
+        const parsed = JSON.parse(rawLocation)
+        setLocationData(parsed)
+        setLocationLabel(parsed?.village || parsed?.district || parsed?.state || parsed?.displayName || null)
+      }
+    } catch {
+      setLocationData(null)
+      setLocationLabel(null)
+    }
+
+    try {
+      const rawProfile = localStorage.getItem(STORAGE_KEYS.profile)
+      setProfileData(rawProfile ? JSON.parse(rawProfile) : (profile || null))
+    } catch {
+      setProfileData(profile || null)
+    }
+  }, [profile])
+
+  useEffect(() => {
+    const lat = userLocation?.lat ?? userLocation?.latitude
+    const lng = userLocation?.lng ?? userLocation?.longitude
+    if (!lat || !lng) return
+
+    const mergedLocation = {
+      ...(locationData || {}),
+      ...userLocation,
+      lat,
+      lng,
+      latitude: lat,
+      longitude: lng,
+      displayName: userLocation?.displayName || `${Number(lat).toFixed(4)}, ${Number(lng).toFixed(4)}`,
+      source: userLocation?.source || "browser",
+    }
+
+    setLocationData(mergedLocation)
+    setLocationLabel(mergedLocation?.village || mergedLocation?.district || mergedLocation?.state || mergedLocation?.displayName || null)
+
+    try {
+      const existingRaw = localStorage.getItem(STORAGE_KEYS.location)
+      const existing = existingRaw ? JSON.parse(existingRaw) : {}
+      localStorage.setItem(STORAGE_KEYS.location, JSON.stringify({ ...existing, ...mergedLocation }))
+    } catch {
+      // no-op
+    }
+  }, [userLocation?.lat, userLocation?.lng, userLocation?.latitude, userLocation?.longitude])
+
+  useEffect(() => {
+    loadNearbyOffers()
+  }, [uiLanguage, locationData?.lat, locationData?.lng, locationData?.latitude, locationData?.longitude, locationData?.state, loanAmount, profileData?.name, profileData?.language])
 
   const loadLoanOptions = async () => {
     try {
       setLoading(true)
       const result = await loanService.getLoanOptions(uiLanguage)
-      setLoanOptions(result.data)
+      setLoanOptions(result.data || [])
       console.log(`Loan options loaded from ${result.source}:`, result.data)
     } catch (err) {
       console.error("Failed to load loan options:", err)
+      setLoanOptions([])
     } finally {
       setLoading(false)
     }
   }
 
+  const loadNearbyOffers = async () => {
+    try {
+      setNearbyLoading(true)
+      const result = await loanService.getNearbyLoanComparisons(uiLanguage, {
+        location: locationData || userLocation || null,
+        profile: profileData || profile || null,
+        requestedAmount: loanAmount,
+      })
+      setNearbyOffers(result.data || [])
+      setNearbySource(result.source || null)
+      console.log(`Nearby offers loaded from ${result.source}:`, result.data)
+    } catch (err) {
+      console.error("Failed to load nearby offers:", err)
+      setNearbyOffers([])
+      setNearbySource(null)
+    } finally {
+      setNearbyLoading(false)
+    }
+  }
+
   const nearbyLoanComparisons = useMemo(() => {
-    return NEARBY_BANK_OFFERS.map((offer) => ({
+    return nearbyOffers.map((offer) => ({
       ...offer,
-      breakdown: calculateLoanBreakdown(
-        Number(loanAmount), offer.annualInterestRate, offer.tenureMonths, offer.processingFeePercent
-      ),
+      breakdown: calculateLoanBreakdown(Number(loanAmount), offer.annualInterestRate, offer.tenureMonths, offer.processingFeePercent),
     }))
-  }, [loanAmount])
+  }, [nearbyOffers, loanAmount])
 
   const parseAnnualRate = (option) => {
-    const src   = `${option?.interest || ""} ${option?.detail || ""}`
+    const src = `${option?.interest || ""} ${option?.detail || ""}`
     const match = src.match(/(\d+(\.\d+)?)\s*%/)
     return match ? Number(match[1]) : 8.5
   }
 
   const parseTenureMonths = (option) => {
     const src = `${option?.tenure || ""} ${option?.detail || ""}`.toLowerCase()
-    const ym  = src.match(/(\d+)\s*-\s*(\d+)\s*year|(\d+)\s*year/)
+    const ym = src.match(/(\d+)\s*-\s*(\d+)\s*year|(\d+)\s*year/)
     if (ym) return Number(ym[2] || ym[3] || ym[1] || 3) * 12
-    const mm  = src.match(/(\d+)\s*-\s*(\d+)\s*month|(\d+)\s*month/)
+    const mm = src.match(/(\d+)\s*-\s*(\d+)\s*month|(\d+)\s*month/)
     if (mm) return Number(mm[2] || mm[3] || mm[1] || 36)
     return 36
   }
 
   const getGlobalDocuments = (option) => {
     const t = (option?.title || "").toLowerCase()
-    if (t.includes("crop"))                              return ["Aadhaar Card", "Land/Crop Proof", "Bank Passbook", "Recent Photograph"]
+    if (t.includes("crop")) return ["Aadhaar Card", "Land/Crop Proof", "Bank Passbook", "Recent Photograph"]
     if (t.includes("equipment") || t.includes("tractor")) return ["Aadhaar + PAN", "Land Ownership/Lease Proof", "Income Certificate", "Quotation of Equipment"]
     return ["Aadhaar Card", "Address Proof", "Income Proof", "Bank Statement (6 months)", "Photograph"]
   }
@@ -183,7 +208,10 @@ export default function LoanPage({ tr, uiLanguage }) {
                 <div className="global-option-actions">
                   <button
                     className="nearby-details-btn"
-                    onClick={() => { setSelectedGlobalOption(item); setGlobalLoanAmount(DEFAULT_LOAN_AMOUNT) }}
+                    onClick={() => {
+                      setSelectedGlobalOption(item)
+                      setGlobalLoanAmount(DEFAULT_LOAN_AMOUNT)
+                    }}
                   >
                     {tr.loanViewDetails}
                   </button>
@@ -197,6 +225,7 @@ export default function LoanPage({ tr, uiLanguage }) {
           <div className="nearby-loan-head">
             <h4>{tr.loanNearbyTitle}</h4>
             <p>{nearbySubtitle}</p>
+            {nearbySource && <p className="text-xs text-gray-500">Data source: {nearbySource}</p>}
           </div>
 
           <div className="nearby-loan-input-row">
@@ -211,32 +240,41 @@ export default function LoanPage({ tr, uiLanguage }) {
             />
           </div>
 
-          <div className="nearby-loan-grid">
-            {nearbyLoanComparisons.map((offer) => (
-              <article className="nearby-loan-card" key={offer.id}>
-                <div className="nearby-loan-card-head">
-                  <strong>{offer.bankName}</strong>
-                  <small>{offer.branch}</small>
-                </div>
-                <div className="nearby-tags">
-                  <span>{offer.distanceKm} km</span>
-                  <span>{callFn(tr.loanEstRate, offer.annualInterestRate)}</span>
-                  <span>{callFn(tr.loanEstTenure, offer.tenureMonths)}</span>
-                </div>
-                <div className="nearby-metrics">
-                  <p>{tr.loanMonthlyEmi}: <strong>{formatCurrency(offer.breakdown.emi)}</strong></p>
-                  <p>{tr.loanFinalPayable}: <strong>{formatCurrency(offer.breakdown.totalPayable)}</strong></p>
-                </div>
-                <button className="nearby-details-btn" onClick={() => setSelectedNearbyOffer(offer)}>
-                  {tr.loanViewFull}
-                </button>
-              </article>
-            ))}
-          </div>
+          {nearbyLoading ? (
+            <div className="center-align py-3">
+              <p>{tr.loanLoading}</p>
+            </div>
+          ) : nearbyLoanComparisons.length === 0 ? (
+            <div className="center-align py-3">
+              <p>No nearby bank offers found for your current location.</p>
+            </div>
+          ) : (
+            <div className="nearby-loan-grid">
+              {nearbyLoanComparisons.map((offer) => (
+                <article className="nearby-loan-card" key={offer.id}>
+                  <div className="nearby-loan-card-head">
+                    <strong>{offer.bankName}</strong>
+                    <small>{offer.branch}</small>
+                  </div>
+                  <div className="nearby-tags">
+                    <span>{offer.distanceKm} km</span>
+                    <span>{callFn(tr.loanEstRate, offer.annualInterestRate)}</span>
+                    <span>{callFn(tr.loanEstTenure, offer.tenureMonths)}</span>
+                  </div>
+                  <div className="nearby-metrics">
+                    <p>{tr.loanMonthlyEmi}: <strong>{formatCurrency(offer.breakdown.emi)}</strong></p>
+                    <p>{tr.loanFinalPayable}: <strong>{formatCurrency(offer.breakdown.totalPayable)}</strong></p>
+                  </div>
+                  <button className="nearby-details-btn" onClick={() => setSelectedNearbyOffer(offer)}>
+                    {tr.loanViewFull}
+                  </button>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
       </div>
 
-      {/* ── Nearby bank detail modal ── */}
       {selectedNearbyOffer && selectedBreakdown && (
         <div className="nearby-loan-modal-overlay" onClick={() => setSelectedNearbyOffer(null)}>
           <div className="nearby-loan-modal" onClick={(e) => e.stopPropagation()}>
@@ -262,17 +300,26 @@ export default function LoanPage({ tr, uiLanguage }) {
             <ul className="nearby-loan-list">
               <li>{callFn(tr.loanRange, formatCurrency(selectedNearbyOffer.minAmount), formatCurrency(selectedNearbyOffer.maxAmount))}</li>
               <li>{callFn(tr.loanPrepayment, selectedNearbyOffer.prepayment)}</li>
+              {selectedNearbyOffer.address && <li>Address: {selectedNearbyOffer.address}</li>}
+              {selectedNearbyOffer.contactPhone && <li>Contact: {selectedNearbyOffer.contactPhone}</li>}
+              {selectedNearbyOffer.managerName && <li>Officer: {selectedNearbyOffer.managerName}</li>}
+              {selectedNearbyOffer.workingHours && <li>Hours: {selectedNearbyOffer.workingHours}</li>}
+              {selectedNearbyOffer.website && (
+                <li>
+                  Website: <a href={selectedNearbyOffer.website} target="_blank" rel="noreferrer">{selectedNearbyOffer.website}</a>
+                </li>
+              )}
+              {selectedNearbyOffer.aiSummary && <li>Summary: {selectedNearbyOffer.aiSummary}</li>}
             </ul>
 
             <p className="nearby-loan-modal-section">{tr.loanDocsRequired}</p>
             <ul className="nearby-loan-list">
-              {selectedNearbyOffer.documents.map((doc) => <li key={doc}>{doc}</li>)}
+              {(selectedNearbyOffer.documents || []).map((doc) => <li key={doc}>{doc}</li>)}
             </ul>
           </div>
         </div>
       )}
 
-      {/* ── Global scheme detail modal ── */}
       {selectedGlobalOption && selectedGlobalBreakdown && (
         <div className="nearby-loan-modal-overlay" onClick={() => setSelectedGlobalOption(null)}>
           <div className="nearby-loan-modal" onClick={(e) => e.stopPropagation()}>

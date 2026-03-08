@@ -57,10 +57,29 @@ function App() {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setUserLocation({
+          const liveLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
-          })
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            displayName: `${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`,
+            source: "browser",
+          }
+          setUserLocation(liveLocation)
+
+          try {
+            const existingRaw = localStorage.getItem(STORAGE_KEYS.location)
+            const existing = existingRaw ? JSON.parse(existingRaw) : {}
+            localStorage.setItem(
+              STORAGE_KEYS.location,
+              JSON.stringify({
+                ...existing,
+                ...liveLocation,
+              }),
+            )
+          } catch (err) {
+            console.warn("Failed to persist location:", err)
+          }
         },
         (error) => {
           console.warn("Geolocation access denied or failed:", error.message)
@@ -249,7 +268,7 @@ function App() {
       case "mandi":
         return <MandiPage tr={tr} uiLanguage={uiLanguage} />
       case "loan":
-        return <LoanPage tr={tr} uiLanguage={uiLanguage} />
+        return <LoanPage tr={tr} uiLanguage={uiLanguage} userLocation={userLocation} profile={profile} />
       case "apply":
         return <ApplyPage tr={tr} uiLanguage={uiLanguage} profile={profile} />
       case "history":
@@ -438,4 +457,7 @@ function AssistantChatPanel({ onRunAssistant, uiLanguage, activeThread, onNewCha
     </div>
   )
 }
+
+
+
 

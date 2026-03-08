@@ -90,6 +90,7 @@ export const API_ENDPOINTS = {
   },
   AI: {
     HOME_UPDATES: '/api/ai/home-updates',
+    NEARBY_LOANS: '/api/ai/nearby-loans',
   },
 }
 
@@ -137,4 +138,5 @@ export const buildHeaders = (token = null) => {
  */
 export const isDevelopment = () => import.meta.env.MODE === 'development'
 export const isProduction = () => import.meta.env.MODE === 'production'
+
 
