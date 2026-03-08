@@ -1,38 +1,34 @@
 /**
- * New Schemes Service
+ * New Schemes & Offers Service
  */
 
-import { API_ENDPOINTS, buildURL } from "./apiConfig"
-import { MOCK_LATEST_OFFERS } from "./mockData"
-import apiClient from "./apiClient"
+import { API_ENDPOINTS, buildURL } from './apiConfig'
+import { getMockLatestOffers } from './mockData'
+import apiClient from './apiClient'
 
 class NewSchemesOffersService {
-
-  async getNewSchemes(language = "hi") {
+  async getNewSchemes(language = 'hi') {
     try {
-      console.log("Fetching new schemes...")
+      console.log('Fetching new schemes...')
 
       const url = buildURL(API_ENDPOINTS.NEW_SCHEMES.LIST)
-
       const response = await apiClient.get(url, {
-        headers: { "Accept-Language": language },
+        headers: { 'Accept-Language': language },
       })
 
       return {
         data: response,
-        source: "api",
+        source: 'api',
       }
-
     } catch (error) {
-      console.warn("New schemes API failed, using mock data:", error.message)
+      console.warn('New schemes API failed, using mock data:', error.message)
 
       return {
-        data: MOCK_LATEST_OFFERS || [],
-        source: "mock",
+        data: getMockLatestOffers(language),
+        source: 'mock',
       }
     }
   }
-
 }
 
 export default new NewSchemesOffersService()

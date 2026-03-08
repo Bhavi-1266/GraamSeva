@@ -1,5 +1,6 @@
 ﻿import { useState } from "react"
 import applicationService from "../services/applicationService"
+import { t } from "../lib/i18n"
 
 export default function ApplyPage({ tr, uiLanguage, profile }) {
   const [applicationMode, setApplicationMode] = useState('typing')
@@ -11,36 +12,17 @@ export default function ApplyPage({ tr, uiLanguage, profile }) {
   })
   const [submitting, setSubmitting] = useState(false)
 
-  const copy = {
-    title: uiLanguage === 'hi' ? 'सेवा के लिए आवेदन' : 'Apply for Service',
-    typing: uiLanguage === 'hi' ? 'टाइपिंग' : 'Typing',
-    voice: uiLanguage === 'hi' ? 'वॉइस' : 'Voice',
-    call: uiLanguage === 'hi' ? 'कॉल' : 'Call',
-    callText: uiLanguage === 'hi' ? 'सहायता केंद्र पर कॉल करें:' : 'Call assisted center:',
-    callSub: uiLanguage === 'hi' ? 'ऑपरेटर फोन पर यही फॉर्म भरने में मदद करेगा।' : 'An operator can complete the same form over phone.',
-    fullName: uiLanguage === 'hi' ? 'पूरा नाम' : 'Full Name',
-    village: uiLanguage === 'hi' ? 'गांव' : 'Village',
-    service: uiLanguage === 'hi' ? 'आवश्यक सेवा' : 'Service Needed',
-    notes: uiLanguage === 'hi' ? 'टिप्पणी' : 'Notes',
-    submit: uiLanguage === 'hi' ? 'आवेदन जमा करें' : 'Submit Application',
-    submitting: uiLanguage === 'hi' ? 'जमा हो रहा है...' : 'Submitting...',
-  }
-
   const submitApplication = async (event) => {
     event.preventDefault()
 
     if (!applicationForm.fullName || !applicationForm.village || !applicationForm.serviceNeeded) {
-      window.alert(
-        uiLanguage === 'hi'
-          ? 'कृपया जमा करने से पहले जरूरी जानकारी भरें।'
-          : 'Please fill required fields before submit.'
-      )
+      window.alert(t(uiLanguage, 'applyRequired'))
       return
     }
 
     try {
       setSubmitting(true)
-      
+
       const result = await applicationService.submitApplication({
         ...applicationForm,
         language: uiLanguage,
@@ -48,14 +30,9 @@ export default function ApplyPage({ tr, uiLanguage, profile }) {
       })
 
       console.log(`Application submitted from ${result.source}:`, result.data)
-      
-      window.alert(
-        uiLanguage === 'hi'
-          ? `आवेदन सफलतापूर्वक जमा हो गया! संदर्भ संख्या: ${result.data.referenceId || 'N/A'}`
-          : `Application submitted successfully! Reference: ${result.data.referenceId || 'N/A'}`
-      )
 
-      // Reset form
+      window.alert(t(uiLanguage, 'applySuccess')(result.data.referenceId || 'N/A'))
+
       setApplicationForm({
         fullName: profile?.name || '',
         village: '',
@@ -64,11 +41,7 @@ export default function ApplyPage({ tr, uiLanguage, profile }) {
       })
     } catch (err) {
       console.error("Failed to submit application:", err)
-      window.alert(
-        uiLanguage === 'hi'
-          ? 'आवेदन जमा करने में त्रुटि। कृपया पुनः प्रयास करें।'
-          : 'Error submitting application. Please try again.'
-      )
+      window.alert(t(uiLanguage, 'applyError'))
     } finally {
       setSubmitting(false)
     }
@@ -77,69 +50,69 @@ export default function ApplyPage({ tr, uiLanguage, profile }) {
   return (
     <div className="card rustic-card">
       <div className="card-content">
-        <span className="card-title">{copy.title}</span>
+        <span className="card-title">{t(uiLanguage, 'applyTitle')}</span>
 
         <div className="mode-row">
-          <button 
-            className={`btn-small ${applicationMode === 'typing' ? 'amber darken-3' : 'brown lighten-1'}`} 
+          <button
+            className={`btn-small ${applicationMode === 'typing' ? 'amber darken-3' : 'brown lighten-1'}`}
             onClick={() => setApplicationMode('typing')}
           >
-            {copy.typing}
+            {t(uiLanguage, 'applyTyping')}
           </button>
-          <button 
-            className={`btn-small ${applicationMode === 'call' ? 'amber darken-3' : 'brown lighten-1'}`} 
+          <button
+            className={`btn-small ${applicationMode === 'call' ? 'amber darken-3' : 'brown lighten-1'}`}
             onClick={() => setApplicationMode('call')}
           >
-            {copy.call}
+            {t(uiLanguage, 'applyCall')}
           </button>
         </div>
 
         {applicationMode === 'call' ? (
           <div className="call-box">
-            <p>{copy.callText} <strong>1800-120-4455</strong></p>
-            <p>{copy.callSub}</p>
+            <p>{t(uiLanguage, 'applyCallText')} <strong>1800-120-4455</strong></p>
+            <p>{t(uiLanguage, 'applyCallSub')}</p>
           </div>
         ) : (
           <form onSubmit={submitApplication} className="top-gap">
             <div className="input-field">
-              <input 
-                id="fullName" 
-                value={applicationForm.fullName} 
-                onChange={(e) => setApplicationForm((prev) => ({ ...prev, fullName: e.target.value }))} 
+              <input
+                id="fullName"
+                value={applicationForm.fullName}
+                onChange={(e) => setApplicationForm((prev) => ({ ...prev, fullName: e.target.value }))}
               />
-              <label className="active" htmlFor="fullName">{copy.fullName}</label>
+              <label className="active" htmlFor="fullName">{t(uiLanguage, 'applyFullName')}</label>
             </div>
             <div className="input-field">
-              <input 
-                id="village" 
-                value={applicationForm.village} 
-                onChange={(e) => setApplicationForm((prev) => ({ ...prev, village: e.target.value }))} 
+              <input
+                id="village"
+                value={applicationForm.village}
+                onChange={(e) => setApplicationForm((prev) => ({ ...prev, village: e.target.value }))}
               />
-              <label className="active" htmlFor="village">{copy.village}</label>
+              <label className="active" htmlFor="village">{t(uiLanguage, 'applyVillage')}</label>
             </div>
             <div className="input-field">
-              <input 
-                id="serviceNeeded" 
-                value={applicationForm.serviceNeeded} 
-                onChange={(e) => setApplicationForm((prev) => ({ ...prev, serviceNeeded: e.target.value }))} 
+              <input
+                id="serviceNeeded"
+                value={applicationForm.serviceNeeded}
+                onChange={(e) => setApplicationForm((prev) => ({ ...prev, serviceNeeded: e.target.value }))}
               />
-              <label className="active" htmlFor="serviceNeeded">{copy.service}</label>
+              <label className="active" htmlFor="serviceNeeded">{t(uiLanguage, 'applyService')}</label>
             </div>
             <div className="input-field">
-              <textarea 
-                id="notes" 
-                className="materialize-textarea" 
-                value={applicationForm.notes} 
-                onChange={(e) => setApplicationForm((prev) => ({ ...prev, notes: e.target.value }))} 
+              <textarea
+                id="notes"
+                className="materialize-textarea"
+                value={applicationForm.notes}
+                onChange={(e) => setApplicationForm((prev) => ({ ...prev, notes: e.target.value }))}
               />
-              <label className="active" htmlFor="notes">{copy.notes}</label>
+              <label className="active" htmlFor="notes">{t(uiLanguage, 'applyNotes')}</label>
             </div>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="btn waves-effect amber darken-3"
               disabled={submitting}
             >
-              {submitting ? copy.submitting : copy.submit}
+              {submitting ? t(uiLanguage, 'applySubmitting') : t(uiLanguage, 'applySubmit')}
             </button>
           </form>
         )}

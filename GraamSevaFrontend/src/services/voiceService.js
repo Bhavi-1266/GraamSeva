@@ -8,15 +8,21 @@ import { API_ENDPOINTS, buildURL } from './apiConfig'
 import { MOCK_TRANSCRIPTS } from './mockData'
 import apiClient from './apiClient'
 
-// BCP-47 locales for the Web Speech API
+/**
+ * BCP-47 locale map.
+ * Keys match appConfig.js LANGUAGES codes exactly: hi, bho, awa, mr, mai, or, en
+ * bho (Bhojpuri), awa (Awadhi), mai (Maithili) have no dedicated BCP-47 locale
+ * so they fall back to hi-IN — the Web Speech API will still recognise them
+ * reasonably well since they share the Devanagari script and phonology.
+ */
 const LOCALE_MAP = {
-  hi: 'hi-IN',
-  bhoj: 'hi-IN',   // fallback to Hindi
-  awa: 'hi-IN',    // fallback to Hindi
-  odi: 'or-IN',    // Odia
-  mar: 'mr-IN',
-  mai: 'hi-IN',    // fallback to Hindi
-  en: 'en-IN',
+  hi:  'hi-IN',
+  bho: 'hi-IN',  // Bhojpuri — fallback to Hindi
+  awa: 'hi-IN',  // Awadhi — fallback to Hindi
+  mr:  'mr-IN',  // Marathi
+  mai: 'hi-IN',  // Maithili — fallback to Hindi
+  or:  'or-IN',  // Odia
+  en:  'en-IN',
 }
 
 const getSpeechRecognition = () =>
@@ -26,6 +32,9 @@ class VoiceService {
   /**
    * Live microphone → text via Web Speech API
    * Used by HomePage (recognizeAndTranslate) and VoiceInputPage (transcribeAudio)
+   *
+   * @param {string} language - Language code (matches appConfig LANGUAGES codes)
+   * @param {Function} onInterimResult - Optional callback for live interim text
    */
   async recognizeAndTranslate(language, onInterimResult) {
     const SpeechRecognition = getSpeechRecognition()
@@ -39,7 +48,7 @@ class VoiceService {
     return new Promise((resolve, reject) => {
       const recognition = new SpeechRecognition()
       recognition.lang = LOCALE_MAP[language] || 'hi-IN'
-      recognition.interimResults = true // Enable live preview
+      recognition.interimResults = true
       recognition.maxAlternatives = 1
       recognition.continuous = false
 
@@ -47,7 +56,7 @@ class VoiceService {
 
       recognition.onresult = async (event) => {
         let interimTranscript = ''
-        
+
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           if (event.results[i].isFinal) {
             finalTranscript += event.results[i][0].transcript
@@ -56,20 +65,20 @@ class VoiceService {
           }
         }
 
-        // Send live preview characters back to the UI
         if (onInterimResult && interimTranscript) {
           onInterimResult(interimTranscript)
         }
 
-        // If it's the final result, translate it
         if (event.results[event.results.length - 1].isFinal) {
           let translatedText = finalTranscript
 
-          // Use free Google Translate API if not English
+          // Translate to English for backend processing if not already English
           if (language !== 'en' && finalTranscript.trim()) {
             try {
+              // Use the BCP-47 source locale for the translate API
+              const sourceLang = LOCALE_MAP[language]?.split('-')[0] || 'hi'
               const res = await fetch(
-                `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${language}&tl=en&dt=t&q=${encodeURIComponent(finalTranscript)}`
+                `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=en&dt=t&q=${encodeURIComponent(finalTranscript)}`
               )
               const data = await res.json()
               translatedText = data[0].map((item) => item[0]).join('')
@@ -80,7 +89,7 @@ class VoiceService {
 
           resolve({
             text: finalTranscript,
-            translatedText: translatedText,
+            translatedText,
             confidence: event.results[event.results.length - 1][0].confidence || 0.9,
             language,
             timestamp: new Date().toISOString(),
@@ -102,8 +111,11 @@ class VoiceService {
   }
 
   /**
-   * Transcribe audio — delegates to live mic recognition
-   * Kept for API compatibility with VoiceInputPage
+   * Transcribe audio — delegates to live mic recognition.
+   * Kept for API compatibility with VoiceInputPage.
+   *
+   * @param {Blob|null} _audioBlob - Unused; real audio comes from the mic
+   * @param {string} language - Language code
    */
   async transcribeAudio(_audioBlob, language) {
     try {
@@ -111,6 +123,7 @@ class VoiceService {
     } catch (error) {
       console.warn('Web Speech API failed, using mock data:', error.message)
       return {
+        // MOCK_TRANSCRIPTS keys now match appConfig language codes
         text: MOCK_TRANSCRIPTS[language] || MOCK_TRANSCRIPTS.en,
         confidence: 0.87,
         language,
@@ -122,6 +135,8 @@ class VoiceService {
 
   /**
    * Text-to-Speech (backend API)
+   * @param {string} text
+   * @param {string} language
    */
   async textToSpeech(text, language) {
     try {
@@ -144,6 +159,7 @@ class VoiceService {
 
   /**
    * Record audio from microphone
+   * @param {number} duration - Max recording duration in seconds
    */
   async recordAudio(duration = 60) {
     try {

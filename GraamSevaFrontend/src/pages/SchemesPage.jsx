@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react"
 import schemeService from "../services/schemeService"
-import "../styles/SchemesModal.css"
+import { t } from "../lib/i18n"
 
-export default function SchemesPage({ uiLanguage }) {
+export default function SchemesPage({ tr, uiLanguage }) {
   const [schemes, setSchemes] = useState([])
   const [selectedScheme, setSelectedScheme] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -35,16 +35,14 @@ export default function SchemesPage({ uiLanguage }) {
 
   const closeModal = () => setSelectedScheme(null)
 
-  const title = uiLanguage === "hi" ? "Government Schemes" : "Government Schemes"
-
   return (
     <div className="card rustic-card">
       <div className="card-content">
-        <span className="card-title">{title}</span>
+        <span className="card-title">{t(uiLanguage, 'schemesTitle')}</span>
 
         {loading ? (
           <div className="center-align py-4">
-            <p>Loading schemes...</p>
+            <p>{t(uiLanguage, 'schemesLoading')}</p>
           </div>
         ) : (
           <ul className="collection">
@@ -63,55 +61,63 @@ export default function SchemesPage({ uiLanguage }) {
       </div>
 
       {selectedScheme && (
-        <div className="scheme-modal-overlay" onClick={closeModal}>
-          <div className="scheme-modal" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          onClick={closeModal}
+        >
+          <div
+            className="relative w-[92%] max-w-lg max-h-[85vh] overflow-y-auto bg-white rounded-xl shadow-xl p-5"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               onClick={closeModal}
-              className="scheme-modal-close"
-              aria-label="Close scheme details"
+              className="absolute top-3 right-3 text-gray-600 hover:text-black"
             >
-              X
+              ✕
             </button>
 
-            <h3 className="scheme-modal-title">{selectedScheme.name}</h3>
-            <p className="scheme-modal-desc">{selectedScheme.desc}</p>
-
-            <p className="scheme-modal-meta">
+            <h3 className="text-xl font-bold mb-2">{selectedScheme.name}</h3>
+            <p className="text-sm text-gray-700 mb-3">{selectedScheme.desc}</p>
+            <p className="text-sm mb-2">
               <strong>Government:</strong> {selectedScheme.governmentLevel}
             </p>
 
-            <p className="scheme-modal-section">Benefits</p>
-            <ul className="scheme-modal-list">
+            <p className="font-semibold mt-2">Benefits</p>
+            <ul className="list-disc ml-5 text-sm mb-3">
               {selectedScheme.benefits?.map((b, i) => (
                 <li key={i}>{b}</li>
               ))}
             </ul>
 
-            <p className="scheme-modal-section">Eligibility</p>
-            <ul className="scheme-modal-list">
+            <p className="font-semibold">Eligibility</p>
+            <ul className="list-disc ml-5 text-sm mb-3">
               <li>Gender: {selectedScheme.eligibility?.gender}</li>
               <li>Marital Status: {selectedScheme.eligibility?.maritalStatus}</li>
               <li>Income Limit: {selectedScheme.eligibility?.incomeLimit}</li>
               <li>Land Requirement: {selectedScheme.eligibility?.landRequired}</li>
             </ul>
 
-            <p className="scheme-modal-section">Documents Required</p>
-            <ul className="scheme-modal-list">
+            <p className="font-semibold">Documents Required</p>
+            <ul className="list-disc ml-5 text-sm mb-3">
               {selectedScheme.documents?.map((doc, i) => (
                 <li key={i}>{doc}</li>
               ))}
             </ul>
 
-            <p className="scheme-modal-section">How to Apply</p>
-            <ul className="scheme-modal-list scheme-modal-list-last">
+            <p className="font-semibold">How to Apply</p>
+            <ul className="list-disc ml-5 text-sm mb-4">
               {selectedScheme.howToApply?.map((step, i) => (
                 <li key={i}>{step}</li>
               ))}
             </ul>
 
-            <div className="scheme-modal-actions">
-              <button className="scheme-modal-action primary">Apply for Scheme</button>
-              <button className="scheme-modal-action secondary">Ask Eligibility</button>
+            <div className="flex gap-3 mt-4">
+              <button className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700">
+                {t(uiLanguage, 'applySubmit')}
+              </button>
+              <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                {t(uiLanguage, 'applyTitle')}
+              </button>
             </div>
           </div>
         </div>

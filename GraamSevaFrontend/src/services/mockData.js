@@ -1,112 +1,279 @@
 /**
  * Mock Data - Fallback when APIs are unavailable
- * All data structures match API response format
+ * All data structures match API response format.
+ *
+ * Language-independent data (prices, IDs, numeric values) is shared.
+ * Language-dependent strings are organized into per-language maps.
+ * Use getMock(lang, key) to retrieve the right data for a given language.
  */
 
-export const MOCK_SCHEMES = [
-{
-  id: 1,
-  name: "PM-KISAN",
-  icon: "🌾",
-  desc: "किसान सम्मान निधि योजना",
-  details: "₹6000 annual income support",
+// ---------------------------------------------------------------------------
+// SCHEMES
+// All scheme structural data is language-neutral (IDs, eligibility numbers).
+// Only display strings (desc, benefits, documents, howToApply) are localized.
+// ---------------------------------------------------------------------------
 
-  governmentLevel: "Central Government",
-
-  eligibility: {
-    gender: "All",
-    maritalStatus: "All",
-    incomeLimit: "₹10 lakh/year",
-    landRequired: "≤ 2 hectares",
-  },
-
-  benefits: [
-    "₹2000 every 4 months",
-    "Direct DBT transfer",
-    "No middlemen"
-  ],
-
-  howToApply: [
-    "Visit CSC center",
-    "Submit Aadhaar + land records",
-    "Verification by district office",
-    "Money credited to bank"
-  ],
-
-  documents: [
-    "Aadhaar card",
-    "Land ownership papers",
-    "Bank account",
-    "Mobile number"
-  ],
-
-  authority: {
-    ministry: "Ministry of Agriculture",
-    stateBody: "State Agriculture Department",
-    localBody: "Gram Panchayat"
-  }
-},
-{
-  id: 2,
-  name: "PM Fasal Bima Yojana",
-  icon: "🛡️",
-  desc: "प्रधानमंत्री फसल बीमा योजना",
-  details: "Crop insurance protection for farmers against natural disasters",
-
-  governmentLevel: "Central + State Government",
-
-  eligibility: {
-    gender: "All",
-    maritalStatus: "All",
-    incomeLimit: "No income limit",
-    landRequired: "Must own or cultivate farmland",
-  },
-
-  benefits: [
-    "Insurance coverage against crop failure",
-    "Low premium (1.5%–2% of crop value)",
-    "Protection from floods, drought, pests",
-    "Direct claim settlement to bank account"
-  ],
-
-  howToApply: [
-    "Visit nearest bank or CSC center",
-    "Register your crop details",
-    "Pay small insurance premium",
-    "Submit land and Aadhaar documents",
-    "Receive insurance coverage confirmation"
-  ],
-
-  documents: [
-    "Aadhaar card",
-    "Land ownership / lease documents",
-    "Bank account details",
-    "Crop sowing declaration"
-  ],
-
-  authority: {
-    ministry: "Ministry of Agriculture & Farmers Welfare",
-    stateBody: "State Agriculture Insurance Office",
-    localBody: "District Agriculture Officer"
-  }
-},
-]
-
-export const MOCK_ELIGIBILITY = {
+const SCHEME_STRINGS = {
   1: {
-    schemeId: 1,
-    title: 'PM-KISAN - किसान सम्मान निधि योजना',
-    description: 'खेती में लगे सभी भारतीय किसानों के लिए आर्थिक सहायता योजना',
-    requirements: [
-      { item: 'भारतीय नागरिक होना चाहिए', status: 'verified' },
-      { item: 'खेती योग्य जमीन होनी चाहिए', status: 'verified' },
-      { item: '2 हेक्टेयर तक की जमीन', status: 'verified' },
-      { item: 'आधार निर्भर बैंक खाता', status: 'pending' },
-    ],
-    documents: ['आधार कार्ड', 'जमीन के कागजात', 'बैंक खाते की जानकारी', 'मोबाइल नंबर'],
-    nextSteps: 'फॉर्म भरने के बाद 30 दिन में ₹2,000 खाते में आएंगे',
+    hi:  { desc: 'किसान सम्मान निधि योजना', benefits: ['हर 4 महीने में ₹2,000', 'सीधे बैंक में DBT ट्रांसफर', 'कोई बिचौलिया नहीं'], howToApply: ['CSC केंद्र पर जाएं', 'आधार + जमीन के कागज जमा करें', 'जिला कार्यालय द्वारा सत्यापन', 'पैसे बैंक में आएंगे'], documents: ['आधार कार्ड', 'जमीन के कागजात', 'बैंक खाता', 'मोबाइल नंबर'] },
+    bho: { desc: 'किसान सम्मान निधि योजना', benefits: ['हर 4 महीना में ₹2,000', 'सीधे बैंक में DBT ट्रांसफर', 'कवनो बिचौलिया नइखे'], howToApply: ['CSC केंद्र पर जाईं', 'आधार + जमीन के कागज जमा करीं', 'जिला दफ्तर से सत्यापन', 'पइसा बैंक में आई'], documents: ['आधार कार्ड', 'जमीन के कागजात', 'बैंक खाता', 'मोबाइल नंबर'] },
+    awa: { desc: 'किसान सम्मान निधि योजना', benefits: ['हर 4 महीना म ₹2,000', 'सीधे बैंक म DBT ट्रांसफर', 'कौनौ बिचौलिया नाहीं'], howToApply: ['CSC केंद्र पर जावौ', 'आधार + जमीन क कागज जमा करौ', 'जिला दफ्तर से सत्यापन', 'पइसा बैंक म आई'], documents: ['आधार कार्ड', 'जमीन क कागजात', 'बैंक खाता', 'मोबाइल नंबर'] },
+    mr:  { desc: 'किसान सन्मान निधी योजना', benefits: ['दर 4 महिन्यांनी ₹2,000', 'थेट बँकेत DBT हस्तांतरण', 'कोणताही मध्यस्थ नाही'], howToApply: ['CSC केंद्रावर जा', 'आधार + जमीन कागदपत्रे जमा करा', 'जिल्हा कार्यालयाकडून पडताळणी', 'पैसे बँकेत येतील'], documents: ['आधार कार्ड', 'जमीन कागदपत्रे', 'बँक खाते', 'मोबाइल नंबर'] },
+    mai: { desc: 'किसान सम्मान निधि योजना', benefits: ['हर 4 माससँ ₹2,000', 'सीधे बैंकमे DBT ट्रांसफर', 'कोनो बिचौलिया नहि'], howToApply: ['CSC केंद्र पर जाउ', 'आधार + जमीनक कागज जमा करू', 'जिला कार्यालयसँ सत्यापन', 'पाइ बैंकमे आएत'], documents: ['आधार कार्ड', 'जमीनक कागजात', 'बैंक खाता', 'मोबाइल नंबर'] },
+    or:  { desc: 'କୃଷକ ସମ୍ମାନ ନିଧି ଯୋଜନା', benefits: ['ପ୍ରତି 4 ମାସରେ ₹2,000', 'ସିଧା ବ୍ୟାଙ୍କକୁ DBT ସ୍ଥାନାନ୍ତର', 'କୌଣସି ମଧ୍ୟସ୍ଥ ନାହିଁ'], howToApply: ['CSC କେନ୍ଦ୍ରକୁ ଯାଆନ୍ତୁ', 'ଆଧାର + ଜମି କାଗଜ ଦାଖଲ କରନ୍ତୁ', 'ଜିଲ୍ଲା କାର୍ଯ୍ୟାଳୟ ଦ୍ୱାରା ଯାଞ୍ଚ', 'ଟଙ୍କା ବ୍ୟାଙ୍କକୁ ଆସିବ'], documents: ['ଆଧାର କାର୍ଡ', 'ଜମି କାଗଜପତ୍ର', 'ବ୍ୟାଙ୍କ ଖାତା', 'ମୋବାଇଲ ନମ୍ବର'] },
+    en:  { desc: 'Kisan Samman Nidhi Scheme', benefits: ['₹2,000 every 4 months', 'Direct DBT bank transfer', 'No middlemen'], howToApply: ['Visit CSC center', 'Submit Aadhaar + land records', 'Verification by district office', 'Money credited to bank'], documents: ['Aadhaar card', 'Land ownership papers', 'Bank account', 'Mobile number'] },
+  },
+  2: {
+    hi:  { desc: 'प्रधानमंत्री फसल बीमा योजना', benefits: ['फसल नुकसान पर बीमा कवर', 'कम प्रीमियम (1.5%–2%)', 'बाढ़, सूखा, कीटों से सुरक्षा', 'सीधे बैंक में दावा भुगतान'], howToApply: ['नजदीकी बैंक या CSC केंद्र जाएं', 'फसल विवरण दर्ज कराएं', 'छोटा बीमा प्रीमियम दें', 'जमीन और आधार दस्तावेज जमा करें', 'बीमा पुष्टि लें'], documents: ['आधार कार्ड', 'जमीन / पट्टा दस्तावेज', 'बैंक खाते की जानकारी', 'फसल बोआई घोषणा'] },
+    bho: { desc: 'फसल बीमा योजना', benefits: ['फसल बर्बाद होले बीमा', 'कम प्रीमियम (1.5%–2%)', 'बाढ़, सूखा, कीड़ा से सुरक्षा', 'सीधे बैंक में भुगतान'], howToApply: ['नजदीकी बैंक या CSC केंद्र जाईं', 'फसल के बारे में बताईं', 'थोड़ा प्रीमियम दीं', 'जमीन आ आधार कागज दीं', 'बीमा पुष्टि लीं'], documents: ['आधार कार्ड', 'जमीन / पट्टा कागज', 'बैंक खाता', 'फसल बोआई घोषणा'] },
+    awa: { desc: 'फसल बीमा योजना', benefits: ['फसल बर्बाद होने पर बीमा', 'कम प्रीमियम (1.5%–2%)', 'बाढ़, सूखा, कीड़ा से बचाव', 'सीधे बैंक म भुगतान'], howToApply: ['नजदीकी बैंक या CSC केंद्र जावौ', 'फसल क विवरण दर्ज करावौ', 'छोट प्रीमियम देव', 'जमीन आ आधार कागज जमा करौ', 'बीमा पुष्टि लेव'], documents: ['आधार कार्ड', 'जमीन / पट्टा कागज', 'बैंक खाता', 'फसल बोआई घोषणा'] },
+    mr:  { desc: 'प्रधानमंत्री पीक विमा योजना', benefits: ['पीक नुकसानीवर विमा संरक्षण', 'कमी प्रीमियम (1.5%–2%)', 'पूर, दुष्काळ, कीडींपासून संरक्षण', 'थेट बँकेत दावा भरपाई'], howToApply: ['जवळील बँक किंवा CSC केंद्रावर जा', 'पीक तपशील नोंदवा', 'छोटा विमा प्रीमियम भरा', 'जमीन आणि आधार कागदपत्रे जमा करा', 'विमा पुष्टी घ्या'], documents: ['आधार कार्ड', 'जमीन / भाडेपट्टा कागदपत्रे', 'बँक खाते तपशील', 'पीक पेरणी जाहीरनामा'] },
+    mai: { desc: 'फसल बीमा योजना', benefits: ['फसल नष्ट होए पर बीमा', 'कम प्रीमियम (1.5%–2%)', 'बाढ़, सूखा, कीड़ासँ रक्षा', 'सीधे बैंकमे दावा'], howToApply: ['नजदीकी बैंक या CSC केंद्र जाउ', 'फसलक विवरण दर्ज करू', 'छोट प्रीमियम दिअ', 'जमीन आ आधार कागज जमा करू', 'बीमा पुष्टि लिअ'], documents: ['आधार कार्ड', 'जमीन / पट्टा कागज', 'बैंक खाता', 'फसल बोआई घोषणा'] },
+    or:  { desc: 'ପ୍ରଧାନମନ୍ତ୍ରୀ ଫସଲ ବୀମା ଯୋଜନା', benefits: ['ଫସଲ ନଷ୍ଟ ହେଲେ ବୀମା', 'କମ୍ ପ୍ରିମିୟମ (1.5%–2%)', 'ବନ୍ୟା, ଖରା, ପୋକରୁ ସୁରକ୍ଷା', 'ସିଧା ବ୍ୟାଙ୍କକୁ ଦାବି ଭୁଗତାନ'], howToApply: ['ନିକଟ ବ୍ୟାଙ୍କ ବା CSC କେନ୍ଦ୍ରକୁ ଯାଆନ୍ତୁ', 'ଫସଲ ବିବରଣ ଦାଖଲ କରନ୍ତୁ', 'ଛୋଟ ପ୍ରିମିୟମ ଦିଅନ୍ତୁ', 'ଜମି ଓ ଆଧାର କାଗଜ ଦାଖଲ କରନ୍ତୁ', 'ବୀମା ନିଶ୍ଚିତକରଣ ନିଅନ୍ତୁ'], documents: ['ଆଧାର କାର୍ଡ', 'ଜମି / ଲିଜ୍ ଦଲିଲ', 'ବ୍ୟାଙ୍କ ଖାତା ବିବରଣ', 'ଫସଲ ବୁଣା ଘୋଷଣା'] },
+    en:  { desc: 'PM Crop Insurance Scheme', benefits: ['Insurance coverage against crop failure', 'Low premium (1.5%–2%)', 'Protection from floods, drought, pests', 'Direct claim settlement to bank account'], howToApply: ['Visit nearest bank or CSC center', 'Register your crop details', 'Pay small insurance premium', 'Submit land and Aadhaar documents', 'Receive insurance coverage confirmation'], documents: ['Aadhaar card', 'Land ownership / lease documents', 'Bank account details', 'Crop sowing declaration'] },
   },
 }
+
+// Scheme structural data shared across all languages
+const SCHEME_BASE = [
+  {
+    id: 1,
+    name: 'PM-KISAN',
+    icon: '🌾',
+    details: '₹6,000 annual income support',
+    governmentLevel: 'Central Government',
+    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: '₹10 lakh/year', landRequired: '≤ 2 hectares' },
+    authority: { ministry: 'Ministry of Agriculture', stateBody: 'State Agriculture Department', localBody: 'Gram Panchayat' },
+  },
+  {
+    id: 2,
+    name: 'PM Fasal Bima Yojana',
+    icon: '🛡️',
+    details: 'Crop insurance against natural disasters',
+    governmentLevel: 'Central + State Government',
+    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'No income limit', landRequired: 'Must own or cultivate farmland' },
+    authority: { ministry: 'Ministry of Agriculture & Farmers Welfare', stateBody: 'State Agriculture Insurance Office', localBody: 'District Agriculture Officer' },
+  },
+]
+
+// ---------------------------------------------------------------------------
+// ELIGIBILITY
+// ---------------------------------------------------------------------------
+
+const ELIGIBILITY_STRINGS = {
+  1: {
+    hi:  { title: 'PM-KISAN - किसान सम्मान निधि योजना', description: 'खेती में लगे सभी भारतीय किसानों के लिए आर्थिक सहायता योजना', requirements: [{ item: 'भारतीय नागरिक होना चाहिए', status: 'verified' }, { item: 'खेती योग्य जमीन होनी चाहिए', status: 'verified' }, { item: '2 हेक्टेयर तक की जमीन', status: 'verified' }, { item: 'आधार निर्भर बैंक खाता', status: 'pending' }], documents: ['आधार कार्ड', 'जमीन के कागजात', 'बैंक खाते की जानकारी', 'मोबाइल नंबर'], nextSteps: 'फॉर्म भरने के बाद 30 दिन में ₹2,000 खाते में आएंगे' },
+    bho: { title: 'PM-KISAN - किसान सम्मान निधि योजना', description: 'खेती करे वाला सभी भारतीय किसानन खातिर आर्थिक सहायता', requirements: [{ item: 'भारतीय नागरिक होखे के चाही', status: 'verified' }, { item: 'खेती लायक जमीन होखे के चाही', status: 'verified' }, { item: '2 हेक्टेयर तक के जमीन', status: 'verified' }, { item: 'आधार से जुड़ल बैंक खाता', status: 'pending' }], documents: ['आधार कार्ड', 'जमीन के कागजात', 'बैंक खाता', 'मोबाइल नंबर'], nextSteps: 'फॉर्म भरला के बाद 30 दिन में ₹2,000 खाते में आई' },
+    awa: { title: 'PM-KISAN - किसान सम्मान निधि योजना', description: 'खेती करे वाला सब किसानन खाति आर्थिक सहायता', requirements: [{ item: 'भारतीय नागरिक होनौ चाही', status: 'verified' }, { item: 'खेती लायक जमीन होनी चाही', status: 'verified' }, { item: '2 हेक्टेयर तक क जमीन', status: 'verified' }, { item: 'आधार से जुड़ल बैंक खाता', status: 'pending' }], documents: ['आधार कार्ड', 'जमीन क कागजात', 'बैंक खाता', 'मोबाइल नंबर'], nextSteps: 'फॉर्म भरे के बाद 30 दिन म ₹2,000 खाते म आईहैं' },
+    mr:  { title: 'PM-KISAN - किसान सन्मान निधी योजना', description: 'शेती करणाऱ्या सर्व भारतीय शेतकऱ्यांसाठी आर्थिक सहाय्य योजना', requirements: [{ item: 'भारतीय नागरिक असणे आवश्यक', status: 'verified' }, { item: 'शेतजमीन असणे आवश्यक', status: 'verified' }, { item: '2 हेक्टरपर्यंत जमीन', status: 'verified' }, { item: 'आधार लिंक बँक खाते', status: 'pending' }], documents: ['आधार कार्ड', 'जमीन कागदपत्रे', 'बँक खाते माहिती', 'मोबाइल नंबर'], nextSteps: 'फॉर्म भरल्यानंतर 30 दिवसांत ₹2,000 खात्यात येतील' },
+    mai: { title: 'PM-KISAN - किसान सम्मान निधि योजना', description: 'खेती करैत सभ भारतीय किसानक लेल आर्थिक सहायता', requirements: [{ item: 'भारतीय नागरिक होएबाक चाही', status: 'verified' }, { item: 'खेती लायक जमीन होएबाक चाही', status: 'verified' }, { item: '2 हेक्टेयर धरि जमीन', status: 'verified' }, { item: 'आधार लिंक बैंक खाता', status: 'pending' }], documents: ['आधार कार्ड', 'जमीनक कागजात', 'बैंक खाता', 'मोबाइल नंबर'], nextSteps: 'फॉर्म भरलाक बाद 30 दिनमे ₹2,000 खातामे आएत' },
+    or:  { title: 'PM-KISAN - କୃଷକ ସମ୍ମାନ ନିଧି ଯୋଜନା', description: 'ଚାଷ କରୁଥିବା ସମସ୍ତ ଭାରତୀୟ କୃଷକଙ୍କ ପାଇଁ ଆର୍ଥିକ ସହାୟତା', requirements: [{ item: 'ଭାରତୀୟ ନାଗରିକ ହୋଇଥିବା ଆବଶ୍ୟକ', status: 'verified' }, { item: 'ଚାଷ ଜମି ଥିବା ଆବଶ୍ୟକ', status: 'verified' }, { item: '2 ହେକ୍ଟର ପର୍ଯ୍ୟନ୍ତ ଜମି', status: 'verified' }, { item: 'ଆଧାର ଲିଙ୍କ ବ୍ୟାଙ୍କ ଖାତା', status: 'pending' }], documents: ['ଆଧାର କାର୍ଡ', 'ଜମି କାଗଜପତ୍ର', 'ବ୍ୟାଙ୍କ ଖାତା ବିବରଣ', 'ମୋବାଇଲ ନମ୍ବର'], nextSteps: 'ଫର୍ମ ଭରିବା ପରେ 30 ଦିନ ମଧ୍ୟରେ ₹2,000 ଖାତାକୁ ଆସିବ' },
+    en:  { title: 'PM-KISAN - Kisan Samman Nidhi Scheme', description: 'Financial support scheme for all Indian farmers engaged in farming', requirements: [{ item: 'Must be an Indian citizen', status: 'verified' }, { item: 'Must own cultivable land', status: 'verified' }, { item: 'Land up to 2 hectares', status: 'verified' }, { item: 'Aadhaar-linked bank account', status: 'pending' }], documents: ['Aadhaar card', 'Land ownership papers', 'Bank account details', 'Mobile number'], nextSteps: 'After submitting the form, ₹2,000 will be credited within 30 days' },
+  },
+}
+
+// ---------------------------------------------------------------------------
+// APPLICATION RESPONSE — next steps are language-dependent
+// ---------------------------------------------------------------------------
+
+const APPLICATION_NEXT_STEPS = {
+  hi:  ['आपका आवेदन क्षेत्रीय कार्यालय को भेजा जाएगा', 'अधिकारी आपसे 3-5 दिनों में संपर्क करेंगे', 'मूल दस्तावेज़ ले जाकर ब्लॉक ऑफिस जाएँ', 'मंजूरी के बाद 7 दिन में पैसे खाते में आएंगे'],
+  bho: ['रउआ के आवेदन क्षेत्रीय कार्यालय के भेजल जाई', 'अधिकारी रउआ से 3-5 दिन में संपर्क करीहन', 'मूल कागज ले के ब्लॉक ऑफिस जाईं', 'मंजूरी के बाद 7 दिन में पइसा खाते में आई'],
+  awa: ['रउ के आवेदन क्षेत्रीय कार्यालय म भेजा जाई', 'अधिकारी रउ से 3-5 दिन म संपर्क करिहैं', 'मूल कागज लेक ब्लॉक ऑफिस जावौ', 'मंजूरी के बाद 7 दिन म पइसा खाते म आईहैं'],
+  mr:  ['तुमचा अर्ज प्रादेशिक कार्यालयाला पाठवला जाईल', 'अधिकारी 3-5 दिवसांत तुमच्याशी संपर्क करतील', 'मूळ कागदपत्रे घेऊन ब्लॉक ऑफिसला जा', 'मंजुरीनंतर 7 दिवसांत पैसे खात्यात येतील'],
+  mai: ['अहाँक आवेदन क्षेत्रीय कार्यालयकेँ पठाओल जाएत', 'अधिकारी अहाँसँ 3-5 दिनमे संपर्क करताह', 'मूल कागज लए ब्लॉक ऑफिस जाउ', 'मंजूरीक बाद 7 दिनमे पाइ खातामे आएत'],
+  or:  ['ଆପଣଙ୍କ ଆବେଦନ ଆଞ୍ଚଳିକ କାର୍ଯ୍ୟାଳୟକୁ ପଠାଯିବ', 'ଅଧିକାରୀ 3-5 ଦିନ ମଧ୍ୟରେ ଆପଣଙ୍କ ସହ ଯୋଗାଯୋଗ କରିବେ', 'ମୂଳ କାଗଜ ଧରି ବ୍ଲକ ଅଫିସ ଯାଆନ୍ତୁ', 'ଅନୁମୋଦନ ପରେ 7 ଦିନ ମଧ୍ୟରେ ଟଙ୍କା ଖାତାକୁ ଆସିବ'],
+  en:  ['Your application will be sent to the regional office', 'An officer will contact you within 3-5 days', 'Visit the block office with original documents', 'Money will be credited within 7 days of approval'],
+}
+
+// ---------------------------------------------------------------------------
+// LATEST OFFERS
+// ---------------------------------------------------------------------------
+
+const LATEST_OFFERS_STRINGS = {
+  hi: [
+    { id: 101, title: 'नई PM-KISAN वृद्धि', desc: '₹2,000 से बढ़कर ₹3,000 प्रति किश्त', icon: '📢', badge: 'नया', date: '2 दिन पहले', type: 'update' },
+    { id: 102, title: 'फसल बीमा विस्तार', desc: '10 और राज्यों में उपलब्ध', icon: '🛡️', badge: 'अपडेट', date: '5 दिन पहले', type: 'expansion' },
+    { id: 103, title: 'डिजिटल साक्षरता योजना', desc: '₹500 की छात्रवृत्ति आवेदन के लिए खुली', icon: '💻', badge: 'नया', date: 'आज', type: 'new' },
+    { id: 104, title: 'बेरोजगारी भत्ता संशोधन', desc: '₹500 से ₹750 किया गया', icon: '💰', badge: 'अपडेट', date: '1 दिन पहले', type: 'update' },
+    { id: 105, title: 'महिला उद्यम योजना', desc: 'महिला किसानों के लिए ₹5 लाख तक ऋण', icon: '👩‍🌾', badge: 'नया', date: '3 दिन पहले', type: 'new' },
+  ],
+  bho: [
+    { id: 101, title: 'PM-KISAN में बढ़ोतरी', desc: '₹2,000 से बढ़ के ₹3,000 प्रति किश्त', icon: '📢', badge: 'नया', date: '2 दिन पहिले', type: 'update' },
+    { id: 102, title: 'फसल बीमा के विस्तार', desc: '10 अउर राज्यन में उपलब्ध', icon: '🛡️', badge: 'अपडेट', date: '5 दिन पहिले', type: 'expansion' },
+    { id: 103, title: 'डिजिटल साक्षरता योजना', desc: '₹500 के छात्रवृत्ति खातिर आवेदन खुलल', icon: '💻', badge: 'नया', date: 'आज', type: 'new' },
+    { id: 104, title: 'बेरोजगारी भत्ता बढ़ल', desc: '₹500 से ₹750 कइल गइल', icon: '💰', badge: 'अपडेट', date: '1 दिन पहिले', type: 'update' },
+    { id: 105, title: 'महिला उद्यम योजना', desc: 'महिला किसानन खातिर ₹5 लाख तक ऋण', icon: '👩‍🌾', badge: 'नया', date: '3 दिन पहिले', type: 'new' },
+  ],
+  awa: [
+    { id: 101, title: 'PM-KISAN म बढ़ोतरी', desc: '₹2,000 से बढ़क ₹3,000 प्रति किश्त', icon: '📢', badge: 'नया', date: '2 दिन पहिले', type: 'update' },
+    { id: 102, title: 'फसल बीमा क विस्तार', desc: '10 अउर राज्यन म उपलब्ध', icon: '🛡️', badge: 'अपडेट', date: '5 दिन पहिले', type: 'expansion' },
+    { id: 103, title: 'डिजिटल साक्षरता योजना', desc: '₹500 क छात्रवृत्ति खाति आवेदन खुलल', icon: '💻', badge: 'नया', date: 'आज', type: 'new' },
+    { id: 104, title: 'बेरोजगारी भत्ता बढ़ाओ गयौ', desc: '₹500 से ₹750 कइल गयौ', icon: '💰', badge: 'अपडेट', date: '1 दिन पहिले', type: 'update' },
+    { id: 105, title: 'महिला उद्यम योजना', desc: 'महिला किसानन खाति ₹5 लाख तक ऋण', icon: '👩‍🌾', badge: 'नया', date: '3 दिन पहिले', type: 'new' },
+  ],
+  mr: [
+    { id: 101, title: 'PM-KISAN वाढ', desc: '₹2,000 वरून ₹3,000 प्रति हप्ता', icon: '📢', badge: 'नवीन', date: '2 दिवसांपूर्वी', type: 'update' },
+    { id: 102, title: 'पीक विमा विस्तार', desc: '10 अधिक राज्यांत उपलब्ध', icon: '🛡️', badge: 'अपडेट', date: '5 दिवसांपूर्वी', type: 'expansion' },
+    { id: 103, title: 'डिजिटल साक्षरता योजना', desc: '₹500 शिष्यवृत्तीसाठी अर्ज सुरू', icon: '💻', badge: 'नवीन', date: 'आज', type: 'new' },
+    { id: 104, title: 'बेरोजगारी भत्ता सुधारणा', desc: '₹500 वरून ₹750 करण्यात आले', icon: '💰', badge: 'अपडेट', date: '1 दिवसापूर्वी', type: 'update' },
+    { id: 105, title: 'महिला उद्यम योजना', desc: 'महिला शेतकऱ्यांसाठी ₹5 लाखापर्यंत कर्ज', icon: '👩‍🌾', badge: 'नवीन', date: '3 दिवसांपूर्वी', type: 'new' },
+  ],
+  mai: [
+    { id: 101, title: 'PM-KISAN मे वृद्धि', desc: '₹2,000 सँ ₹3,000 प्रति किश्त', icon: '📢', badge: 'नव', date: '2 दिन पहिने', type: 'update' },
+    { id: 102, title: 'फसल बीमाक विस्तार', desc: '10 और राज्यमे उपलब्ध', icon: '🛡️', badge: 'अपडेट', date: '5 दिन पहिने', type: 'expansion' },
+    { id: 103, title: 'डिजिटल साक्षरता योजना', desc: '₹500 छात्रवृत्ति खातिर आवेदन खुजल', icon: '💻', badge: 'नव', date: 'आइ', type: 'new' },
+    { id: 104, title: 'बेरोजगारी भत्ता संशोधन', desc: '₹500 सँ ₹750 कएल गेल', icon: '💰', badge: 'अपडेट', date: '1 दिन पहिने', type: 'update' },
+    { id: 105, title: 'महिला उद्यम योजना', desc: 'महिला किसानक लेल ₹5 लाख धरि ऋण', icon: '👩‍🌾', badge: 'नव', date: '3 दिन पहिने', type: 'new' },
+  ],
+  or: [
+    { id: 101, title: 'PM-KISAN ବୃଦ୍ଧି', desc: '₹2,000 ରୁ ₹3,000 ପ୍ରତି କିସ୍ତ', icon: '📢', badge: 'ନୂଆ', date: '2 ଦିନ ଆଗ', type: 'update' },
+    { id: 102, title: 'ଫସଲ ବୀମା ବିସ୍ତାର', desc: '10 ଅଧିକ ରାଜ୍ୟରେ ଉପଲବ୍ଧ', icon: '🛡️', badge: 'ଅପଡେଟ', date: '5 ଦିନ ଆଗ', type: 'expansion' },
+    { id: 103, title: 'ଡିଜିଟାଲ ସାକ୍ଷରତା ଯୋଜନା', desc: '₹500 ଛାତ୍ରବୃତ୍ତି ପାଇଁ ଆବେଦନ ଖୋଲା', icon: '💻', badge: 'ନୂଆ', date: 'ଆଜି', type: 'new' },
+    { id: 104, title: 'ବେକାର ଭତ୍ତା ସଂଶୋଧନ', desc: '₹500 ରୁ ₹750 ସଂଶୋଧିତ', icon: '💰', badge: 'ଅପଡେଟ', date: '1 ଦିନ ଆଗ', type: 'update' },
+    { id: 105, title: 'ମହିଳା ଉଦ୍ୟମ ଯୋଜନା', desc: 'ମହିଳା କୃଷକଙ୍କ ପାଇଁ ₹5 ଲକ୍ଷ ପର୍ଯ୍ୟନ୍ତ ଋଣ', icon: '👩‍🌾', badge: 'ନୂଆ', date: '3 ଦିନ ଆଗ', type: 'new' },
+  ],
+  en: [
+    { id: 101, title: 'New PM-KISAN Increase', desc: '₹2,000 raised to ₹3,000 per instalment', icon: '📢', badge: 'New', date: '2 days ago', type: 'update' },
+    { id: 102, title: 'Crop Insurance Expanded', desc: 'Now available in 10 more states', icon: '🛡️', badge: 'Update', date: '5 days ago', type: 'expansion' },
+    { id: 103, title: 'Digital Literacy Scheme', desc: '₹500 scholarship applications open', icon: '💻', badge: 'New', date: 'Today', type: 'new' },
+    { id: 104, title: 'Unemployment Allowance Revised', desc: 'Raised from ₹500 to ₹750', icon: '💰', badge: 'Update', date: '1 day ago', type: 'update' },
+    { id: 105, title: 'Women Enterprise Scheme', desc: 'Loans up to ₹5 lakh for women farmers', icon: '👩‍🌾', badge: 'New', date: '3 days ago', type: 'new' },
+  ],
+}
+
+// ---------------------------------------------------------------------------
+// LOAN OPTIONS
+// ---------------------------------------------------------------------------
+
+const LOAN_OPTIONS_STRINGS = {
+  hi: [
+    { id: 1, title: 'कृषि उपकरण लोन', detail: 'ट्रैक्टर, थ्रेशर और अन्य उपकरण के लिए', amount: '₹3-10 लाख', interest: '7-9%', tenure: '3-7 वर्ष', eligibility: 'खेती योग्य जमीन आवश्यक' },
+    { id: 2, title: 'फसल लोन', detail: 'बीज, खाद, कीटनाशक के लिए अल्पकालिक ऋण', amount: '₹50,000-5 लाख', interest: '4-7%', tenure: '6-12 माह', eligibility: 'खेती का प्रमाण पत्र चाहिए' },
+    { id: 3, title: 'पशुपालन लोन', detail: 'गाय, भैंस, मुर्गी पालन के लिए', amount: '₹1-5 लाख', interest: '8-10%', tenure: '3-5 वर्ष', eligibility: 'पशुपालन प्रशिक्षण या अनुभव' },
+    { id: 4, title: 'भूमि विकास लोन', detail: 'सिंचाई, बोरवेल, तालाब खुदाई के लिए', amount: '₹2-8 लाख', interest: '9-11%', tenure: '5-10 वर्ष', eligibility: 'ज़मीन का स्वामित्व आवश्यक' },
+    { id: 5, title: 'मुद्रा लोन', detail: 'छोटे व्यवसाय शुरू करने के लिए', amount: '₹50,000-10 लाख', interest: '8-12%', tenure: '3-5 वर्ष', eligibility: 'व्यवसाय योजना आवश्यक' },
+  ],
+  bho: [
+    { id: 1, title: 'कृषि उपकरण लोन', detail: 'ट्रैक्टर, थ्रेशर आ अन्य उपकरण खातिर', amount: '₹3-10 लाख', interest: '7-9%', tenure: '3-7 साल', eligibility: 'खेती लायक जमीन चाही' },
+    { id: 2, title: 'फसल लोन', detail: 'बीज, खाद, दवाई खातिर अल्पकालिक ऋण', amount: '₹50,000-5 लाख', interest: '4-7%', tenure: '6-12 महीना', eligibility: 'खेती के प्रमाण पत्र चाही' },
+    { id: 3, title: 'पशुपालन लोन', detail: 'गाय, भैंस, मुर्गी पालन खातिर', amount: '₹1-5 लाख', interest: '8-10%', tenure: '3-5 साल', eligibility: 'पशुपालन के अनुभव चाही' },
+    { id: 4, title: 'जमीन विकास लोन', detail: 'सिंचाई, बोरवेल, तालाब खुदाई खातिर', amount: '₹2-8 लाख', interest: '9-11%', tenure: '5-10 साल', eligibility: 'जमीन के मालिकाना जरूरी' },
+    { id: 5, title: 'मुद्रा लोन', detail: 'छोट व्यापार शुरू करे खातिर', amount: '₹50,000-10 लाख', interest: '8-12%', tenure: '3-5 साल', eligibility: 'व्यापार योजना जरूरी' },
+  ],
+  awa: [
+    { id: 1, title: 'कृषि उपकरण लोन', detail: 'ट्रैक्टर, थ्रेशर अउर अन्य उपकरण खाति', amount: '₹3-10 लाख', interest: '7-9%', tenure: '3-7 साल', eligibility: 'खेती लायक जमीन जरूरी' },
+    { id: 2, title: 'फसल लोन', detail: 'बीज, खाद, दवाई खाति छोट ऋण', amount: '₹50,000-5 लाख', interest: '4-7%', tenure: '6-12 महीना', eligibility: 'खेती क प्रमाण पत्र जरूरी' },
+    { id: 3, title: 'पशुपालन लोन', detail: 'गाय, भैंस, मुर्गी पालन खाति', amount: '₹1-5 लाख', interest: '8-10%', tenure: '3-5 साल', eligibility: 'पशुपालन अनुभव जरूरी' },
+    { id: 4, title: 'जमीन विकास लोन', detail: 'सिंचाई, बोरवेल, तालाब खुदाई खाति', amount: '₹2-8 लाख', interest: '9-11%', tenure: '5-10 साल', eligibility: 'जमीन क मालिकाना जरूरी' },
+    { id: 5, title: 'मुद्रा लोन', detail: 'छोट व्यापार शुरू करे खाति', amount: '₹50,000-10 लाख', interest: '8-12%', tenure: '3-5 साल', eligibility: 'व्यापार योजना जरूरी' },
+  ],
+  mr: [
+    { id: 1, title: 'कृषी उपकरण कर्ज', detail: 'ट्रॅक्टर, थ्रेशर आणि इतर उपकरणांसाठी', amount: '₹3-10 लाख', interest: '7-9%', tenure: '3-7 वर्षे', eligibility: 'शेतजमीन असणे आवश्यक' },
+    { id: 2, title: 'पीक कर्ज', detail: 'बी-बियाणे, खते, कीटकनाशकांसाठी अल्पकालीन कर्ज', amount: '₹50,000-5 लाख', interest: '4-7%', tenure: '6-12 महिने', eligibility: 'शेती प्रमाणपत्र आवश्यक' },
+    { id: 3, title: 'पशुपालन कर्ज', detail: 'गाय, म्हैस, कोंबडी पालनासाठी', amount: '₹1-5 लाख', interest: '8-10%', tenure: '3-5 वर्षे', eligibility: 'पशुपालन प्रशिक्षण किंवा अनुभव' },
+    { id: 4, title: 'जमीन विकास कर्ज', detail: 'सिंचन, बोअरवेल, तलाव खुदाईसाठी', amount: '₹2-8 लाख', interest: '9-11%', tenure: '5-10 वर्षे', eligibility: 'जमीन मालकी आवश्यक' },
+    { id: 5, title: 'मुद्रा कर्ज', detail: 'छोटे व्यवसाय सुरू करण्यासाठी', amount: '₹50,000-10 लाख', interest: '8-12%', tenure: '3-5 वर्षे', eligibility: 'व्यवसाय योजना आवश्यक' },
+  ],
+  mai: [
+    { id: 1, title: 'कृषि उपकरण ऋण', detail: 'ट्रैक्टर, थ्रेशर आ अन्य उपकरणक लेल', amount: '₹3-10 लाख', interest: '7-9%', tenure: '3-7 वर्ष', eligibility: 'खेती लायक जमीन आवश्यक' },
+    { id: 2, title: 'फसल ऋण', detail: 'बीज, खाद, दवाईक लेल अल्पकालिक ऋण', amount: '₹50,000-5 लाख', interest: '4-7%', tenure: '6-12 माह', eligibility: 'खेतीक प्रमाण पत्र चाही' },
+    { id: 3, title: 'पशुपालन ऋण', detail: 'गाय, भैंस, कुकुरक लेल', amount: '₹1-5 लाख', interest: '8-10%', tenure: '3-5 वर्ष', eligibility: 'पशुपालन अनुभव आवश्यक' },
+    { id: 4, title: 'भूमि विकास ऋण', detail: 'सिंचाई, बोरवेल, पोखरि खुदाईक लेल', amount: '₹2-8 लाख', interest: '9-11%', tenure: '5-10 वर्ष', eligibility: 'जमीनक स्वामित्व आवश्यक' },
+    { id: 5, title: 'मुद्रा ऋण', detail: 'छोट व्यापार शुरू करेक लेल', amount: '₹50,000-10 लाख', interest: '8-12%', tenure: '3-5 वर्ष', eligibility: 'व्यापार योजना आवश्यक' },
+  ],
+  or: [
+    { id: 1, title: 'କୃଷି ଉପକରଣ ଋଣ', detail: 'ଟ୍ରାକ୍ଟର, ଥ୍ରେଶର ଓ ଅନ୍ୟ ଉପକରଣ ପାଇଁ', amount: '₹3-10 ଲକ୍ଷ', interest: '7-9%', tenure: '3-7 ବର୍ଷ', eligibility: 'ଚାଷ ଜମି ଆବଶ୍ୟକ' },
+    { id: 2, title: 'ଫସଲ ଋଣ', detail: 'ବୀଜ, ସାର, କୀଟନାଶକ ପାଇଁ ଅଳ୍ପକାଳୀନ ଋଣ', amount: '₹50,000-5 ଲକ୍ଷ', interest: '4-7%', tenure: '6-12 ମାସ', eligibility: 'ଚାଷ ପ୍ରମାଣପତ୍ର ଆବଶ୍ୟକ' },
+    { id: 3, title: 'ପଶୁପାଳନ ଋଣ', detail: 'ଗାଈ, ମଇଁଷି, କୁକୁଡ଼ା ପାଳନ ପାଇଁ', amount: '₹1-5 ଲକ୍ଷ', interest: '8-10%', tenure: '3-5 ବର୍ଷ', eligibility: 'ପଶୁପାଳନ ଅଭିଜ୍ଞତା ଆବଶ୍ୟକ' },
+    { id: 4, title: 'ଜମି ଉନ୍ନୟନ ଋଣ', detail: 'ଜଳସେଚନ, ବୋରୱେଲ, ପୋଖରୀ ଖନନ ପାଇଁ', amount: '₹2-8 ଲକ୍ଷ', interest: '9-11%', tenure: '5-10 ବର୍ଷ', eligibility: 'ଜମି ମାଲିକାନା ଆବଶ୍ୟକ' },
+    { id: 5, title: 'ମୁଦ୍ରା ଋଣ', detail: 'ଛୋଟ ବ୍ୟବସାୟ ଆରମ୍ଭ ପାଇଁ', amount: '₹50,000-10 ଲକ୍ଷ', interest: '8-12%', tenure: '3-5 ବର୍ଷ', eligibility: 'ବ୍ୟବସାୟ ଯୋଜନା ଆବଶ୍ୟକ' },
+  ],
+  en: [
+    { id: 1, title: 'Farm Equipment Loan', detail: 'For tractors, threshers and other machinery', amount: '₹3-10 lakh', interest: '7-9%', tenure: '3-7 years', eligibility: 'Cultivable land required' },
+    { id: 2, title: 'Crop Loan', detail: 'Short-term credit for seeds, fertilizers, pesticides', amount: '₹50,000-5 lakh', interest: '4-7%', tenure: '6-12 months', eligibility: 'Farming proof certificate required' },
+    { id: 3, title: 'Dairy / Livestock Loan', detail: 'For cattle, buffalo, poultry farming', amount: '₹1-5 lakh', interest: '8-10%', tenure: '3-5 years', eligibility: 'Animal husbandry training or experience' },
+    { id: 4, title: 'Land Development Loan', detail: 'For irrigation, borewells, pond excavation', amount: '₹2-8 lakh', interest: '9-11%', tenure: '5-10 years', eligibility: 'Land ownership required' },
+    { id: 5, title: 'MUDRA Loan', detail: 'For starting small businesses', amount: '₹50,000-10 lakh', interest: '8-12%', tenure: '3-5 years', eligibility: 'Business plan required' },
+  ],
+}
+
+// ---------------------------------------------------------------------------
+// MANDI PRICES
+// Mandi names and crop names are localized; prices/trends stay universal.
+// ---------------------------------------------------------------------------
+
+const MANDI_PRICE_DATA = [
+  {
+    id: 1,
+    names: { hi: 'रामपुर मंडी', bho: 'रामपुर मंडी', awa: 'रामपुर मंडी', mr: 'रामपूर बाजार', mai: 'रामपुर मंडी', or: 'ରାମପୁର ମଣ୍ଡି', en: 'Rampur Market' },
+    state: { hi: 'उत्तर प्रदेश', bho: 'उत्तर प्रदेश', awa: 'उत्तर प्रदेश', mr: 'उत्तर प्रदेश', mai: 'उत्तर प्रदेश', or: 'ଉତ୍ତର ପ୍ରଦେଶ', en: 'Uttar Pradesh' },
+    crops: [
+      { names: { hi: 'गेहूं', bho: 'गेहूं', awa: 'गेहूं', mr: 'गहू', mai: 'गहूम', or: 'ଗହମ', en: 'Wheat' }, price: '₹2,150', unit: { hi: '/क्विंटल', bho: '/क्विंटल', awa: '/क्विंटल', mr: '/क्विंटल', mai: '/क्विंटल', or: '/କ୍ୱିଣ୍ଟାଲ', en: '/quintal' }, change: '+50', trend: 'up' },
+      { names: { hi: 'धान', bho: 'धान', awa: 'धान', mr: 'भात', mai: 'धान', or: 'ଧାନ', en: 'Paddy' }, price: '₹1,930', unit: { hi: '/क्विंटल', bho: '/क्विंटल', awa: '/क्विंटल', mr: '/क्विंटल', mai: '/क्विंटल', or: '/କ୍ୱିଣ୍ଟାଲ', en: '/quintal' }, change: '-10', trend: 'down' },
+      { names: { hi: 'मक्का', bho: 'मक्का', awa: 'मक्का', mr: 'मका', mai: 'मकई', or: 'ମକା', en: 'Maize' }, price: '₹1,700', unit: { hi: '/क्विंटल', bho: '/क्विंटल', awa: '/क्विंटल', mr: '/क्विंटल', mai: '/क्विंटल', or: '/କ୍ୱିଣ୍ଟାଲ', en: '/quintal' }, change: '+20', trend: 'up' },
+    ],
+  },
+  {
+    id: 2,
+    names: { hi: 'लखनऊ मंडी', bho: 'लखनऊ मंडी', awa: 'लखनऊ मंडी', mr: 'लखनौ बाजार', mai: 'लखनऊ मंडी', or: 'ଲକ୍ଷ୍ନୌ ମଣ୍ଡି', en: 'Lucknow Market' },
+    state: { hi: 'उत्तर प्रदेश', bho: 'उत्तर प्रदेश', awa: 'उत्तर प्रदेश', mr: 'उत्तर प्रदेश', mai: 'उत्तर प्रदेश', or: 'ଉତ୍ତର ପ୍ରଦେଶ', en: 'Uttar Pradesh' },
+    crops: [
+      { names: { hi: 'गेहूं', bho: 'गेहूं', awa: 'गेहूं', mr: 'गहू', mai: 'गहूम', or: 'ଗହମ', en: 'Wheat' }, price: '₹2,180', unit: { hi: '/क्विंटल', bho: '/क्विंटल', awa: '/क्विंटल', mr: '/क्विंटल', mai: '/क्विंटल', or: '/କ୍ୱିଣ୍ଟାଲ', en: '/quintal' }, change: '+30', trend: 'up' },
+      { names: { hi: 'दलहन', bho: 'दलहन', awa: 'दलहन', mr: 'डाळ', mai: 'दालि', or: 'ଡାଲି', en: 'Pulses' }, price: '₹5,820', unit: { hi: '/क्विंटल', bho: '/क्विंटल', awa: '/क्विंटल', mr: '/क्विंटल', mai: '/क्विंटल', or: '/କ୍ୱିଣ୍ଟାଲ', en: '/quintal' }, change: '+110', trend: 'up' },
+      { names: { hi: 'चना', bho: 'चना', awa: 'चना', mr: 'हरभरा', mai: 'चना', or: 'ଚଣା', en: 'Gram' }, price: '₹5,100', unit: { hi: '/क्विंटल', bho: '/क्विंटल', awa: '/क्विंटल', mr: '/क्विंटल', mai: '/क्विंटल', or: '/କ୍ୱିଣ୍ଟାଲ', en: '/quintal' }, change: '-40', trend: 'down' },
+    ],
+  },
+  {
+    id: 3,
+    names: { hi: 'सुल्तानपुर मंडी', bho: 'सुल्तानपुर मंडी', awa: 'सुल्तानपुर मंडी', mr: 'सुलतानपूर बाजार', mai: 'सुल्तानपुर मंडी', or: 'ସୁଲ୍ତାନପୁର ମଣ୍ଡି', en: 'Sultanpur Market' },
+    state: { hi: 'उत्तर प्रदेश', bho: 'उत्तर प्रदेश', awa: 'उत्तर प्रदेश', mr: 'उत्तर प्रदेश', mai: 'उत्तर प्रदेश', or: 'ଉତ୍ତର ପ୍ରଦେଶ', en: 'Uttar Pradesh' },
+    crops: [
+      { names: { hi: 'धान', bho: 'धान', awa: 'धान', mr: 'भात', mai: 'धान', or: 'ଧାନ', en: 'Paddy' }, price: '₹1,950', unit: { hi: '/क्विंटल', bho: '/क्विंटल', awa: '/क्विंटल', mr: '/क्विंटल', mai: '/क्विंटल', or: '/କ୍ୱିଣ୍ଟାଲ', en: '/quintal' }, change: '+15', trend: 'up' },
+      { names: { hi: 'सरसों', bho: 'सरसों', awa: 'सरसों', mr: 'मोहरी', mai: 'सरिसब', or: 'ସୋରିଷ', en: 'Mustard' }, price: '₹5,400', unit: { hi: '/क्विंटल', bho: '/क्विंटल', awa: '/क्विंटल', mr: '/क्विंटल', mai: '/क्विंटल', or: '/କ୍ୱିଣ୍ଟାଲ', en: '/quintal' }, change: '+70', trend: 'up' },
+      { names: { hi: 'मक्का', bho: 'मक्का', awa: 'मक्का', mr: 'मका', mai: 'मकई', or: 'ମକା', en: 'Maize' }, price: '₹1,690', unit: { hi: '/क्विंटल', bho: '/क्विंटल', awa: '/क्विंटल', mr: '/क्विंटल', mai: '/क्विंटल', or: '/କ୍ୱିଣ୍ଟାଲ', en: '/quintal' }, change: '0', trend: 'stable' },
+    ],
+  },
+  {
+    id: 4,
+    names: { hi: 'फैजाबाद मंडी', bho: 'फैजाबाद मंडी', awa: 'फैजाबाद मंडी', mr: 'फैजाबाद बाजार', mai: 'फैजाबाद मंडी', or: 'ଫୈଜାବାଦ ମଣ୍ଡି', en: 'Faizabad Market' },
+    state: { hi: 'उत्तर प्रदेश', bho: 'उत्तर प्रदेश', awa: 'उत्तर प्रदेश', mr: 'उत्तर प्रदेश', mai: 'उत्तर प्रदेश', or: 'ଉତ୍ତର ପ୍ରଦେଶ', en: 'Uttar Pradesh' },
+    crops: [
+      { names: { hi: 'गेहूं', bho: 'गेहूं', awa: 'गेहूं', mr: 'गहू', mai: 'गहूम', or: 'ଗହମ', en: 'Wheat' }, price: '₹2,120', unit: { hi: '/क्विंटल', bho: '/क्विंटल', awa: '/क्विंटल', mr: '/क्विंटल', mai: '/क्विंटल', or: '/କ୍ୱିଣ୍ଟାଲ', en: '/quintal' }, change: '-20', trend: 'down' },
+      { names: { hi: 'गन्ना', bho: 'गन्ना', awa: 'गन्ना', mr: 'ऊस', mai: 'ईख', or: 'ଆଖୁ', en: 'Sugarcane' }, price: '₹355', unit: { hi: '/क्विंटल', bho: '/क्विंटल', awa: '/क्विंटल', mr: '/क्विंटल', mai: '/क्विंटल', or: '/କ୍ୱିଣ୍ଟାଲ', en: '/quintal' }, change: '+10', trend: 'up' },
+      { names: { hi: 'दलहन', bho: 'दलहन', awa: 'दलहन', mr: 'डाळ', mai: 'दालि', or: 'ଡାଲି', en: 'Pulses' }, price: '₹5,760', unit: { hi: '/क्विंटल', bho: '/क्विंटल', awa: '/क्विंटल', mr: '/क्विंटल', mai: '/क्विंटल', or: '/କ୍ୱିଣ୍ଟାଲ', en: '/quintal' }, change: '+60', trend: 'up' },
+    ],
+  },
+  {
+    id: 5,
+    names: { hi: 'बस्ती मंडी', bho: 'बस्ती मंडी', awa: 'बस्ती मंडी', mr: 'बस्ती बाजार', mai: 'बस्ती मंडी', or: 'ବସ୍ତି ମଣ୍ଡି', en: 'Basti Market' },
+    state: { hi: 'उत्तर प्रदेश', bho: 'उत्तर प्रदेश', awa: 'उत्तर प्रदेश', mr: 'उत्तर प्रदेश', mai: 'उत्तर प्रदेश', or: 'ଉତ୍ତର ପ୍ରଦେଶ', en: 'Uttar Pradesh' },
+    crops: [
+      { names: { hi: 'गन्ना', bho: 'गन्ना', awa: 'गन्ना', mr: 'ऊस', mai: 'ईख', or: 'ଆଖୁ', en: 'Sugarcane' }, price: '₹350', unit: { hi: '/क्विंटल', bho: '/क्विंटल', awa: '/क्विंटल', mr: '/क्विंटल', mai: '/क्विंटल', or: '/କ୍ୱିଣ୍ଟାଲ', en: '/quintal' }, change: '+15', trend: 'up' },
+      { names: { hi: 'धान', bho: 'धान', awa: 'धान', mr: 'भात', mai: 'धान', or: 'ଧାନ', en: 'Paddy' }, price: '₹1,920', unit: { hi: '/क्विंटल', bho: '/क्विंटल', awa: '/क्विंटल', mr: '/क्विंटल', mai: '/क्विंटल', or: '/କ୍ୱିଣ୍ଟାଲ', en: '/quintal' }, change: '-30', trend: 'down' },
+      { names: { hi: 'चना', bho: 'चना', awa: 'चना', mr: 'हरभरा', mai: 'चना', or: 'ଚଣା', en: 'Gram' }, price: '₹5,050', unit: { hi: '/क्विंटल', bho: '/क्विंटल', awa: '/क्विंटल', mr: '/क्विंटल', mai: '/क्विंटल', or: '/କ୍ୱିଣ୍ଟାଲ', en: '/quintal' }, change: '+25', trend: 'up' },
+    ],
+  },
+]
+
+// ---------------------------------------------------------------------------
+// MOCK TRANSCRIPTS — voice recognition demo text per language
+// Keys now match appConfig.js language codes exactly
+// ---------------------------------------------------------------------------
+
+export const MOCK_TRANSCRIPTS = {
+  hi:  'मुझे PM-KISAN योजना के बारे में जानकारी चाहिए',
+  bho: 'हम फसल बीमा खातिर आवेदन करना चाहतानी',
+  awa: 'मिट्टी स्वास्थ्य कार्ड योजना क जानकारी दियौ',
+  mr:  'मला सरकारी योजनांची माहिती हवी',
+  mai: 'हम MGNREGA रेजिस्ट्रेशनक बारेमे जानकारी चाहै छी',
+  or:  'ମୁଁ MGNREGA ରେଜିଷ୍ଟ୍ରେସନ ସମ୍ପର୍କରେ ଜାଣିବାକୁ ଚାହୁଁ',
+  en:  'I need information about government schemes',
+}
+
+// ---------------------------------------------------------------------------
+// DASHBOARD STATS — static numerics; only relative time strings are localized
+// ---------------------------------------------------------------------------
 
 export const MOCK_DASHBOARD_STATS = {
   todaysCalls: 247,
@@ -114,41 +281,21 @@ export const MOCK_DASHBOARD_STATS = {
   amountUnlocked: '₹68,50,000',
   approvalRate: '87%',
   recentActivities: [
-    {
-      id: 1,
-      name: 'राम कुमार',
-      scheme: 'PM-KISAN',
-      status: 'Approved',
-      date: '2 घंटे पहले',
-      amount: '₹2,000',
-    },
-    {
-      id: 2,
-      name: 'रीता देवी',
-      scheme: 'Crop Insurance',
-      status: 'Processing',
-      date: '4 घंटे पहले',
-      amount: '₹15,000',
-    },
+    { id: 1, name: 'राम कुमार', scheme: 'PM-KISAN', status: 'Approved', date: '2 घंटे पहले', amount: '₹2,000' },
+    { id: 2, name: 'रीता देवी', scheme: 'Crop Insurance', status: 'Processing', date: '4 घंटे पहले', amount: '₹15,000' },
   ],
   languageBreakdown: [
-    { lang: 'हिन्दी', calls: 1200 },
-    { lang: 'भोजपुरी', calls: 850 },
-    { lang: 'अवधी', calls: 650 },
-    { lang: 'ओडिया', calls: 520 },
-    { lang: 'मराठी', calls: 420 },
+    { lang: 'हिन्दी', calls: 1200, color: '#FF6B6B' },
+    { lang: 'भोजपुरी', calls: 850, color: '#4ECDC4' },
+    { lang: 'अवधी', calls: 650, color: '#45B7D1' },
+    { lang: 'ओडिया', calls: 520, color: '#96CEB4' },
+    { lang: 'मराठी', calls: 420, color: '#FFEAA7' },
   ],
 }
 
-export const MOCK_TRANSCRIPTS = {
-  hi: 'मुझे PM-KISAN योजना के बारे में जानकारी चाहिए',
-  bhoj: 'हम फसल बीमा के लिए आवेदन करना चाहते हैं',
-  awa: 'मिट्टी स्वास्थ्य कार्ड योजना की जानकारी दीजिए',
-  odi: 'ମୁଁ MGNREGA ରେଜିଷ୍ଟ୍ରେସନ ସମ୍ପର୍କରେ ଜାଣିବାକୁ ଚାହୁଁ',
-  mar: 'मला सरकारी योजनांचा माहिती हवा',
-  mai: 'हम PMAW योजनाकेँ बारेमे जानकारी चाहै छी',
-  en: 'I need information about government schemes',
-}
+// ---------------------------------------------------------------------------
+// APPLICATION RESPONSE — referenceId is dynamic, nextSteps are localized
+// ---------------------------------------------------------------------------
 
 export const MOCK_APPLICATION_RESPONSE = {
   success: true,
@@ -156,243 +303,94 @@ export const MOCK_APPLICATION_RESPONSE = {
   status: 'submitted',
   timestamp: new Date().toISOString(),
   expectedApprovalTime: '7-15 days',
-  nextSteps: [
-    'आपका आवेदन क्षेत्रीय कार्यालय को भेजा जाएगा',
-    'अधिकारी आपसे 3-5 दिनों में संपर्क करेंगे',
-    'मूल दस्तावेज़ ले जाकर ब्लॉक ऑफिस जाएँ',
-    'मंजूरी के बाद 7 दिन में पैसे खाते में आएंगे',
-  ],
+  // nextSteps are resolved at call-time via getMockApplicationResponse(lang)
+  nextSteps: APPLICATION_NEXT_STEPS.hi,
 }
 
-export const MOCK_LATEST_OFFERS = [
-  {
-    id: 101,
-    title: 'नई PM-KISAN वृद्धि',
-    desc: '₹ 2000 से बढ़कर ₹ 3000 प्रति माह',
-    icon: '📢',
-    badge: 'नया',
-    date: '2 दिन पहले',
-    type: 'update',
-  },
-  {
-    id: 102,
-    title: 'फसल बीमा को मिला विस्तार',
-    desc: '10 और राज्यों में उपलब्ध अब',
-    icon: '🛡️',
-    badge: 'अपडेट',
-    date: '5 दिन पहले',
-    type: 'expansion',
-  },
-  {
-    id: 103,
-    title: 'डिजिटल साक्षरता योजना',
-    desc: '₹ 500 की छात्रवृत्ति आवेदन के लिए खुली',
-    icon: '💻',
-    badge: 'नया',
-    date: 'आज',
-    type: 'new',
-  },
-  {
-    id: 104,
-    title: 'बेरोजगारी भत्ता बढ़ाया गया',
-    desc: '₹ 500 से ₹ 750 में संशोधन',
-    icon: '💰',
-    badge: 'अपडेट',
-    date: '1 दिन पहले',
-    type: 'update',
-  },
-  {
-    id: 105,
-    title: 'महिला उद्यम योजना',
-    desc: 'महिला किसानों के लिए विशेष ₹ 5 लाख तक ऋण',
-    icon: '👩‍🌾',
-    badge: 'नया',
-    date: '3 दिन पहले',
-    type: 'new',
-  },
-]
+// ---------------------------------------------------------------------------
+// PUBLIC HELPERS
+// All services should call these instead of importing raw constants directly.
+// ---------------------------------------------------------------------------
 
-export const MOCK_MANDI_PRICES = [
-  {
-    id: 1,
-    mandi: 'रामपुर मंडी',
-    state: 'उत्तर प्रदेश',
-    crops: [
-      {
-        crop: 'गेहूं (Wheat)',
-        price: '₹2,150/क्विंटल',
-        change: '+50',
-        trend: 'up',
-      },
-      {
-        crop: 'धान (Paddy)',
-        price: '₹1,930/क्विंटल',
-        change: '-10',
-        trend: 'down',
-      },
-      {
-        crop: 'मक्का (Maize)',
-        price: '₹1,700/क्विंटल',
-        change: '+20',
-        trend: 'up',
-      },
-    ],
-  },
+/** Resolve lang to a supported key, falling back to 'hi' */
+function resolveLang(lang) {
+  const supported = ['hi', 'bho', 'awa', 'mr', 'mai', 'or', 'en']
+  return supported.includes(lang) ? lang : 'hi'
+}
 
-  {
-    id: 2,
-    mandi: 'लखनऊ मंडी',
-    state: 'उत्तर प्रदेश',
-    crops: [
-      {
-        crop: 'गेहूं (Wheat)',
-        price: '₹2,180/क्विंटल',
-        change: '+30',
-        trend: 'up',
-      },
-      {
-        crop: 'दलहन (Pulses)',
-        price: '₹5,820/क्विंटल',
-        change: '+110',
-        trend: 'up',
-      },
-      {
-        crop: 'चना (Gram)',
-        price: '₹5,100/क्विंटल',
-        change: '-40',
-        trend: 'down',
-      },
-    ],
-  },
+/** Get localized schemes list */
+export function getMockSchemes(lang) {
+  const l = resolveLang(lang)
+  return SCHEME_BASE.map((scheme) => ({
+    ...scheme,
+    ...(SCHEME_STRINGS[scheme.id]?.[l] || SCHEME_STRINGS[scheme.id]?.hi),
+  }))
+}
 
-  {
-    id: 3,
-    mandi: 'सुल्तानपुर मंडी',
-    state: 'उत्तर प्रदेश',
-    crops: [
-      {
-        crop: 'धान (Paddy)',
-        price: '₹1,950/क्विंटल',
-        change: '+15',
-        trend: 'up',
-      },
-      {
-        crop: 'सरसों (Mustard)',
-        price: '₹5,400/क्विंटल',
-        change: '+70',
-        trend: 'up',
-      },
-      {
-        crop: 'मक्का (Maize)',
-        price: '₹1,690/क्विंटल',
-        change: '0',
-        trend: 'stable',
-      },
-    ],
-  },
+/** Get localized scheme by ID */
+export function getMockSchemeById(id, lang) {
+  const l = resolveLang(lang)
+  const base = SCHEME_BASE.find((s) => s.id === Number(id)) || SCHEME_BASE[0]
+  return {
+    ...base,
+    ...(SCHEME_STRINGS[base.id]?.[l] || SCHEME_STRINGS[base.id]?.hi),
+  }
+}
 
-  {
-    id: 4,
-    mandi: 'फैजाबाद मंडी',
-    state: 'उत्तर प्रदेश',
-    crops: [
-      {
-        crop: 'गेहूं (Wheat)',
-        price: '₹2,120/क्विंटल',
-        change: '-20',
-        trend: 'down',
-      },
-      {
-        crop: 'गन्ना (Sugarcane)',
-        price: '₹355/क्विंटल',
-        change: '+10',
-        trend: 'up',
-      },
-      {
-        crop: 'दलहन (Pulses)',
-        price: '₹5,760/क्विंटल',
-        change: '+60',
-        trend: 'up',
-      },
-    ],
-  },
+/** Get localized eligibility data for a scheme */
+export function getMockEligibility(schemeId, lang) {
+  const l = resolveLang(lang)
+  const id = Number(schemeId)
+  return ELIGIBILITY_STRINGS[id]?.[l] || ELIGIBILITY_STRINGS[id]?.hi || ELIGIBILITY_STRINGS[1].hi
+}
 
-  {
-    id: 5,
-    mandi: 'बस्ती मंडी',
-    state: 'उत्तर प्रदेश',
-    crops: [
-      {
-        crop: 'गन्ना (Sugarcane)',
-        price: '₹350/क्विंटल',
-        change: '+15',
-        trend: 'up',
-      },
-      {
-        crop: 'धान (Paddy)',
-        price: '₹1,920/क्विंटल',
-        change: '-30',
-        trend: 'down',
-      },
-      {
-        crop: 'चना (Gram)',
-        price: '₹5,050/क्विंटल',
-        change: '+25',
-        trend: 'up',
-      },
-    ],
-  },
-]
+/** Get localized mandi prices */
+export function getMockMandiPrices(lang) {
+  const l = resolveLang(lang)
+  return MANDI_PRICE_DATA.map((mandi) => ({
+    id: mandi.id,
+    mandi: mandi.names[l] || mandi.names.hi,
+    state: mandi.state[l] || mandi.state.hi,
+    crops: mandi.crops.map((c) => ({
+      crop: c.names[l] || c.names.hi,
+      price: c.price + (c.unit[l] || c.unit.hi),
+      change: c.change,
+      trend: c.trend,
+    })),
+  }))
+}
 
-export const MOCK_LOAN_OPTIONS = [
-  {
-    id: 1,
-    title: 'कृषि उपकरण लोन (Equipment Loan)',
-    detail: 'ट्रैक्टर, थ्रेशर और अन्य उपकरण के लिए | 3-7 साल के लिए | 7-9% वार्षिक ब्याज',
-    amount: '₹3-10 लाख',
-    interest: '7-9%',
-    tenure: '3-7 years',
-    eligibility: 'खेती योग्य जमीन आवश्यक',
-  },
-  {
-    id: 2,
-    title: 'फसल लोन (Crop Loan)',
-    detail: 'बीज, खाद, कीटनाशक के लिए अल्पकालिक ऋण | 6-12 महीने | 4-7% ब्याज',
-    amount: '₹50,000-5 लाख',
-    interest: '4-7%',
-    tenure: '6-12 months',
-    eligibility: 'खेती का प्रमाण पत्र चाहिए',
-  },
-  {
-    id: 3,
-    title: 'पशुपालन लोन (Dairy/Livestock Loan)',
-    detail: 'गाय, भैंस, मुर्गी पालन के लिए | 3-5 साल | 8-10% ब्याज',
-    amount: '₹1-5 लाख',
-    interest: '8-10%',
-    tenure: '3-5 years',
-    eligibility: 'पशुपालन प्रशिक्षण या अनुभव',
-  },
-  {
-    id: 4,
-    title: 'भूमि विकास लोन (Land Development)',
-    detail: 'सिंचाई, बोरवेल, तालाब खुदाई के लिए | 5-10 साल | 9-11% ब्याज',
-    amount: '₹2-8 लाख',
-    interest: '9-11%',
-    tenure: '5-10 years',
-    eligibility: 'ज़मीन का स्वामित्व आवश्यक',
-  },
-  {
-    id: 5,
-    title: 'मुद्रा लोन (MUDRA Loan)',
-    detail: 'छोटे व्यवसाय शुरू करने के लिए | 3-5 साल | 8-12% ब्याज',
-    amount: '₹50,000-10 लाख',
-    interest: '8-12%',
-    tenure: '3-5 years',
-    eligibility: 'व्यवसाय योजना आवश्यक',
-  },
-]
+/** Get localized loan options */
+export function getMockLoanOptions(lang) {
+  const l = resolveLang(lang)
+  return LOAN_OPTIONS_STRINGS[l] || LOAN_OPTIONS_STRINGS.hi
+}
 
+/** Get localized latest offers */
+export function getMockLatestOffers(lang) {
+  const l = resolveLang(lang)
+  return LATEST_OFFERS_STRINGS[l] || LATEST_OFFERS_STRINGS.hi
+}
 
+/** Get application response with localized next steps */
+export function getMockApplicationResponse(lang) {
+  const l = resolveLang(lang)
+  return {
+    ...MOCK_APPLICATION_RESPONSE,
+    nextSteps: APPLICATION_NEXT_STEPS[l] || APPLICATION_NEXT_STEPS.hi,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Legacy named exports — kept so existing imports don't break immediately.
+// Services should migrate to the getMock* helpers above.
+// ---------------------------------------------------------------------------
+
+export const MOCK_SCHEMES = getMockSchemes('hi')
+export const MOCK_ELIGIBILITY = { 1: getMockEligibility(1, 'hi') }
+export const MOCK_LATEST_OFFERS = getMockLatestOffers('hi')
+export const MOCK_MANDI_PRICES = getMockMandiPrices('hi')
+export const MOCK_LOAN_OPTIONS = getMockLoanOptions('hi')
 
 export default {
   MOCK_SCHEMES,
@@ -403,4 +401,11 @@ export default {
   MOCK_LATEST_OFFERS,
   MOCK_MANDI_PRICES,
   MOCK_LOAN_OPTIONS,
+  getMockSchemes,
+  getMockSchemeById,
+  getMockEligibility,
+  getMockMandiPrices,
+  getMockLoanOptions,
+  getMockLatestOffers,
+  getMockApplicationResponse,
 }

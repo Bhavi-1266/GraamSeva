@@ -4,7 +4,7 @@
  */
 
 import { API_ENDPOINTS, buildURL } from './apiConfig'
-import { MOCK_MANDI_PRICES } from './mockData'
+import { getMockMandiPrices } from './mockData'
 import apiClient from './apiClient'
 
 class MandiService {
@@ -17,7 +17,7 @@ class MandiService {
   async getMandiPrices(language = 'hi', location = null) {
     try {
       console.log('Fetching mandi prices from API...')
-      
+
       const url = buildURL(API_ENDPOINTS.MANDI?.LIST || '/api/mandi')
       const response = await apiClient.get(url, {
         headers: { 'Accept-Language': language },
@@ -31,9 +31,9 @@ class MandiService {
       }
     } catch (error) {
       console.warn('Mandi API failed, using mock data:', error.message)
-      
+
       return {
-        data: MOCK_MANDI_PRICES,
+        data: getMockMandiPrices(language),
         source: 'mock',
       }
     }
@@ -48,7 +48,7 @@ class MandiService {
   async getCropPrice(cropName, language = 'hi') {
     try {
       console.log(`Fetching price for ${cropName} from API...`)
-      
+
       const url = buildURL(API_ENDPOINTS.MANDI?.GET_CROP || `/api/mandi/${cropName}`)
       const response = await apiClient.get(url, {
         headers: { 'Accept-Language': language },
@@ -61,14 +61,14 @@ class MandiService {
       }
     } catch (error) {
       console.warn('Crop price API failed, using mock data:', error.message)
-      
-      // Find crop in mock data
-      const crop = MOCK_MANDI_PRICES.find(
-        (item) => item.title.toLowerCase().includes(cropName.toLowerCase())
+
+      const prices = getMockMandiPrices(language)
+      const match = prices.find((mandi) =>
+        mandi.crops.some((c) => c.crop.toLowerCase().includes(cropName.toLowerCase()))
       )
-      
+
       return {
-        data: crop || MOCK_MANDI_PRICES[0],
+        data: match || prices[0],
         source: 'mock',
       }
     }
