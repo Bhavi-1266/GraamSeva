@@ -318,25 +318,113 @@ function resolveLang(lang) {
   return supported.includes(lang) ? lang : 'hi'
 }
 
-/** Get localized schemes list */
-export function getMockSchemes(lang) {
+const SUPPLEMENTAL_SCHEMES = [
+  {
+    id: 3,
+    name: 'Kisan Credit Card (KCC)',
+    icon: 'credit_card',
+    details: 'Working capital credit for crop cultivation and allied activities',
+    governmentLevel: 'Central Government',
+    states: ['ALL'],
+    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'As per bank norm', landRequired: 'Cultivator / tenant farmer / SHG / JLG' },
+    authority: { ministry: 'Ministry of Agriculture', stateBody: 'State Level Bankers Committee', localBody: 'Scheduled Commercial Banks / RRBs' },
+    desc: 'Institutional credit support for farmers with flexible withdrawal and repayment.',
+    benefits: ['Low-interest crop credit', 'Interest subvention on timely repayment', 'Credit for dairy, fisheries, poultry', 'Simplified renewal'],
+    documents: ['Aadhaar card', 'Land record / cultivation proof', 'Bank KYC documents', 'Photograph'],
+    howToApply: ['Visit nearest bank branch', 'Submit KCC form with land details', 'KYC and field verification', 'Receive sanctioned credit limit'],
+  },
+  {
+    id: 4,
+    name: 'Soil Health Card Scheme',
+    icon: 'science',
+    details: 'Soil testing and nutrient advisory to improve productivity',
+    governmentLevel: 'Central + State Government',
+    states: ['ALL'],
+    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'No income limit', landRequired: 'Farm plot details required' },
+    authority: { ministry: 'Ministry of Agriculture & Farmers Welfare', stateBody: 'State Agriculture Department', localBody: 'Block Agriculture Office' },
+    desc: 'Provides scientific soil nutrient status and crop-wise fertilizer recommendation.',
+    benefits: ['Free or subsidized soil testing', 'Balanced fertilizer usage', 'Improved crop yield', 'Reduced cultivation cost'],
+    documents: ['Aadhaar card', 'Land details', 'Mobile number'],
+    howToApply: ['Contact agriculture extension officer', 'Submit soil sample from field', 'Laboratory testing', 'Collect soil health card report'],
+  },
+  {
+    id: 5,
+    name: 'PM KUSUM',
+    icon: 'wb_sunny',
+    details: 'Solar pumps and decentralized solar power for farmers',
+    governmentLevel: 'Central + State Government',
+    states: ['ALL'],
+    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'As per state guideline', landRequired: 'Land / irrigation requirement' },
+    authority: { ministry: 'Ministry of New and Renewable Energy', stateBody: 'State Nodal Renewable Agency', localBody: 'DISCOM / District Office' },
+    desc: 'Subsidy-based scheme for solar pumps and additional farm income through solar power.',
+    benefits: ['Subsidy on solar pump installation', 'Lower irrigation power cost', 'Reliable daytime power', 'Additional income from power sale (where applicable)'],
+    documents: ['Aadhaar card', 'Land ownership papers', 'Bank account details', 'Electricity connection details'],
+    howToApply: ['Apply through state renewable portal', 'Upload required documents', 'Site verification by agency', 'Subsidy approval and installation'],
+  },
+  {
+    id: 6,
+    name: 'Delhi Kisan Registration and Subsidy',
+    icon: 'location_city',
+    details: 'State support for registered farmers in Delhi',
+    governmentLevel: 'Delhi Government',
+    states: ['Delhi', 'NCT of Delhi'],
+    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'As per Delhi guideline', landRequired: 'Farmer registration in Delhi' },
+    authority: { ministry: 'Department of Development, GNCTD', stateBody: 'Delhi Agriculture Department', localBody: 'District Agriculture Office' },
+    desc: 'Registration-linked support and subsidy access for cultivators in Delhi region.',
+    benefits: ['Priority access to state agriculture schemes', 'Input subsidy opportunities', 'Department advisory services'],
+    documents: ['Aadhaar card', 'Address proof in Delhi', 'Land / cultivation proof', 'Bank account details'],
+    howToApply: ['Register at Delhi agriculture portal', 'Submit farmer profile and proof', 'Department validation', 'Apply to available state benefits'],
+  },
+  {
+    id: 7,
+    name: 'Mukhyamantri Kisan Samman Nidhi (UP)',
+    icon: 'agriculture',
+    details: 'State-level top-up support for farmers in Uttar Pradesh',
+    governmentLevel: 'Uttar Pradesh Government',
+    states: ['Uttar Pradesh', 'UP'],
+    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'As per UP guideline', landRequired: 'Registered farmer in Uttar Pradesh' },
+    authority: { ministry: 'Government of Uttar Pradesh', stateBody: 'UP Agriculture Department', localBody: 'Tehsil / Block Office' },
+    desc: 'State support linked with farmer records and agriculture department verification.',
+    benefits: ['Supplementary support in selected categories', 'State portal tracking', 'District-level facilitation'],
+    documents: ['Aadhaar card', 'UP domicile/address proof', 'Land details', 'Bank account details'],
+    howToApply: ['Visit official UP scheme portal', 'Complete farmer registration', 'Upload proofs and submit', 'Track status via district office'],
+  },
+  {
+    id: 8,
+    name: 'Mahatma Jyotirao Phule Shetkari Karjmukti (Maharashtra)',
+    icon: 'account_balance',
+    details: 'Debt relief support program for eligible farmers in Maharashtra',
+    governmentLevel: 'Maharashtra Government',
+    states: ['Maharashtra'],
+    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'As per Maharashtra guideline', landRequired: 'Eligible farmer as per state criteria' },
+    authority: { ministry: 'Government of Maharashtra', stateBody: 'Cooperation and Agriculture Department', localBody: 'District Cooperative Office' },
+    desc: 'State relief assistance for eligible farmer loan accounts under notified conditions.',
+    benefits: ['Debt relief for eligible categories', 'Portal-based claim and verification', 'District-level support'],
+    documents: ['Aadhaar card', 'Loan account details', 'Farmer registration proof', 'Bank and identity documents'],
+    howToApply: ['Check eligibility on state portal', 'Submit loan and identity details', 'Verification by district authority', 'Relief credited as per approved process'],
+  },
+]
+
+function getAllMockSchemes(lang) {
   const l = resolveLang(lang)
-  return SCHEME_BASE.map((scheme) => ({
+  const localizedBase = SCHEME_BASE.map((scheme) => ({
     ...scheme,
     ...(SCHEME_STRINGS[scheme.id]?.[l] || SCHEME_STRINGS[scheme.id]?.hi),
   }))
+
+  return [...localizedBase, ...SUPPLEMENTAL_SCHEMES]
+}
+
+/** Get localized schemes list */
+export function getMockSchemes(lang) {
+  return getAllMockSchemes(lang)
 }
 
 /** Get localized scheme by ID */
 export function getMockSchemeById(id, lang) {
-  const l = resolveLang(lang)
-  const base = SCHEME_BASE.find((s) => s.id === Number(id)) || SCHEME_BASE[0]
-  return {
-    ...base,
-    ...(SCHEME_STRINGS[base.id]?.[l] || SCHEME_STRINGS[base.id]?.hi),
-  }
+  const allSchemes = getAllMockSchemes(lang)
+  return allSchemes.find((s) => s.id === Number(id)) || allSchemes[0]
 }
-
 /** Get localized eligibility data for a scheme */
 export function getMockEligibility(schemeId, lang) {
   const l = resolveLang(lang)

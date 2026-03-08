@@ -122,8 +122,25 @@ class SchemeService {
     } catch (error) {
       console.warn(`State schemes API failed for ${state}, using mock data:`, error.message)
 
+      const normalizedState = String(state || '').trim().toLowerCase()
+      const allSchemes = getMockSchemes(language)
+      const filtered = allSchemes.filter((scheme) => {
+        if (!Array.isArray(scheme.states) || scheme.states.length === 0) return true
+
+        const normalizedSchemeStates = scheme.states.map((s) => String(s || '').toLowerCase())
+        return (
+          normalizedSchemeStates.includes('all') ||
+          normalizedSchemeStates.some(
+            (schemeState) =>
+              schemeState === normalizedState ||
+              schemeState.includes(normalizedState) ||
+              normalizedState.includes(schemeState),
+          )
+        )
+      })
+
       return {
-        data: getMockSchemes(language),
+        data: filtered,
         source: 'mock',
       }
     }
