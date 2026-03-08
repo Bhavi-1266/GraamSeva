@@ -165,7 +165,13 @@ function App() {
 
     if (data.speak) {
       const speech = new SpeechSynthesisUtterance(data.speak)
-      speech.lang = uiLanguage === "hi" ? "hi-IN" : "en-US"
+      const localeMap = {
+        hi: 'hi-IN',
+        mr: 'mr-IN',
+        or: 'or-IN',
+        en: 'en-US'
+      }
+      speech.lang = localeMap[uiLanguage] || 'hi-IN'
       window.speechSynthesis.speak(speech)
     }
   }

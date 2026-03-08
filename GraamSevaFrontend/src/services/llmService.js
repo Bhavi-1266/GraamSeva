@@ -31,21 +31,29 @@ Available Application Pages and their IDs:
 CORE CAPABILITIES:
 1. CONTEXTUAL REASONING:
    - If a user mentions a budget (e.g., "I have 10,000 for a tractor"), realize that is a Downpayment. Explain that they can get a loan for the rest and suggest specific nearby banks.
-   - Summarize what the user will see on the redirected page (e.g., "I'm taking you to the loan page where you can see options from SBI and HDFC").
+   - Summarize what the user will see on the redirected page.
 
 2. LOCATION AWARENESS:
    - Use the provided location (Latitude/Longitude or City) to suggest "nearby" Mandis or Bank branches. 
-   - Even if you don't have a real database yet, provide 2-3 realistic mock suggestions for the specific region mentioned or the general local area.
 
 3. STRICT LANGUAGE ADHERENCE:
-   - Respond in the language requested by the user. If they ask in Hindi, respond in pure Hindi (Devanagari). If they ask in English, respond in English. Do not mix them unless it's a technical term widely used.
+   - You MUST respond in the user's PREFERRED LANGUAGE provided in the prompt.
+   - Supported Language Codes:
+     - hi: Hindi (use Devanagari script)
+     - en: English (use Latin script)
+     - bho: Bhojpuri (use Devanagari script)
+     - awa: Awadhi (use Devanagari script)
+     - mr: Marathi (use Devanagari script)
+     - mai: Maithili (use Devanagari script)
+     - or: Odia (use Odia script)
+   - Do NOT respond in English if the preference is a regional language, even if the user query is in English. Use the specific dialect and tone appropriate for that language.
 
 RESPONSE FORMAT:
 You MUST respond in STRICT JSON.
 JSON Structure:
 {
-  "message": "Detailed but concise answer (max 4 sentences) considering location and context.",
-  "speak": "Conversational short summary (1 sentence) in the user's language.",
+  "message": "Detailed but concise answer (max 4 sentences) in the user's PREFERRED LANGUAGE.",
+  "speak": "Conversational short summary (1 sentence) in the user's PREFERRED LANGUAGE.",
   "redirect": "page_id",
   "result": {
     "items": [
@@ -54,15 +62,14 @@ JSON Structure:
   }
 }
 
-Example for "Tractor loan with 10k budget in Nagpur":
+Example for "Tractor loan" with preference "hi" (Hindi):
 {
-  "message": "With your 10,000 downpayment, you qualify for a tractor loan from nearby banks in Nagpur like SBI or Bank of Maharashtra. I am showing you the loan page where you can compare interest rates.",
-  "speak": "Nagpur ke banks ke loan options dekhiye jinme aapka 10 hazar ka budget fit bethega.",
+  "message": "आपके बजट के अनुसार, आप पास के बैंकों जैसे SBI या बैंक ऑफ महाराष्ट्र से ट्रैक्टर लोन के लिए पात्र हैं। मैं आपको लोन पेज पर ले जा रहा हूँ जहाँ आप ब्याज दरों की तुलना कर सकते हैं।",
+  "speak": "लोन के विकल्पों की जानकारी के लिए मैं आपको लोन पेज पर भेज रहा हूँ।",
   "redirect": "loan",
   "result": {
     "items": [
-        { "Bank": "SBI Nagpur Main", "Offer": "Low Interest Tractor Loan", "Distance": "2.5 km" },
-        { "Bank": "Bank of Maharashtra", "Offer": "Kisan Suvidha Loan", "Distance": "3.1 km" }
+        { "बैंक": "SBI नागपुर", "ऑफर": "कम ब्याज दर", "दूरी": "2.5 km" }
     ]
   }
 }`
@@ -76,11 +83,12 @@ export const generateChatResponse = async (query, language = 'en', context = {})
 
   // Construct a contextual user prompt
   const userContextPrompt = `
-User Profile: Name: ${profile.name || 'Unknown'}, Language Preference: ${language}.
+USER LANGUAGE PREFERENCE: ${language} (MUST RESPOND IN THIS LANGUAGE)
+User Profile: Name: ${profile.name || 'Unknown'}.
 User Location: ${location.lat ? `Lat: ${location.lat}, Lng: ${location.lng}` : 'Unavailable'}.
 User Query: "${query}"
 
-Please provide a highly relevant response based on this specific user data.`
+Please provide a highly relevant response in ${language} based on this specific user data.`
 
   try {
     const response = await aiClient.models.generateContent({
