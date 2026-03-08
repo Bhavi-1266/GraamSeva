@@ -84,7 +84,7 @@ export const API_ENDPOINTS = {
     WEATHER: '/api/weather/village/:villageCode',
     COLD_STORAGE: '/api/cold-storage/nearby',
   },
-  NewSchemes: {
+  NEW_SCHEMES: {
     LIST: '/api/new-schemes',
     GET_BY_ID: '/api/new-schemes/:id',
   },
