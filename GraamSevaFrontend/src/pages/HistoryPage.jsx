@@ -8,12 +8,8 @@ export default function HistoryPage({ tr, uiLanguage, chatThreads = [], onOpenCh
   }, [chatThreads])
 
   const clearHistory = () => {
-    const confirmMsg =
-      uiLanguage === 'hi'
-        ? 'Kya aap sabhi chat history hatana chahte hain?'
-        : 'Are you sure you want to clear all chat history?'
-
-    if (window.confirm(confirmMsg)) {
+    // tr.historyConfirm is already localised for all 7 languages — no ternary needed
+    if (window.confirm(tr.historyConfirm)) {
       if (onClearHistory) {
         onClearHistory()
       } else {
@@ -30,13 +26,13 @@ export default function HistoryPage({ tr, uiLanguage, chatThreads = [], onOpenCh
           <span className="card-title">{tr.pages.history}</span>
           {sortedThreads.length > 0 && (
             <button className="btn-small waves-effect red lighten-1" onClick={clearHistory}>
-              Clear
+              {tr.historyClear}
             </button>
           )}
         </div>
 
         {sortedThreads.length === 0 ? (
-          <p>No chat history available.</p>
+          <p>{tr.historyEmpty}</p>
         ) : (
           <ul className="collection">
             {sortedThreads.map((thread) => {
@@ -46,14 +42,17 @@ export default function HistoryPage({ tr, uiLanguage, chatThreads = [], onOpenCh
                 <li className="collection-item" key={thread.id}>
                   <div className="flex justify-between items-start gap-2">
                     <div>
-                      <strong>{thread.title || 'Chat'}</strong>
+                      <strong>{thread.title || tr.historyTitle}</strong>
                       <p style={{ margin: '4px 0', color: '#6d4c41' }}>{preview.slice(0, 100)}</p>
                       <div className="history-meta">
-                        {thread.messages?.length || 0} messages | {formatTime(thread.updatedAt || thread.createdAt)}
+                        {thread.messages?.length || 0} {tr.historyMessages} | {formatTime(thread.updatedAt || thread.createdAt)}
                       </div>
                     </div>
-                    <button className="btn-small amber darken-2" onClick={() => onOpenChat && onOpenChat(thread.id)}>
-                      Continue
+                    <button
+                      className="btn-small amber darken-2"
+                      onClick={() => onOpenChat && onOpenChat(thread.id)}
+                    >
+                      {tr.historyContinue}
                     </button>
                   </div>
                 </li>

@@ -3,6 +3,7 @@ import { applicationService } from '../services'
 import '../styles/ApplicationPage.css'
 
 export default function ApplicationPage({
+  tr,
   service,
   userProfile,
   language,
@@ -18,10 +19,10 @@ export default function ApplicationPage({
     familyMembers: '',
     annualIncome: '',
   })
-  const [submitted, setSubmitted] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted]               = useState(false)
+  const [submitting, setSubmitting]             = useState(false)
   const [submissionResult, setSubmissionResult] = useState(null)
-  const [dataSource, setDataSource] = useState(null)
+  const [dataSource, setDataSource]             = useState(null)
 
   const totalSteps = 3
 
@@ -30,71 +31,54 @@ export default function ApplicationPage({
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleNext = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1)
-    }
-  }
+  const handleNext = () => { if (currentStep < totalSteps) setCurrentStep(currentStep + 1) }
+  const handlePrev = () => { if (currentStep > 1) setCurrentStep(currentStep - 1) }
 
   const handleSubmit = async () => {
     setSubmitting(true)
     try {
-      // Call application API service
       const result = await applicationService.submitApplication(
-        {
-          schemeId: service.id,
-          schemeName: service.name,
-          userProfile,
-          formData,
-          language,
-        },
+        { schemeId: service.id, schemeName: service.name, userProfile, formData, language },
         language
       )
-
       setSubmissionResult(result)
       setDataSource(result.source)
       setSubmitted(true)
     } catch (error) {
       console.error('Submission error:', error)
-      // Still show success even if API fails, using mock data
       setSubmitted(true)
     } finally {
       setSubmitting(false)
     }
   }
 
-  const handlePrev = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1)
-    }
-  }
-
+  // ── Success screen ──
   if (submitted && submissionResult) {
     return (
       <div className="application-page success">
         <div className="success-container">
           <div className="success-icon">✅</div>
-          <h2>आवेदन सफलतापूर्वक जमा हुआ!</h2>
+          <h2>{tr.appSuccessTitle}</h2>
           <div className="success-details">
             <p>
-              आपका आवेदन संदर्भ नंबर:{' '}
+              {tr.appRefNo}{' '}
               <span className="reference-number">{submissionResult.referenceId}</span>
             </p>
-            <p>
-              आप SMS और फोन पर अपडेट स्वीकार करेंगे।
-            </p>
+            <p>{tr.appSmsNote}</p>
             <p className="timeline">
-              ⏱️ आमतौर पर संसाधन में <strong>{submissionResult.data.expectedApprovalTime || '7-15 दिन'}</strong> लगते हैं।
+              {tr.appTimeline
+                ? tr.appTimeline(submissionResult.data.expectedApprovalTime || tr.appTimelineFallback)
+                : `⏱️ ${submissionResult.data.expectedApprovalTime || tr.appTimelineFallback}`}
             </p>
             {dataSource && (
               <p className="data-source-hint">
-                {dataSource === 'api' ? '✓ API के माध्यम से जमा किया गया' : '💾 ऑफलाइन सहेजा गया'}
+                {dataSource === 'api' ? tr.appViaApi : tr.appOffline}
               </p>
             )}
           </div>
 
           <div className="next-steps-box">
-            <h4>अगली क्रिया:</h4>
+            <h4>{tr.appNextStepsTitle}</h4>
             <ul>
               {(submissionResult.data.nextSteps || []).map((step, idx) => (
                 <li key={idx}>✓ {step}</li>
@@ -102,71 +86,59 @@ export default function ApplicationPage({
             </ul>
           </div>
 
-          <button 
-            className="new-application-button"
-            onClick={() => window.location.reload()}
-          >
-            नई योजना के लिए आवेदन करें
+          <button className="new-application-button" onClick={() => window.location.reload()}>
+            {tr.appNewApplication}
           </button>
         </div>
       </div>
     )
   }
 
+  // ── Form ──
   return (
     <div className="application-page">
       <div className="app-header">
         <button className="back-button" onClick={onBack}>
-          ← वापस
+          {tr.appBack}
         </button>
-        <h2>आवेदन फॉर्म</h2>
+        <h2>{tr.appFormTitle}</h2>
       </div>
 
       <div className="progress-bar">
-        <div
-          className="progress-fill"
-          style={{ width: `${(currentStep / totalSteps) * 100}%` }}
-        ></div>
+        <div className="progress-fill" style={{ width: `${(currentStep / totalSteps) * 100}%` }} />
       </div>
 
       <p className="step-indicator">
-        चरण {currentStep} का {totalSteps}
+        {typeof tr.appStepOf === 'function'
+          ? tr.appStepOf(currentStep, totalSteps)
+          : `${currentStep} / ${totalSteps}`}
       </p>
 
       <div className="form-container">
+
         {/* Step 1: Land Information */}
         {currentStep === 1 && (
           <div className="form-step">
-            <h3>🌾 जमीन की जानकारी</h3>
+            <h3>{tr.appStep1Title}</h3>
 
             <div className="form-group">
-              <label>कुल कृषि योग्य जमीन (हेक्टेयर में)</label>
-              <select
-                name="landArea"
-                value={formData.landArea}
-                onChange={handleInputChange}
-                className="form-input"
-              >
-                <option value="">-- चुनें --</option>
-                <option value="0.5">0.5 हेक्टेयर तक</option>
-                <option value="1">1 हेक्टेयर</option>
-                <option value="1.5">1.5 हेक्टेयर</option>
-                <option value="2">2 हेक्टेयर</option>
+              <label>{tr.appLandArea}</label>
+              <select name="landArea" value={formData.landArea} onChange={handleInputChange} className="form-input">
+                <option value="">{tr.appChoose}</option>
+                <option value="0.5">{tr.appLandHalf}</option>
+                <option value="1">{tr.appLandOne}</option>
+                <option value="1.5">{tr.appLandOneHalf}</option>
+                <option value="2">{tr.appLandTwo}</option>
               </select>
             </div>
 
             <div className="form-group">
-              <label>जमीन का प्रकार</label>
-              <select
-                name="landType"
-                value={formData.landType}
-                onChange={handleInputChange}
-                className="form-input"
-              >
-                <option value="">-- चुनें --</option>
-                <option value="owned">अपनी मालिकाना</option>
-                <option value="leased">किराये पर</option>
-                <option value="shared">साझेदारी</option>
+              <label>{tr.appLandType}</label>
+              <select name="landType" value={formData.landType} onChange={handleInputChange} className="form-input">
+                <option value="">{tr.appChoose}</option>
+                <option value="owned">{tr.appLandOwned}</option>
+                <option value="leased">{tr.appLandLeased}</option>
+                <option value="shared">{tr.appLandShared}</option>
               </select>
             </div>
           </div>
@@ -175,40 +147,40 @@ export default function ApplicationPage({
         {/* Step 2: Bank Information */}
         {currentStep === 2 && (
           <div className="form-step">
-            <h3>🏦 बैंक विवरण</h3>
+            <h3>{tr.appStep2Title}</h3>
 
             <div className="form-group">
-              <label>बैंक का नाम</label>
+              <label>{tr.appBankName}</label>
               <input
                 type="text"
                 name="bankName"
                 value={formData.bankName}
                 onChange={handleInputChange}
-                placeholder="जैसे: SBI, HDFC आदि"
+                placeholder={tr.appBankPlaceholder}
                 className="form-input"
               />
             </div>
 
             <div className="form-group">
-              <label>खाता संख्या</label>
+              <label>{tr.appAccountNo}</label>
               <input
                 type="text"
                 name="accountNumber"
                 value={formData.accountNumber}
                 onChange={handleInputChange}
-                placeholder="12 अंकों का खाता नंबर"
+                placeholder={tr.appAccountPlaceholder}
                 className="form-input"
               />
             </div>
 
             <div className="form-group">
-              <label>IFSC कोड</label>
+              <label>{tr.appIfsc}</label>
               <input
                 type="text"
                 name="ifscCode"
                 value={formData.ifscCode}
                 onChange={handleInputChange}
-                placeholder="जैसे: SBIN0001234"
+                placeholder={tr.appIfscPlaceholder}
                 className="form-input"
               />
             </div>
@@ -218,49 +190,35 @@ export default function ApplicationPage({
         {/* Step 3: Family Information */}
         {currentStep === 3 && (
           <div className="form-step">
-            <h3>👨‍👩‍👧‍👦 पारिवारिक जानकारी</h3>
+            <h3>{tr.appStep3Title}</h3>
 
             <div className="form-group">
-              <label>परिवार के सदस्यों की संख्या</label>
-              <select
-                name="familyMembers"
-                value={formData.familyMembers}
-                onChange={handleInputChange}
-                className="form-input"
-              >
-                <option value="">-- चुनें --</option>
-                <option value="1">1 व्यक्ति</option>
-                <option value="2">2 व्यक्ति</option>
-                <option value="3">3 व्यक्ति</option>
-                <option value="4">4 व्यक्ति</option>
-                <option value="5+">5 या अधिक</option>
+              <label>{tr.appFamilyMembers}</label>
+              <select name="familyMembers" value={formData.familyMembers} onChange={handleInputChange} className="form-input">
+                <option value="">{tr.appChoose}</option>
+                <option value="1">{typeof tr.appPerson === 'function' ? tr.appPerson(1) : '1'}</option>
+                <option value="2">{typeof tr.appPersonPlural === 'function' ? tr.appPersonPlural(2) : '2'}</option>
+                <option value="3">{typeof tr.appPersonPlural === 'function' ? tr.appPersonPlural(3) : '3'}</option>
+                <option value="4">{typeof tr.appPersonPlural === 'function' ? tr.appPersonPlural(4) : '4'}</option>
+                <option value="5+">{tr.appFiveOrMore}</option>
               </select>
             </div>
 
             <div className="form-group">
-              <label>वार्षिक आय (₹ में)</label>
-              <select
-                name="annualIncome"
-                value={formData.annualIncome}
-                onChange={handleInputChange}
-                className="form-input"
-              >
-                <option value="">-- चुनें --</option>
-                <option value="100000">₹1,00,000 तक</option>
-                <option value="200000">₹1,00,000 - ₹2,00,000</option>
-                <option value="300000">₹2,00,000 - ₹3,00,000</option>
-                <option value="500000">₹3,00,000 - ₹5,00,000</option>
+              <label>{tr.appAnnualIncome}</label>
+              <select name="annualIncome" value={formData.annualIncome} onChange={handleInputChange} className="form-input">
+                <option value="">{tr.appChoose}</option>
+                <option value="100000">{tr.appIncome1}</option>
+                <option value="200000">{tr.appIncome2}</option>
+                <option value="300000">{tr.appIncome3}</option>
+                <option value="500000">{tr.appIncome5}</option>
               </select>
             </div>
 
             <div className="terms-box">
-              <input
-                type="checkbox"
-                id="terms"
-                className="terms-checkbox"
-              />
+              <input type="checkbox" id="terms" className="terms-checkbox" />
               <label htmlFor="terms" className="terms-label">
-                मैं सत्यापित करता हूं कि दी गई सभी जानकारी सही है।
+                {tr.appTerms}
               </label>
             </div>
           </div>
@@ -268,28 +226,19 @@ export default function ApplicationPage({
       </div>
 
       <div className="form-actions">
-        <button
-          className="prev-button"
-          onClick={handlePrev}
-          disabled={currentStep === 1}
-        >
-          ← पिछला
+        <button className="prev-button" onClick={handlePrev} disabled={currentStep === 1}>
+          {tr.appPrev}
         </button>
         {currentStep < totalSteps ? (
           <button className="next-button" onClick={handleNext}>
-            आगे →
+            {tr.appNext}
           </button>
         ) : (
-          <button 
-            className="submit-button" 
-            onClick={handleSubmit}
-            disabled={submitting}
-          >
-            {submitting ? '⏳ जमा किया जा रहा है...' : '✅ जमा करें'}
+          <button className="submit-button" onClick={handleSubmit} disabled={submitting}>
+            {submitting ? tr.appSubmitting : tr.appSubmit}
           </button>
         )}
       </div>
     </div>
   )
 }
-

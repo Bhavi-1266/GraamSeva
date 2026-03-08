@@ -4,7 +4,6 @@ import newSchemesOffersService from '../services/newSchemesOffers'
 import '../styles/HomePage.css'
 
 export default function HomePage({ tr, onNavigate, uiLanguage }) {
-  const openText = 'Open'
   const [newOffers, setNewOffers] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -25,29 +24,24 @@ export default function HomePage({ tr, onNavigate, uiLanguage }) {
     }
   }
 
-  const updatesTitle = 'Recent Updates'
-  const regularTitle = 'Regular Updates'
-  const optionsTitle = 'Home Options'
-  const optionsHint = 'Open tabs and services'
-
-  const latestUpdates = newOffers.filter((offer) => offer.type === 'new' || offer.type === 'update')
+  const latestUpdates  = newOffers.filter((offer) => offer.type === 'new' || offer.type === 'update')
   const regularUpdates = newOffers.filter((offer) => offer.type !== 'new' && offer.type !== 'update')
-  const homeOptions = PAGES.filter((page) => page.id !== 'home')
+  const homeOptions    = PAGES.filter((page) => page.id !== 'home')
 
   return (
     <div className="home-layout">
       <section className="home-updates-panel rustic-card">
         <div className="home-panel-head">
-          <h3>{updatesTitle}</h3>
+          <h3>{tr.homeUpdatesTitle}</h3>
           <span>{newOffers.length}</span>
         </div>
 
         {loading ? (
-          <p className="home-loading-text">Loading updates...</p>
+          <p className="home-loading-text">{tr.homeLoadingUpdates}</p>
         ) : (
           <div className="updates-columns">
             <div className="updates-column">
-              <h4>{updatesTitle}</h4>
+              <h4>{tr.homeUpdatesTitle}</h4>
               <div className="updates-list">
                 {latestUpdates.map((offer) => (
                   <article key={offer.id} className="update-item">
@@ -60,13 +54,13 @@ export default function HomePage({ tr, onNavigate, uiLanguage }) {
                   </article>
                 ))}
                 {latestUpdates.length === 0 && (
-                  <p className="home-empty-text">No updates available.</p>
+                  <p className="home-empty-text">{tr.homeNoUpdates}</p>
                 )}
               </div>
             </div>
 
             <div className="updates-column">
-              <h4>{regularTitle}</h4>
+              <h4>{tr.homeRegularTitle}</h4>
               <div className="updates-list">
                 {regularUpdates.map((offer) => (
                   <article key={offer.id} className="update-item regular">
@@ -79,7 +73,7 @@ export default function HomePage({ tr, onNavigate, uiLanguage }) {
                   </article>
                 ))}
                 {regularUpdates.length === 0 && (
-                  <p className="home-empty-text">Regular list is empty.</p>
+                  <p className="home-empty-text">{tr.homeRegularEmpty}</p>
                 )}
               </div>
             </div>
@@ -89,11 +83,11 @@ export default function HomePage({ tr, onNavigate, uiLanguage }) {
 
       <aside className="home-options-panel rustic-card">
         <div className="home-panel-head">
-          <h3>{optionsTitle}</h3>
+          <h3>{tr.homeOptionsTitle}</h3>
           <span>{homeOptions.length}</span>
         </div>
 
-        <p className="home-options-hint">{optionsHint}</p>
+        <p className="home-options-hint">{tr.homeOptionsHint}</p>
 
         <div className="service-grid home-service-grid">
           {homeOptions.map((page) => (
@@ -105,9 +99,7 @@ export default function HomePage({ tr, onNavigate, uiLanguage }) {
               <div className="card-content">
                 <span className="material-icons">{page.icon}</span>
                 <h6>{tr.pages[page.id]}</h6>
-                <p>
-                  {tr.pages[page.id]} {openText}
-                </p>
+                <p>{tr.pages[page.id]} {tr.homeOpen}</p>
               </div>
             </button>
           ))}
