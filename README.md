@@ -64,6 +64,7 @@ graph TD
 | Layer | Technology |
 | :--- | :--- |
 | **Frontend** | React 19, Vite, Tailwind CSS |
+| **Backend** | DjangoRest Framework  |
 | **AI / LLM** | Google Gemini 2.5 Flash |
 | **Styling** | Simple Minimal , Responsive Grid |
 | **Icons** | Material Design Icons |
@@ -75,7 +76,7 @@ graph TD
 ### 1. Prerequisites
 - Node.js (v18+)
 - npm
-- -django
+- django
 
 ### 2. Installation
 ```bash
