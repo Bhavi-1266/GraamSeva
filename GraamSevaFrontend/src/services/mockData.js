@@ -32,6 +32,66 @@ const SCHEME_STRINGS = {
     or:  { desc: 'ପ୍ରଧାନମନ୍ତ୍ରୀ ଫସଲ ବୀମା ଯୋଜନା', benefits: ['ଫସଲ ନଷ୍ଟ ହେଲେ ବୀମା', 'କମ୍ ପ୍ରିମିୟମ (1.5%–2%)', 'ବନ୍ୟା, ଖରା, ପୋକରୁ ସୁରକ୍ଷା', 'ସିଧା ବ୍ୟାଙ୍କକୁ ଦାବି ଭୁଗତାନ'], howToApply: ['ନିକଟ ବ୍ୟାଙ୍କ ବା CSC କେନ୍ଦ୍ରକୁ ଯାଆନ୍ତୁ', 'ଫସଲ ବିବରଣ ଦାଖଲ କରନ୍ତୁ', 'ଛୋଟ ପ୍ରିମିୟମ ଦିଅନ୍ତୁ', 'ଜମି ଓ ଆଧାର କାଗଜ ଦାଖଲ କରନ୍ତୁ', 'ବୀମା ନିଶ୍ଚିତକରଣ ନିଅନ୍ତୁ'], documents: ['ଆଧାର କାର୍ଡ', 'ଜମି / ଲିଜ୍ ଦଲିଲ', 'ବ୍ୟାଙ୍କ ଖାତା ବିବରଣ', 'ଫସଲ ବୁଣା ଘୋଷଣା'] },
     en:  { desc: 'PM Crop Insurance Scheme', benefits: ['Insurance coverage against crop failure', 'Low premium (1.5%–2%)', 'Protection from floods, drought, pests', 'Direct claim settlement to bank account'], howToApply: ['Visit nearest bank or CSC center', 'Register your crop details', 'Pay small insurance premium', 'Submit land and Aadhaar documents', 'Receive insurance coverage confirmation'], documents: ['Aadhaar card', 'Land ownership / lease documents', 'Bank account details', 'Crop sowing declaration'] },
   },
+  // ── id 3: Kisan Credit Card ────────────────────────────────────────────────
+  3: {
+    hi:  { desc: 'किसान क्रेडिट कार्ड — फसल खेती और संबंधित गतिविधियों के लिए कार्यशील पूंजी ऋण', benefits: ['कम ब्याज दर पर फसल ऋण', 'समय पर भुगतान पर ब्याज छूट', 'डेयरी, मछली पालन, मुर्गीपालन के लिए भी', 'आसान नवीनीकरण'], howToApply: ['नजदीकी बैंक शाखा जाएं', 'जमीन विवरण के साथ KCC फॉर्म जमा करें', 'KYC और क्षेत्र सत्यापन', 'स्वीकृत क्रेडिट सीमा प्राप्त करें'], documents: ['आधार कार्ड', 'जमीन रिकॉर्ड / खेती का प्रमाण', 'बैंक KYC दस्तावेज', 'फोटो'] },
+    bho: { desc: 'किसान क्रेडिट कार्ड — खेती आ उससे जुड़ल कामन खातिर कार्यशील पूंजी ऋण', benefits: ['कम ब्याज पर फसल ऋण', 'समय से भुगतान पर ब्याज छूट', 'डेयरी, मछली, मुर्गी के लिए भी', 'आसान नवीनीकरण'], howToApply: ['नजदीकी बैंक शाखा जाईं', 'जमीन के कागज के साथ KCC फॉर्म दीं', 'KYC आ खेत सत्यापन', 'स्वीकृत क्रेडिट सीमा मिली'], documents: ['आधार कार्ड', 'जमीन रिकॉर्ड / खेती प्रमाण', 'बैंक KYC कागज', 'फोटो'] },
+    awa: { desc: 'किसान क्रेडिट कार्ड — खेती अउर उससे जुड़े काम खाति कार्यशील पूंजी ऋण', benefits: ['कम ब्याज म फसल ऋण', 'समय पर भुगतान पर ब्याज छूट', 'डेयरी, मछली, मुर्गी खाति भी', 'आसान नवीनीकरण'], howToApply: ['नजदीकी बैंक शाखा जावौ', 'जमीन क कागज के साथ KCC फॉर्म दावौ', 'KYC आ खेत सत्यापन', 'स्वीकृत क्रेडिट सीमा मिलि'], documents: ['आधार कार्ड', 'जमीन रिकॉर्ड / खेती क प्रमाण', 'बैंक KYC कागज', 'फोटो'] },
+    mr:  { desc: 'किसान क्रेडिट कार्ड — पीक लागवड आणि संलग्न उपक्रमांसाठी खेळते भांडवल कर्ज', benefits: ['कमी व्याजदरावर पीक कर्ज', 'वेळेवर परतफेडीवर व्याज सवलत', 'दुग्धव्यवसाय, मत्स्यपालन, कुक्कुटपालनासाठी', 'सुलभ नूतनीकरण'], howToApply: ['जवळच्या बँक शाखेत जा', 'जमीन तपशीलासह KCC फॉर्म जमा करा', 'KYC आणि क्षेत्र पडताळणी', 'मंजूर क्रेडिट मर्यादा मिळवा'], documents: ['आधार कार्ड', 'जमीन नोंद / लागवड पुरावा', 'बँक KYC कागदपत्रे', 'फोटो'] },
+    mai: { desc: 'किसान क्रेडिट कार्ड — फसल खेती आ संबंधित कामक लेल कार्यशील पूंजी ऋण', benefits: ['कम ब्याज पर फसल ऋण', 'समय पर भुगतान पर ब्याज छूट', 'डेयरी, मत्स्य, मुर्गीक लेल', 'आसान नवीनीकरण'], howToApply: ['नजदीकी बैंक शाखा जाउ', 'जमीनक कागज के साथ KCC फॉर्म दिअ', 'KYC आ खेत सत्यापन', 'स्वीकृत क्रेडिट सीमा लिअ'], documents: ['आधार कार्ड', 'जमीन रिकॉर्ड / खेतीक प्रमाण', 'बैंक KYC कागज', 'फोटो'] },
+    or:  { desc: 'କିସାନ କ୍ରେଡିଟ କାର୍ଡ — ଫସଲ ଚାଷ ଓ ସଂଶ୍ଳିଷ୍ଟ କାର୍ଯ୍ୟ ପାଇଁ ଚଳଚ୍ଚଳ ପୁଞ୍ଜି ଋଣ', benefits: ['କମ ସୁଧ ହାରରେ ଫସଲ ଋଣ', 'ସଠିକ ସମୟରେ ଫେରଷ୍ଟ ଦେଲେ ସୁଧ ଛାଡ', 'ଦୁଗ୍ଧ, ମୀନ, କୁକ୍କୁଟ ଚାଷ ପାଇଁ', 'ସହଜ ନବୀକରଣ'], howToApply: ['ନିକଟ ବ୍ୟାଙ୍କ ଶାଖାକୁ ଯାଆନ୍ତୁ', 'ଜମି ବିବରଣ ସହ KCC ଫର୍ମ ଦାଖଲ କରନ୍ତୁ', 'KYC ଓ କ୍ଷେତ୍ର ଯାଞ୍ଚ', 'ଅନୁମୋଦିତ ଋଣ ସୀମା ପ୍ରାପ୍ତ କରନ୍ତୁ'], documents: ['ଆଧାର କାର୍ଡ', 'ଜମି ରେକର୍ଡ / ଚାଷ ପ୍ରମାଣ', 'ବ୍ୟାଙ୍କ KYC କାଗଜ', 'ଫଟୋ'] },
+    en:  { desc: 'Kisan Credit Card — working capital credit for crop cultivation and allied activities', benefits: ['Low-interest crop credit', 'Interest subvention on timely repayment', 'Credit for dairy, fisheries, poultry', 'Simplified renewal'], howToApply: ['Visit nearest bank branch', 'Submit KCC form with land details', 'KYC and field verification', 'Receive sanctioned credit limit'], documents: ['Aadhaar card', 'Land record / cultivation proof', 'Bank KYC documents', 'Photograph'] },
+  },
+  // ── id 4: Soil Health Card ─────────────────────────────────────────────────
+  4: {
+    hi:  { desc: 'मिट्टी स्वास्थ्य कार्ड योजना — उत्पादकता सुधार के लिए मिट्टी परीक्षण और पोषक तत्व सलाह', benefits: ['मुफ्त या सब्सिडी युक्त मिट्टी परीक्षण', 'संतुलित उर्वरक उपयोग', 'फसल उत्पादन में सुधार', 'खेती लागत में कमी'], howToApply: ['कृषि विस्तार अधिकारी से संपर्क करें', 'खेत से मिट्टी का नमूना जमा करें', 'प्रयोगशाला परीक्षण', 'मिट्टी स्वास्थ्य कार्ड रिपोर्ट लें'], documents: ['आधार कार्ड', 'जमीन का विवरण', 'मोबाइल नंबर'] },
+    bho: { desc: 'माटी स्वास्थ्य कार्ड योजना — माटी जाँच आ खाद सलाह', benefits: ['मुफ्त या सस्ती माटी जाँच', 'संतुलित खाद इस्तेमाल', 'फसल उत्पादन में सुधार', 'खेती लागत कम'], howToApply: ['कृषि अधिकारी से बात करीं', 'खेत से माटी नमूना दीं', 'प्रयोगशाला जाँच', 'माटी स्वास्थ्य कार्ड रिपोर्ट लीं'], documents: ['आधार कार्ड', 'जमीन के विवरण', 'मोबाइल नंबर'] },
+    awa: { desc: 'माटी स्वास्थ्य कार्ड योजना — माटी परीक्षण अउर पोषक तत्व सलाह', benefits: ['मुफ्त या सस्ती माटी परीक्षण', 'संतुलित खाद उपयोग', 'फसल उत्पादन म सुधार', 'खेती लागत म कमी'], howToApply: ['कृषि अधिकारी से मिलौ', 'खेत से माटी नमूना दावौ', 'प्रयोगशाला परीक्षण', 'माटी स्वास्थ्य कार्ड रिपोर्ट लेव'], documents: ['आधार कार्ड', 'जमीन क विवरण', 'मोबाइल नंबर'] },
+    mr:  { desc: 'माती आरोग्य कार्ड योजना — उत्पादकता सुधारण्यासाठी माती परीक्षण आणि पोषक सल्ला', benefits: ['मोफत किंवा अनुदानित माती परीक्षण', 'संतुलित खत वापर', 'पीक उत्पादनात सुधारणा', 'लागवड खर्च कमी'], howToApply: ['कृषी विस्तार अधिकाऱ्याशी संपर्क करा', 'शेतातून माती नमुना द्या', 'प्रयोगशाळा परीक्षण', 'माती आरोग्य कार्ड अहवाल घ्या'], documents: ['आधार कार्ड', 'जमीन तपशील', 'मोबाइल नंबर'] },
+    mai: { desc: 'माटी स्वास्थ्य कार्ड योजना — उत्पादकता सुधार लेल माटी परीक्षण आ पोषक सलाह', benefits: ['मुफ्त या सस्ती माटी परीक्षण', 'संतुलित खाद उपयोग', 'फसल उत्पादनमे सुधार', 'खेती लागत कम'], howToApply: ['कृषि अधिकारीसँ सम्पर्क करू', 'खेतसँ माटी नमूना दिअ', 'प्रयोगशाला परीक्षण', 'माटी स्वास्थ्य कार्ड रिपोर्ट लिअ'], documents: ['आधार कार्ड', 'जमीनक विवरण', 'मोबाइल नंबर'] },
+    or:  { desc: 'ମାଟି ସ୍ୱାସ୍ଥ୍ୟ କାର୍ଡ ଯୋଜନା — ଉତ୍ପାଦନ ଉନ୍ନତି ପାଇଁ ମାଟି ପରୀକ୍ଷା ଓ ସାର ପରାମର୍ଶ', benefits: ['ମୁଫ୍ତ ବା ଅନୁଦାନ ଯୁକ୍ତ ମାଟି ପରୀକ୍ଷା', 'ସନ୍ତୁଳିତ ସାର ବ୍ୟବହାର', 'ଫସଲ ଉତ୍ପାଦନ ବୃଦ୍ଧି', 'ଚାଷ ଖର୍ଚ୍ଚ ହ୍ରାସ'], howToApply: ['କୃଷି ସଂସ୍ପ୍ରସାରଣ ଅଧିକାରୀଙ୍କୁ ଯୋଗାଯୋଗ କରନ୍ତୁ', 'ଜମିରୁ ମାଟି ନମୁନା ଦାଖଲ କରନ୍ତୁ', 'ପ୍ରୟୋଗଶାଳା ପରୀକ୍ଷା', 'ମାଟି ସ୍ୱାସ୍ଥ୍ୟ କାର୍ଡ ରିପୋର୍ଟ ନିଅନ୍ତୁ'], documents: ['ଆଧାର କାର୍ଡ', 'ଜମି ବିବରଣ', 'ମୋବାଇଲ ନମ୍ବର'] },
+    en:  { desc: 'Soil Health Card Scheme — soil testing and nutrient advisory to improve productivity', benefits: ['Free or subsidized soil testing', 'Balanced fertilizer usage', 'Improved crop yield', 'Reduced cultivation cost'], howToApply: ['Contact agriculture extension officer', 'Submit soil sample from field', 'Laboratory testing', 'Collect soil health card report'], documents: ['Aadhaar card', 'Land details', 'Mobile number'] },
+  },
+  // ── id 5: PM KUSUM ─────────────────────────────────────────────────────────
+  5: {
+    hi:  { desc: 'PM KUSUM — किसानों के लिए सौर पंप और विकेंद्रीकृत सौर ऊर्जा', benefits: ['सौर पंप स्थापना पर सब्सिडी', 'सिंचाई बिजली लागत में कमी', 'दिन में विश्वसनीय बिजली', 'बिजली बिक्री से अतिरिक्त आय (जहाँ लागू)'], howToApply: ['राज्य नवीकरणीय ऊर्जा पोर्टल पर आवेदन करें', 'जरूरी दस्तावेज अपलोड करें', 'एजेंसी द्वारा साइट सत्यापन', 'सब्सिडी अनुमोदन और स्थापना'], documents: ['आधार कार्ड', 'जमीन के कागजात', 'बैंक खाते की जानकारी', 'बिजली कनेक्शन विवरण'] },
+    bho: { desc: 'PM KUSUM — किसानन खातिर सोलर पंप आ सौर ऊर्जा', benefits: ['सोलर पंप पर सब्सिडी', 'सिंचाई बिजली खर्च कम', 'दिन में पक्का बिजली', 'बिजली बेचले से अतिरिक्त कमाई'], howToApply: ['राज्य सोलर पोर्टल पर आवेदन करीं', 'जरूरी कागज अपलोड करीं', 'एजेंसी से साइट सत्यापन', 'सब्सिडी मंजूरी आ स्थापना'], documents: ['आधार कार्ड', 'जमीन के कागज', 'बैंक खाता', 'बिजली कनेक्शन'] },
+    awa: { desc: 'PM KUSUM — किसानन खाति सोलर पंप अउर सौर ऊर्जा', benefits: ['सोलर पंप पर सब्सिडी', 'सिंचाई बिजली खर्च म कमी', 'दिन म भरोसेमंद बिजली', 'बिजली बेचे से अतिरिक्त आय'], howToApply: ['राज्य सोलर पोर्टल पर आवेदन करौ', 'जरूरी कागज अपलोड करौ', 'एजेंसी से साइट सत्यापन', 'सब्सिडी मंजूरी आ स्थापना'], documents: ['आधार कार्ड', 'जमीन क कागज', 'बैंक खाता', 'बिजली कनेक्शन विवरण'] },
+    mr:  { desc: 'PM KUSUM — शेतकऱ्यांसाठी सौर पंप आणि विकेंद्रित सौर ऊर्जा', benefits: ['सौर पंप बसवण्यावर अनुदान', 'सिंचन वीज खर्च कमी', 'दिवसा विश्वासार्ह वीज', 'वीज विक्रीतून अतिरिक्त उत्पन्न (लागू असल्यास)'], howToApply: ['राज्य नवीकरणीय ऊर्जा पोर्टलवर अर्ज करा', 'आवश्यक कागदपत्रे अपलोड करा', 'एजन्सीद्वारे साइट पडताळणी', 'अनुदान मंजुरी आणि स्थापना'], documents: ['आधार कार्ड', 'जमीन कागदपत्रे', 'बँक खाते तपशील', 'वीज कनेक्शन तपशील'] },
+    mai: { desc: 'PM KUSUM — किसानक लेल सोलर पंप आ विकेंद्रीकृत सौर ऊर्जा', benefits: ['सोलर पंप स्थापना पर सब्सिडी', 'सिंचाई बिजली लागत कम', 'दिनमे विश्वसनीय बिजली', 'बिजली बिक्रीसँ अतिरिक्त आय'], howToApply: ['राज्य सोलर पोर्टल पर आवेदन करू', 'जरूरी कागज अपलोड करू', 'एजेंसीसँ साइट सत्यापन', 'सब्सिडी मंजूरी आ स्थापना'], documents: ['आधार कार्ड', 'जमीनक कागज', 'बैंक खाता', 'बिजली कनेक्शन विवरण'] },
+    or:  { desc: 'PM KUSUM — ଚାଷୀଙ୍କ ପାଇଁ ସୌର ପଂପ ଓ ବିକେନ୍ଦ୍ରୀଭୂତ ସୌର ଶକ୍ତି', benefits: ['ସୌର ପଂପ ସ୍ଥାପନରେ ଅନୁଦାନ', 'ଜଳସେଚନ ବିଦ୍ୟୁତ ଖର୍ଚ୍ଚ ହ୍ରାସ', 'ଦିନ ସମୟରେ ନିର୍ଭରଯୋଗ୍ୟ ବିଦ୍ୟୁତ', 'ବିଦ୍ୟୁତ ବିକ୍ରିରୁ ଅତିରିକ୍ତ ଆୟ'], howToApply: ['ରାଜ୍ୟ ସୌର ଶକ୍ତି ପୋର୍ଟାଲରେ ଆବେଦନ କରନ୍ତୁ', 'ଆବଶ୍ୟକ କାଗଜ ଅପଲୋଡ କରନ୍ତୁ', 'ଏଜେନ୍ସି ଦ୍ୱାରା ସ୍ଥଳ ଯାଞ୍ଚ', 'ଅନୁଦାନ ଅନୁମୋଦନ ଓ ସ୍ଥାପନା'], documents: ['ଆଧାର କାର୍ଡ', 'ଜମି କାଗଜ', 'ବ୍ୟାଙ୍କ ଖାତା ବିବରଣ', 'ବିଦ୍ୟୁତ ସଂଯୋଗ ବିବରଣ'] },
+    en:  { desc: 'PM KUSUM — solar pumps and decentralized solar power for farmers', benefits: ['Subsidy on solar pump installation', 'Lower irrigation power cost', 'Reliable daytime power', 'Additional income from power sale (where applicable)'], howToApply: ['Apply through state renewable portal', 'Upload required documents', 'Site verification by agency', 'Subsidy approval and installation'], documents: ['Aadhaar card', 'Land ownership papers', 'Bank account details', 'Electricity connection details'] },
+  },
+  // ── id 6: Delhi Kisan Registration ────────────────────────────────────────
+  6: {
+    hi:  { desc: 'दिल्ली किसान पंजीकरण एवं सब्सिडी — दिल्ली में पंजीकृत किसानों के लिए राज्य सहायता', benefits: ['राज्य कृषि योजनाओं में प्राथमिकता', 'इनपुट सब्सिडी के अवसर', 'विभाग की सलाहकार सेवाएं'], howToApply: ['दिल्ली कृषि पोर्टल पर पंजीकरण करें', 'किसान प्रोफाइल और प्रमाण जमा करें', 'विभाग द्वारा सत्यापन', 'उपलब्ध राज्य लाभों के लिए आवेदन करें'], documents: ['आधार कार्ड', 'दिल्ली का पता प्रमाण', 'जमीन / खेती का प्रमाण', 'बैंक खाते की जानकारी'] },
+    bho: { desc: 'दिल्ली किसान पंजीकरण — दिल्ली में किसानन खातिर राज्य सहायता', benefits: ['राज्य कृषि योजना में पहिला मौका', 'इनपुट सब्सिडी', 'विभाग से सलाह'], howToApply: ['दिल्ली कृषि पोर्टल पर पंजीकरण करीं', 'किसान प्रोफाइल आ प्रमाण दीं', 'विभाग से सत्यापन', 'राज्य लाभ खातिर आवेदन करीं'], documents: ['आधार कार्ड', 'दिल्ली का पता प्रमाण', 'जमीन / खेती प्रमाण', 'बैंक खाता'] },
+    awa: { desc: 'दिल्ली किसान पंजीकरण — दिल्ली म किसानन खाति राज्य सहायता', benefits: ['राज्य कृषि योजना म प्राथमिकता', 'इनपुट सब्सिडी', 'विभाग से सलाह'], howToApply: ['दिल्ली कृषि पोर्टल पर पंजीकरण करौ', 'किसान प्रोफाइल आ प्रमाण दावौ', 'विभाग से सत्यापन', 'राज्य लाभ खाति आवेदन करौ'], documents: ['आधार कार्ड', 'दिल्ली क पता प्रमाण', 'जमीन / खेती क प्रमाण', 'बैंक खाता'] },
+    mr:  { desc: 'दिल्ली शेतकरी नोंदणी व अनुदान — दिल्लीतील नोंदणीकृत शेतकऱ्यांसाठी राज्य सहाय्य', benefits: ['राज्य कृषी योजनांना प्राधान्य', 'निविष्ठा अनुदान संधी', 'विभागाच्या सल्लागार सेवा'], howToApply: ['दिल्ली कृषी पोर्टलवर नोंदणी करा', 'शेतकरी प्रोफाइल आणि पुरावे सादर करा', 'विभागाची पडताळणी', 'उपलब्ध राज्य लाभांसाठी अर्ज करा'], documents: ['आधार कार्ड', 'दिल्ली पत्ता पुरावा', 'जमीन / लागवड पुरावा', 'बँक खाते तपशील'] },
+    mai: { desc: 'दिल्ली किसान पंजीकरण — दिल्लीमे पंजीकृत किसानक लेल राज्य सहायता', benefits: ['राज्य कृषि योजनामे प्राथमिकता', 'इनपुट सब्सिडी', 'विभागसँ सलाह'], howToApply: ['दिल्ली कृषि पोर्टल पर पंजीकरण करू', 'किसान प्रोफाइल आ प्रमाण दिअ', 'विभागसँ सत्यापन', 'राज्य लाभक लेल आवेदन करू'], documents: ['आधार कार्ड', 'दिल्लीक पता प्रमाण', 'जमीन / खेतीक प्रमाण', 'बैंक खाता'] },
+    or:  { desc: 'ଦିଲ୍ଲୀ କୃଷକ ପଞ୍ଜୀକରଣ ଓ ଅନୁଦାନ — ଦିଲ୍ଲୀରେ ପଞ୍ଜୀଭୁକ୍ତ ଚାଷୀଙ୍କ ପାଇଁ ରାଜ୍ୟ ସହାୟତା', benefits: ['ରାଜ୍ୟ କୃଷି ଯୋଜନାରେ ଅଗ୍ରାଧିକାର', 'ଇନପୁଟ ଅନୁଦାନ ସୁଯୋଗ', 'ବିଭାଗ ପରାମର୍ଶ ସେବା'], howToApply: ['ଦିଲ୍ଲୀ କୃଷି ପୋର୍ଟାଲରେ ପଞ୍ଜୀକରଣ କରନ୍ତୁ', 'ଚାଷୀ ପ୍ରୋଫାଇଲ ଓ ପ୍ରମାଣ ଦାଖଲ କରନ୍ତୁ', 'ବିଭାଗ ଯାଞ୍ଚ', 'ଉପଲବ୍ଧ ରାଜ୍ୟ ସୁବିଧା ପାଇଁ ଆବେଦନ'], documents: ['ଆଧାର କାର୍ଡ', 'ଦିଲ୍ଲୀ ଠିକଣା ପ୍ରମାଣ', 'ଜମି / ଚାଷ ପ୍ରମାଣ', 'ବ୍ୟାଙ୍କ ଖାତା ବିବରଣ'] },
+    en:  { desc: 'Delhi Kisan Registration and Subsidy — state support for registered farmers in Delhi', benefits: ['Priority access to state agriculture schemes', 'Input subsidy opportunities', 'Department advisory services'], howToApply: ['Register at Delhi agriculture portal', 'Submit farmer profile and proof', 'Department validation', 'Apply to available state benefits'], documents: ['Aadhaar card', 'Address proof in Delhi', 'Land / cultivation proof', 'Bank account details'] },
+  },
+  // ── id 7: Mukhyamantri Kisan Samman Nidhi UP ──────────────────────────────
+  7: {
+    hi:  { desc: 'मुख्यमंत्री किसान सम्मान निधि (UP) — उत्तर प्रदेश में किसानों के लिए राज्य स्तरीय अतिरिक्त सहायता', benefits: ['चुनिंदा श्रेणियों में अनुपूरक सहायता', 'राज्य पोर्टल पर ट्रैकिंग', 'जिला स्तरीय सुविधा'], howToApply: ['आधिकारिक UP योजना पोर्टल पर जाएं', 'किसान पंजीकरण पूरा करें', 'प्रमाण अपलोड करें और जमा करें', 'जिला कार्यालय द्वारा स्थिति ट्रैक करें'], documents: ['आधार कार्ड', 'UP निवास / पता प्रमाण', 'जमीन का विवरण', 'बैंक खाते की जानकारी'] },
+    bho: { desc: 'मुख्यमंत्री किसान सम्मान निधि (UP) — UP में किसानन खातिर राज्य स्तरीय अतिरिक्त सहायता', benefits: ['चुनल श्रेणी में अनुपूरक सहायता', 'राज्य पोर्टल पर ट्रैकिंग', 'जिला स्तर सुविधा'], howToApply: ['UP योजना पोर्टल पर जाईं', 'किसान पंजीकरण पूरा करीं', 'प्रमाण अपलोड करीं', 'जिला दफ्तर से स्थिति जानीं'], documents: ['आधार कार्ड', 'UP निवास / पता प्रमाण', 'जमीन के विवरण', 'बैंक खाता'] },
+    awa: { desc: 'मुख्यमंत्री किसान सम्मान निधि (UP) — UP म किसानन खाति अतिरिक्त राज्य सहायता', benefits: ['चुनल श्रेणी म अनुपूरक सहायता', 'राज्य पोर्टल पर ट्रैकिंग', 'जिला स्तर सुविधा'], howToApply: ['UP योजना पोर्टल पर जावौ', 'किसान पंजीकरण पूरा करौ', 'प्रमाण अपलोड करौ', 'जिला दफ्तर से स्थिति जानौ'], documents: ['आधार कार्ड', 'UP निवास / पता प्रमाण', 'जमीन क विवरण', 'बैंक खाता'] },
+    mr:  { desc: 'मुख्यमंत्री किसान सम्मान निधी (UP) — उत्तर प्रदेशातील शेतकऱ्यांसाठी राज्यस्तरीय अतिरिक्त सहाय्य', benefits: ['निवडक श्रेणींमध्ये पूरक सहाय्य', 'राज्य पोर्टलवर ट्रॅकिंग', 'जिल्हा स्तर सुविधा'], howToApply: ['अधिकृत UP योजना पोर्टलवर जा', 'शेतकरी नोंदणी पूर्ण करा', 'पुरावे अपलोड करा', 'जिल्हा कार्यालयाद्वारे स्थिती ट्रॅक करा'], documents: ['आधार कार्ड', 'UP अधिवास / पत्ता पुरावा', 'जमीन तपशील', 'बँक खाते तपशील'] },
+    mai: { desc: 'मुख्यमंत्री किसान सम्मान निधि (UP) — UP म किसानक लेल राज्य स्तरीय अतिरिक्त सहायता', benefits: ['चुनिंदा श्रेणीमे अनुपूरक सहायता', 'राज्य पोर्टल पर ट्रैकिंग', 'जिला स्तर सुविधा'], howToApply: ['UP योजना पोर्टल पर जाउ', 'किसान पंजीकरण पूरा करू', 'प्रमाण अपलोड करू', 'जिला कार्यालयसँ स्थिति ट्रैक करू'], documents: ['आधार कार्ड', 'UP निवास / पता प्रमाण', 'जमीनक विवरण', 'बैंक खाता'] },
+    or:  { desc: 'ମୁଖ୍ୟମନ୍ତ୍ରୀ କିସାନ ସମ୍ମାନ ନିଧି (UP) — ଉତ୍ତର ପ୍ରଦେଶରେ ଚାଷୀଙ୍କ ପାଇଁ ରାଜ୍ୟ ସ୍ତରୀୟ ଅତିରିକ୍ତ ସହାୟତା', benefits: ['ଚୟନିତ ବର୍ଗରେ ଅନୁପୂରକ ସହାୟତା', 'ରାଜ୍ୟ ପୋର୍ଟାଲରେ ଟ୍ରାକିଂ', 'ଜିଲ୍ଲା ସ୍ତର ସୁବିଧା'], howToApply: ['ଅଧିକୃତ UP ଯୋଜନା ପୋର୍ଟାଲ ଯାଆନ୍ତୁ', 'ଚାଷୀ ପଞ୍ଜୀକରଣ ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ', 'ପ୍ରମାଣ ଅପଲୋଡ କରନ୍ତୁ', 'ଜିଲ୍ଲା କାର୍ଯ୍ୟାଳୟ ଦ୍ୱାରା ସ୍ଥିତି ଟ୍ରାକ କରନ୍ତୁ'], documents: ['ଆଧାର କାର୍ଡ', 'UP ବାସ / ଠିକଣା ପ୍ରମାଣ', 'ଜମି ବିବରଣ', 'ବ୍ୟାଙ୍କ ଖାତା ବିବରଣ'] },
+    en:  { desc: 'Mukhyamantri Kisan Samman Nidhi (UP) — state-level top-up support for farmers in Uttar Pradesh', benefits: ['Supplementary support in selected categories', 'State portal tracking', 'District-level facilitation'], howToApply: ['Visit official UP scheme portal', 'Complete farmer registration', 'Upload proofs and submit', 'Track status via district office'], documents: ['Aadhaar card', 'UP domicile/address proof', 'Land details', 'Bank account details'] },
+  },
+  // ── id 8: Maharashtra Shetkari Karjmukti ──────────────────────────────────
+  8: {
+    hi:  { desc: 'महात्मा ज्योतिराव फुले शेतकरी कर्जमुक्ति (महाराष्ट्र) — पात्र किसानों को कर्ज राहत', benefits: ['पात्र श्रेणियों के लिए कर्ज राहत', 'पोर्टल आधारित दावा और सत्यापन', 'जिला स्तरीय सहायता'], howToApply: ['राज्य पोर्टल पर पात्रता जांचें', 'ऋण और पहचान विवरण जमा करें', 'जिला प्राधिकरण द्वारा सत्यापन', 'स्वीकृत प्रक्रिया के अनुसार राहत जमा'], documents: ['आधार कार्ड', 'ऋण खाते की जानकारी', 'किसान पंजीकरण प्रमाण', 'बैंक और पहचान दस्तावेज'] },
+    bho: { desc: 'महात्मा ज्योतिराव फुले शेतकरी कर्जमुक्ति (महाराष्ट्र) — पात्र किसानन खातिर कर्ज राहत', benefits: ['पात्र श्रेणी खातिर कर्ज राहत', 'पोर्टल से दावा आ सत्यापन', 'जिला स्तर सहायता'], howToApply: ['राज्य पोर्टल पर पात्रता जांचीं', 'ऋण आ पहचान विवरण दीं', 'जिला प्राधिकरण से सत्यापन', 'स्वीकृत प्रक्रिया से राहत'], documents: ['आधार कार्ड', 'ऋण खाता', 'किसान पंजीकरण प्रमाण', 'बैंक आ पहचान कागज'] },
+    awa: { desc: 'महात्मा ज्योतिराव फुले शेतकरी कर्जमुक्ति (महाराष्ट्र) — पात्र किसानन खाति कर्ज राहत', benefits: ['पात्र श्रेणी खाति कर्ज राहत', 'पोर्टल से दावा आ सत्यापन', 'जिला स्तर सहायता'], howToApply: ['राज्य पोर्टल पर पात्रता जांचौ', 'ऋण आ पहचान विवरण दावौ', 'जिला प्राधिकरण से सत्यापन', 'स्वीकृत प्रक्रिया से राहत'], documents: ['आधार कार्ड', 'ऋण खाता', 'किसान पंजीकरण प्रमाण', 'बैंक आ पहचान कागज'] },
+    mr:  { desc: 'महात्मा जोतिराव फुले शेतकरी कर्जमुक्ती (महाराष्ट्र) — पात्र शेतकऱ्यांना कर्जमाफी सहाय्य', benefits: ['पात्र श्रेणींसाठी कर्जमाफी', 'पोर्टल आधारित दावा आणि पडताळणी', 'जिल्हा स्तर सहाय्य'], howToApply: ['राज्य पोर्टलवर पात्रता तपासा', 'कर्ज आणि ओळख तपशील सादर करा', 'जिल्हा प्राधिकरणाची पडताळणी', 'मंजूर प्रक्रियेनुसार मदत'], documents: ['आधार कार्ड', 'कर्ज खाते तपशील', 'शेतकरी नोंदणी पुरावा', 'बँक आणि ओळख कागदपत्रे'] },
+    mai: { desc: 'महात्मा ज्योतिराव फुले शेतकरी कर्जमुक्ति (महाराष्ट्र) — पात्र किसानक लेल कर्ज राहत', benefits: ['पात्र श्रेणीक लेल कर्ज राहत', 'पोर्टल आधारित दावा आ सत्यापन', 'जिला स्तर सहायता'], howToApply: ['राज्य पोर्टल पर पात्रता जाँचू', 'ऋण आ पहचान विवरण दिअ', 'जिला प्राधिकरणसँ सत्यापन', 'स्वीकृत प्रक्रियासँ राहत'], documents: ['आधार कार्ड', 'ऋण खाता', 'किसान पंजीकरण प्रमाण', 'बैंक आ पहचान कागज'] },
+    or:  { desc: 'ମହାତ୍ମା ଜ୍ୟୋତିରାଓ ଫୁଲେ ଶେତକାରୀ କର୍ଜମୁକ୍ତି (ମହାରାଷ୍ଟ୍ର) — ଯୋଗ୍ୟ ଚାଷୀଙ୍କ ପାଇଁ ଋଣ ମୁକ୍ତି ସହାୟତା', benefits: ['ଯୋଗ୍ୟ ବର୍ଗ ପାଇଁ ଋଣ ମୁକ୍ତି', 'ପୋର୍ଟାଲ ଆଧାରିତ ଦାବି ଓ ଯାଞ୍ଚ', 'ଜିଲ୍ଲା ସ୍ତର ସହାୟତା'], howToApply: ['ରାଜ୍ୟ ପୋର୍ଟାଲରେ ଯୋଗ୍ୟତା ଯାଞ୍ଚ', 'ଋଣ ଓ ପରିଚୟ ବିବରଣ ଦାଖଲ', 'ଜିଲ୍ଲା ପ୍ରାଧିକରଣ ଯାଞ୍ଚ', 'ଅନୁମୋଦିତ ପ୍ରକ୍ରିୟା ଅନୁଯାୟୀ ରାହତ'], documents: ['ଆଧାର କାର୍ଡ', 'ଋଣ ଖାତା ବିବରଣ', 'ଚାଷୀ ପଞ୍ଜୀକରଣ ପ୍ରମାଣ', 'ବ୍ୟାଙ୍କ ଓ ପରିଚୟ କାଗଜ'] },
+    en:  { desc: 'Mahatma Jyotirao Phule Shetkari Karjmukti (Maharashtra) — debt relief support for eligible farmers', benefits: ['Debt relief for eligible categories', 'Portal-based claim and verification', 'District-level support'], howToApply: ['Check eligibility on state portal', 'Submit loan and identity details', 'Verification by district authority', 'Relief credited as per approved process'], documents: ['Aadhaar card', 'Loan account details', 'Farmer registration proof', 'Bank and identity documents'] },
+  },
 }
 
 // Scheme structural data shared across all languages
@@ -42,6 +102,7 @@ const SCHEME_BASE = [
     icon: '🌾',
     details: '₹6,000 annual income support',
     governmentLevel: 'Central Government',
+    states: ['ALL'],
     eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: '₹10 lakh/year', landRequired: '≤ 2 hectares' },
     authority: { ministry: 'Ministry of Agriculture', stateBody: 'State Agriculture Department', localBody: 'Gram Panchayat' },
   },
@@ -51,8 +112,69 @@ const SCHEME_BASE = [
     icon: '🛡️',
     details: 'Crop insurance against natural disasters',
     governmentLevel: 'Central + State Government',
+    states: ['ALL'],
     eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'No income limit', landRequired: 'Must own or cultivate farmland' },
     authority: { ministry: 'Ministry of Agriculture & Farmers Welfare', stateBody: 'State Agriculture Insurance Office', localBody: 'District Agriculture Officer' },
+  },
+  {
+    id: 3,
+    name: 'Kisan Credit Card (KCC)',
+    icon: '💳',
+    details: 'Working capital credit for crop cultivation and allied activities',
+    governmentLevel: 'Central Government',
+    states: ['ALL'],
+    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'As per bank norm', landRequired: 'Cultivator / tenant farmer / SHG / JLG' },
+    authority: { ministry: 'Ministry of Agriculture', stateBody: 'State Level Bankers Committee', localBody: 'Scheduled Commercial Banks / RRBs' },
+  },
+  {
+    id: 4,
+    name: 'Soil Health Card Scheme',
+    icon: '🧪',
+    details: 'Soil testing and nutrient advisory to improve productivity',
+    governmentLevel: 'Central + State Government',
+    states: ['ALL'],
+    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'No income limit', landRequired: 'Farm plot details required' },
+    authority: { ministry: 'Ministry of Agriculture & Farmers Welfare', stateBody: 'State Agriculture Department', localBody: 'Block Agriculture Office' },
+  },
+  {
+    id: 5,
+    name: 'PM KUSUM',
+    icon: '☀️',
+    details: 'Solar pumps and decentralized solar power for farmers',
+    governmentLevel: 'Central + State Government',
+    states: ['ALL'],
+    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'As per state guideline', landRequired: 'Land / irrigation requirement' },
+    authority: { ministry: 'Ministry of New and Renewable Energy', stateBody: 'State Nodal Renewable Agency', localBody: 'DISCOM / District Office' },
+  },
+  {
+    id: 6,
+    name: 'Delhi Kisan Registration and Subsidy',
+    icon: '🏙️',
+    details: 'State support for registered farmers in Delhi',
+    governmentLevel: 'Delhi Government',
+    states: ['Delhi', 'NCT of Delhi'],
+    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'As per Delhi guideline', landRequired: 'Farmer registration in Delhi' },
+    authority: { ministry: 'Department of Development, GNCTD', stateBody: 'Delhi Agriculture Department', localBody: 'District Agriculture Office' },
+  },
+  {
+    id: 7,
+    name: 'Mukhyamantri Kisan Samman Nidhi (UP)',
+    icon: '🌱',
+    details: 'State-level top-up support for farmers in Uttar Pradesh',
+    governmentLevel: 'Uttar Pradesh Government',
+    states: ['Uttar Pradesh', 'UP'],
+    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'As per UP guideline', landRequired: 'Registered farmer in Uttar Pradesh' },
+    authority: { ministry: 'Government of Uttar Pradesh', stateBody: 'UP Agriculture Department', localBody: 'Tehsil / Block Office' },
+  },
+  {
+    id: 8,
+    name: 'Mahatma Jyotirao Phule Shetkari Karjmukti',
+    icon: '🤝',
+    details: 'Debt relief support program for eligible farmers in Maharashtra',
+    governmentLevel: 'Maharashtra Government',
+    states: ['Maharashtra'],
+    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'As per Maharashtra guideline', landRequired: 'Eligible farmer as per state criteria' },
+    authority: { ministry: 'Government of Maharashtra', stateBody: 'Cooperation and Agriculture Department', localBody: 'District Cooperative Office' },
   },
 ]
 
@@ -216,7 +338,7 @@ const MANDI_PRICE_DATA = [
   },
   {
     id: 2,
-    names: { hi: 'लखनऊ मंडी', bho: 'लखनऊ मंडी', awa: 'लखनऊ मंडी', mr: 'लखनौ बाजार', mai: 'लखनऊ मंडी', or: 'ଲକ୍ଷ୍ନୌ ମଣ୍ଡି', en: 'Lucknow Market' },
+    names: { hi: 'लखनऊ मंडी', bho: 'लखनऊ मंडी', awa: 'लखनऊ मंडी', mr: 'लखनौ बाजार', mai: 'लखनऊ मंडी', or: 'ଲକ୍ଷ୍ନୌ ମଣ୍ଡି', en: 'Lhhhhhhhhhhhhhhhhhhhhhhhucknow Market' },
     state: { hi: 'उत्तर प्रदेश', bho: 'उत्तर प्रदेश', awa: 'उत्तर प्रदेश', mr: 'उत्तर प्रदेश', mai: 'उत्तर प्रदेश', or: 'ଉତ୍ତର ପ୍ରଦେଶ', en: 'Uttar Pradesh' },
     crops: [
       { names: { hi: 'गेहूं', bho: 'गेहूं', awa: 'गेहूं', mr: 'गहू', mai: 'गहूम', or: 'ଗହମ', en: 'Wheat' }, price: '₹2,180', unit: { hi: '/क्विंटल', bho: '/क्विंटल', awa: '/क्विंटल', mr: '/क्विंटल', mai: '/क्विंटल', or: '/କ୍ୱିଣ୍ଟାଲ', en: '/quintal' }, change: '+30', trend: 'up' },
@@ -318,101 +440,12 @@ function resolveLang(lang) {
   return supported.includes(lang) ? lang : 'hi'
 }
 
-const SUPPLEMENTAL_SCHEMES = [
-  {
-    id: 3,
-    name: 'Kisan Credit Card (KCC)',
-    icon: 'credit_card',
-    details: 'Working capital credit for crop cultivation and allied activities',
-    governmentLevel: 'Central Government',
-    states: ['ALL'],
-    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'As per bank norm', landRequired: 'Cultivator / tenant farmer / SHG / JLG' },
-    authority: { ministry: 'Ministry of Agriculture', stateBody: 'State Level Bankers Committee', localBody: 'Scheduled Commercial Banks / RRBs' },
-    desc: 'Institutional credit support for farmers with flexible withdrawal and repayment.',
-    benefits: ['Low-interest crop credit', 'Interest subvention on timely repayment', 'Credit for dairy, fisheries, poultry', 'Simplified renewal'],
-    documents: ['Aadhaar card', 'Land record / cultivation proof', 'Bank KYC documents', 'Photograph'],
-    howToApply: ['Visit nearest bank branch', 'Submit KCC form with land details', 'KYC and field verification', 'Receive sanctioned credit limit'],
-  },
-  {
-    id: 4,
-    name: 'Soil Health Card Scheme',
-    icon: 'science',
-    details: 'Soil testing and nutrient advisory to improve productivity',
-    governmentLevel: 'Central + State Government',
-    states: ['ALL'],
-    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'No income limit', landRequired: 'Farm plot details required' },
-    authority: { ministry: 'Ministry of Agriculture & Farmers Welfare', stateBody: 'State Agriculture Department', localBody: 'Block Agriculture Office' },
-    desc: 'Provides scientific soil nutrient status and crop-wise fertilizer recommendation.',
-    benefits: ['Free or subsidized soil testing', 'Balanced fertilizer usage', 'Improved crop yield', 'Reduced cultivation cost'],
-    documents: ['Aadhaar card', 'Land details', 'Mobile number'],
-    howToApply: ['Contact agriculture extension officer', 'Submit soil sample from field', 'Laboratory testing', 'Collect soil health card report'],
-  },
-  {
-    id: 5,
-    name: 'PM KUSUM',
-    icon: 'wb_sunny',
-    details: 'Solar pumps and decentralized solar power for farmers',
-    governmentLevel: 'Central + State Government',
-    states: ['ALL'],
-    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'As per state guideline', landRequired: 'Land / irrigation requirement' },
-    authority: { ministry: 'Ministry of New and Renewable Energy', stateBody: 'State Nodal Renewable Agency', localBody: 'DISCOM / District Office' },
-    desc: 'Subsidy-based scheme for solar pumps and additional farm income through solar power.',
-    benefits: ['Subsidy on solar pump installation', 'Lower irrigation power cost', 'Reliable daytime power', 'Additional income from power sale (where applicable)'],
-    documents: ['Aadhaar card', 'Land ownership papers', 'Bank account details', 'Electricity connection details'],
-    howToApply: ['Apply through state renewable portal', 'Upload required documents', 'Site verification by agency', 'Subsidy approval and installation'],
-  },
-  {
-    id: 6,
-    name: 'Delhi Kisan Registration and Subsidy',
-    icon: 'location_city',
-    details: 'State support for registered farmers in Delhi',
-    governmentLevel: 'Delhi Government',
-    states: ['Delhi', 'NCT of Delhi'],
-    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'As per Delhi guideline', landRequired: 'Farmer registration in Delhi' },
-    authority: { ministry: 'Department of Development, GNCTD', stateBody: 'Delhi Agriculture Department', localBody: 'District Agriculture Office' },
-    desc: 'Registration-linked support and subsidy access for cultivators in Delhi region.',
-    benefits: ['Priority access to state agriculture schemes', 'Input subsidy opportunities', 'Department advisory services'],
-    documents: ['Aadhaar card', 'Address proof in Delhi', 'Land / cultivation proof', 'Bank account details'],
-    howToApply: ['Register at Delhi agriculture portal', 'Submit farmer profile and proof', 'Department validation', 'Apply to available state benefits'],
-  },
-  {
-    id: 7,
-    name: 'Mukhyamantri Kisan Samman Nidhi (UP)',
-    icon: 'agriculture',
-    details: 'State-level top-up support for farmers in Uttar Pradesh',
-    governmentLevel: 'Uttar Pradesh Government',
-    states: ['Uttar Pradesh', 'UP'],
-    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'As per UP guideline', landRequired: 'Registered farmer in Uttar Pradesh' },
-    authority: { ministry: 'Government of Uttar Pradesh', stateBody: 'UP Agriculture Department', localBody: 'Tehsil / Block Office' },
-    desc: 'State support linked with farmer records and agriculture department verification.',
-    benefits: ['Supplementary support in selected categories', 'State portal tracking', 'District-level facilitation'],
-    documents: ['Aadhaar card', 'UP domicile/address proof', 'Land details', 'Bank account details'],
-    howToApply: ['Visit official UP scheme portal', 'Complete farmer registration', 'Upload proofs and submit', 'Track status via district office'],
-  },
-  {
-    id: 8,
-    name: 'Mahatma Jyotirao Phule Shetkari Karjmukti (Maharashtra)',
-    icon: 'account_balance',
-    details: 'Debt relief support program for eligible farmers in Maharashtra',
-    governmentLevel: 'Maharashtra Government',
-    states: ['Maharashtra'],
-    eligibility: { gender: 'All', maritalStatus: 'All', incomeLimit: 'As per Maharashtra guideline', landRequired: 'Eligible farmer as per state criteria' },
-    authority: { ministry: 'Government of Maharashtra', stateBody: 'Cooperation and Agriculture Department', localBody: 'District Cooperative Office' },
-    desc: 'State relief assistance for eligible farmer loan accounts under notified conditions.',
-    benefits: ['Debt relief for eligible categories', 'Portal-based claim and verification', 'District-level support'],
-    documents: ['Aadhaar card', 'Loan account details', 'Farmer registration proof', 'Bank and identity documents'],
-    howToApply: ['Check eligibility on state portal', 'Submit loan and identity details', 'Verification by district authority', 'Relief credited as per approved process'],
-  },
-]
-
 function getAllMockSchemes(lang) {
   const l = resolveLang(lang)
-  const localizedBase = SCHEME_BASE.map((scheme) => ({
+  return SCHEME_BASE.map((scheme) => ({
     ...scheme,
-    ...(SCHEME_STRINGS[scheme.id]?.[l] || SCHEME_STRINGS[scheme.id]?.hi),
+    ...(SCHEME_STRINGS[scheme.id]?.[l] || SCHEME_STRINGS[scheme.id]?.hi || {}),
   }))
-
-  return [...localizedBase, ...SUPPLEMENTAL_SCHEMES]
 }
 
 /** Get localized schemes list */
