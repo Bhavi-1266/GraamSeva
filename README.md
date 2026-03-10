@@ -22,6 +22,11 @@ The heart of GraamSeva is an **LLM-driven Assistant** that:
 - **Low Literacy Optimized**: No typing required. Users speak in their native tongue.
 - **Web Speech API**: Browser-native, high-performance transcription.
 
+### 🌐 Regional Language Support
+- **Inclusive Access**: Users can switch the entire interface to their preferred regional language.
+- **Full Interface Translation**: Schemes, chatbot responses, and all translatable UI elements adapt automatically.
+- **Supported Languages**: Hindi, Bhojpuri, Awadhi, Marathi, Maithili, Odia, and English.
+
 ### 📊 Operator Dashboard
 - **CSC Management**: Real-time KPI monitoring, language distribution analytics, and application tracking for village operators.
 
