@@ -63,11 +63,10 @@ graph TD
 
 | Layer | Technology |
 | :--- | :--- |
-| **Frontend** | React 19, Vite, Vanilla CSS |
+| **Frontend** | React 19, Vite, Tailwind CSS |
 | **AI / LLM** | Google Gemini 2.5 Flash |
-| **Styling** | Modern Glassmorphism, Responsive Grid |
+| **Styling** | Simple Minimal , Responsive Grid |
 | **Icons** | Material Design Icons |
-| **Deployment** | Azure Static Web Apps (Ready) |
 
 ---
 
@@ -76,6 +75,7 @@ graph TD
 ### 1. Prerequisites
 - Node.js (v18+)
 - npm
+- -django
 
 ### 2. Installation
 ```bash
@@ -84,6 +84,16 @@ cd GraamSevaFrontend
 
 # Install dependencies
 npm install
+```
+```bash
+# Navigate to the backend directory
+cd Backend
+
+# start Venv
+source venv/bin/activate
+
+cd GraamSeva
+python manage.py runserver
 ```
 
 ### 3. Environment Configuration
